@@ -1,0 +1,53 @@
+== SHIPPED build (core -Ofast), rebuilt by T6b, hex == builder's
+ARM image 09_guardian.ino.elf fresh twin: hg_twin_pack -> 206 B, hg_twin_unpack -> rc -7  (0 = loads; < 0 = file rejected, defaults used)
+packed file first bytes 4e5457480300ce00  (unlearned t1_night_base hours are NaN by design)
+hg2_check_crc() on the ARM image: 1
+4000 minutes, ARM image 09_guardian.ino.elf vs host golden flags (-O2 -fsingle-precision-constant -ffp-contract=off):
+  core_now    max |diff| 1.669e-01   NaN-pattern mismatches 0
+  core_20     max |diff| 1.611e-01   NaN-pattern mismatches 0
+  core_30     max |diff| 1.622e-01   NaN-pattern mismatches 0
+  sd_now      max |diff| 8.181e-02   NaN-pattern mismatches 0
+  sd_20       max |diff| 6.799e-02   NaN-pattern mismatches 0
+  sd_30       max |diff| 6.508e-02   NaN-pattern mismatches 0
+  f20_eff     max |diff| 1.611e-01   NaN-pattern mismatches 0
+  f30_eff     max |diff| 1.622e-01   NaN-pattern mismatches 0
+  logit_p38   max |diff| 1.829e+00   NaN-pattern mismatches 0
+  logit_p385  max |diff| 2.532e+00   NaN-pattern mismatches 0
+  strain      max |diff| 4.462e-01   NaN-pattern mismatches 0
+  kf          max |diff| 3.815e-06   NaN-pattern mismatches 3852
+  core_flux   max |diff| 0.000e+00   NaN-pattern mismatches 0
+  flux_valid/hr_valid/valid/why mismatching minutes: 21
+  first mismatch: (148, 'kf', nan, 36.697509765625)
+2880 minutes. State mismatches ARM vs host golden: 297; minutes with any guardian-record difference: 2866; max |core| diff 0.10 C
+state minutes ARM : {'OK': 2879, 'CHECK': 1}
+state minutes host: {'OK': 2582, 'CHECK': 1, 'DRINK': 297}
+  minute 1747 (mod 907 day 1): ARM state OK tiers 0 f20 37.14 | host state DRINK tiers 1 f20 37.16
+  minute 1748 (mod 908 day 1): ARM state OK tiers 0 f20 37.14 | host state DRINK tiers 1 f20 37.17
+  minute 1749 (mod 909 day 1): ARM state OK tiers 0 f20 37.14 | host state DRINK tiers 1 f20 37.17
+  minute 1750 (mod 910 day 1): ARM state OK tiers 0 f20 37.14 | host state DRINK tiers 1 f20 37.16
+  minute 1751 (mod 911 day 1): ARM state OK tiers 0 f20 37.15 | host state DRINK tiers 1 f20 37.17
+  minute 1752 (mod 912 day 1): ARM state OK tiers 0 f20 37.15 | host state DRINK tiers 1 f20 37.17
+
+== CONTROL build: identical sketch + '#pragma GCC optimize ("no-fast-math")' in a scratch copy of fw_flags.h
+ARM image control_nofastmath.elf fresh twin: hg_twin_pack -> 206 B, hg_twin_unpack -> rc 0  (0 = loads; < 0 = file rejected, defaults used)
+packed file first bytes 4e5457480300ce00  (unlearned t1_night_base hours are NaN by design)
+hg2_check_crc() on the ARM image: 1
+4000 minutes, ARM image control_nofastmath.elf vs host golden flags (-O2 -fsingle-precision-constant -ffp-contract=off):
+  core_now    max |diff| 0.000e+00   NaN-pattern mismatches 0
+  core_20     max |diff| 0.000e+00   NaN-pattern mismatches 0
+  core_30     max |diff| 0.000e+00   NaN-pattern mismatches 0
+  sd_now      max |diff| 0.000e+00   NaN-pattern mismatches 0
+  sd_20       max |diff| 0.000e+00   NaN-pattern mismatches 0
+  sd_30       max |diff| 0.000e+00   NaN-pattern mismatches 0
+  f20_eff     max |diff| 0.000e+00   NaN-pattern mismatches 0
+  f30_eff     max |diff| 0.000e+00   NaN-pattern mismatches 0
+  logit_p38   max |diff| 0.000e+00   NaN-pattern mismatches 0
+  logit_p385  max |diff| 0.000e+00   NaN-pattern mismatches 0
+  strain      max |diff| 0.000e+00   NaN-pattern mismatches 0
+  kf          max |diff| 0.000e+00   NaN-pattern mismatches 0
+  core_flux   max |diff| 0.000e+00   NaN-pattern mismatches 0
+  flux_valid/hr_valid/valid/why mismatching minutes: 0
+  first mismatch: None
+2880 minutes. State mismatches ARM vs host golden: 0; minutes with any guardian-record difference: 0; max |core| diff 0.00 C
+state minutes ARM : {'OK': 2582, 'CHECK': 1, 'DRINK': 297}
+state minutes host: {'OK': 2582, 'CHECK': 1, 'DRINK': 297}

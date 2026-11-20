@@ -1,0 +1,6 @@
+hg_fw_minute: N=20000 mean 11.57 us  min 3.58 us  max 43210.38 us (host)
+percentiles: p50 4.10 us p99 7.50 us p99.9 25.10 us (host; max is scheduler noise on a loaded 2-CPU box)
+x50: p99.9 1.26 ms
+states: 1320 0 0 18680 0 0 0 0 0
+nightly_update 0.12 us, twin_pack 9.38 us (856 B), twin_load 10.27 us (host)
+x50 (rough M4F factor, T template): minute mean 0.58 ms max 2160.52 ms; nightly+pack 0.47 ms

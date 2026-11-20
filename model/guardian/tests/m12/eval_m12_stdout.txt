@@ -1,0 +1,25 @@
+a_nn_only|hr_raw               DRINK/d  3.0  min/d    79  S2  79.8%  COOL/wk 0.4
+b_v12_only|hr_raw              DRINK/d  4.0  min/d   104  S2  73.8%  COOL/wk 0.4
+c_both|hr_raw                  DRINK/d  4.5  min/d   138  S2  86.3%  COOL/wk 0.4
+d_both_base363|hr_raw          DRINK/d  4.5  min/d   138  S2  86.3%  COOL/wk 0.4
+e_both_oldweights|hr_raw       DRINK/d  6.6  min/d   275  S2  93.6%  COOL/wk 0.4
+a_nn_only|hr_scaled            DRINK/d  2.3  min/d    71  S2  75.9%  COOL/wk 0.0
+b_v12_only|hr_scaled           DRINK/d  2.5  min/d    76  S2  66.0%  COOL/wk 0.0
+c_both|hr_scaled               DRINK/d  3.2  min/d   118  S2  81.9%  COOL/wk 0.0
+d_both_base363|hr_scaled       DRINK/d  3.2  min/d   118  S2  81.9%  COOL/wk 0.0
+e_both_oldweights|hr_scaled    DRINK/d  5.0  min/d   253  S2  92.0%  COOL/wk 0.0
+c_both|hr_raw {"n_onsets_S1": 4072, "path": {"v12": 2109, "nn": 936, "v12+nn": 568, "other(env)": 459}, "hour": {"0": 20, "1": 15, "2": 20, "3": 16, "4": 15, "5": 39, "6": 91, "7": 191, "8": 223, "9": 237, "10": 170, "11": 212, "12": 417, "13": 456, "14": 170, "15": 88, "16": 144, "17": 183, "18": 307, "19": 511, "20": 311, "21": 143, "22": 68, "23": 25}, "activity": {"adl": 2392, "sit": 796, "stand": 455, "walk": 256, "sleep": 140, "lying": 33}, "location": {"home": 3839, "out": 202, "transit": 31}, "T_in_median": 28.240999221801758, "T_in_share_ge_30": 0.33079567779960706}
+d_both_base363|hr_raw {"n_onsets_S1": 4072, "path": {"v12": 2109, "nn": 936, "v12+nn": 568, "other(env)": 459}, "hour": {"0": 20, "1": 15, "2": 20, "3": 16, "4": 15, "5": 39, "6": 91, "7": 191, "8": 223, "9": 237, "10": 170, "11": 212, "12": 417, "13": 456, "14": 170, "15": 88, "16": 144, "17": 183, "18": 307, "19": 511, "20": 311, "21": 143, "22": 68, "23": 25}, "activity": {"adl": 2392, "sit": 796, "stand": 455, "walk": 256, "sleep": 140, "lying": 33}, "location": {"home": 3839, "out": 202, "transit": 31}, "T_in_median": 28.240999221801758, "T_in_share_ge_30": 0.33079567779960706}
+c_both|hr_scaled {"n_onsets_S1": 3149, "path": {"v12": 1572, "nn": 820, "other(env)": 393, "v12+nn": 364}, "hour": {"0": 18, "1": 10, "2": 13, "3": 13, "4": 12, "5": 26, "6": 70, "7": 130, "8": 154, "9": 171, "10": 132, "11": 173, "12": 343, "13": 346, "14": 116, "15": 54, "16": 108, "17": 137, "18": 251, "19": 445, "20": 243, "21": 118, "22": 50, "23": 16}, "activity": {"adl": 1955, "sit": 558, "stand": 282, "walk": 222, "sleep": 106, "lying": 26}, "location": {"home": 2926, "out": 192, "transit": 31}, "T_in_median": 28.360000610351562, "T_in_share_ge_30": 0.3467767545252461}
+d_both_base363|hr_scaled {"n_onsets_S1": 3149, "path": {"v12": 1572, "nn": 820, "other(env)": 393, "v12+nn": 364}, "hour": {"0": 18, "1": 10, "2": 13, "3": 13, "4": 12, "5": 26, "6": 70, "7": 130, "8": 154, "9": 171, "10": 132, "11": 173, "12": 343, "13": 346, "14": 116, "15": 54, "16": 108, "17": 137, "18": 251, "19": 445, "20": 243, "21": 118, "22": 50, "23": 16}, "activity": {"adl": 1955, "sit": 558, "stand": 282, "walk": 222, "sleep": 106, "lying": 26}, "location": {"home": 2926, "out": 192, "transit": 31}, "T_in_median": 28.360000610351562, "T_in_share_ge_30": 0.3467767545252461}
+a_nn_only|hr_raw {"learned": 149, "persons": 150, "at_lower_bound": 0, "median": 37.4446144, "p10": 37.16948166}
+b_v12_only|hr_raw {"learned": 146, "persons": 150, "at_lower_bound": 0, "median": 37.4455605, "p10": 37.18602945}
+c_both|hr_raw {"learned": 146, "persons": 150, "at_lower_bound": 0, "median": 37.429946900000004, "p10": 37.170566550000004}
+d_both_base363|hr_raw {"learned": 146, "persons": 150, "at_lower_bound": 0, "median": 37.429946900000004, "p10": 37.170566550000004}
+e_both_oldweights|hr_raw {"learned": 142, "persons": 150, "at_lower_bound": 0, "median": 37.295400650000005, "p10": 37.02040981}
+a_nn_only|hr_scaled {"learned": 149, "persons": 150, "at_lower_bound": 0, "median": 37.4379883, "p10": 37.16798098}
+b_v12_only|hr_scaled {"learned": 146, "persons": 150, "at_lower_bound": 0, "median": 37.4335041, "p10": 37.1744633}
+c_both|hr_scaled {"learned": 146, "persons": 150, "at_lower_bound": 0, "median": 37.423238749999996, "p10": 37.16684345}
+d_both_base363|hr_scaled {"learned": 146, "persons": 150, "at_lower_bound": 0, "median": 37.423238749999996, "p10": 37.16684345}
+e_both_oldweights|hr_scaled {"learned": 142, "persons": 150, "at_lower_bound": 0, "median": 37.291803349999995, "p10": 37.02278904}
+EXIT=0

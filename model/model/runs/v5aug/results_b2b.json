@@ -1,0 +1,34 @@
+{
+ "rule": "B2b-v5: REAL range half-widths for the AR core = max(split-conformal 90 % on HTT 65 + Brighton 10 pooled, Brighton-only 90 %) - the band is for 65+, and Brighton (CALIBRATION, spent exam) is the only real older data; fix_b2's NN-based widths are superseded",
+ "sources": {
+  "eval_v5": {
+   "now": {
+    "half_pooled_90": 0.527,
+    "half_brighton_only_90": 0.605,
+    "loso_coverage_minutes_pct": 89.811,
+    "loso_share_persons_below_80_pct": 17.333,
+    "loso_brighton_mean_coverage_pct": 85.04
+   },
+   "f20": {
+    "half_pooled_90": 0.542,
+    "half_brighton_only_90": 0.688,
+    "loso_coverage_minutes_pct": 89.756,
+    "loso_share_persons_below_80_pct": 16.0,
+    "loso_brighton_mean_coverage_pct": 80.124
+   }
+  },
+  "fix_b2": {
+   "HG2_CONF_HALF_NOW_REAL": 0.566558837890625,
+   "HG2_CONF_HALF_F20_REAL": 0.5504837036132812,
+   "HG2_CONF_HALF_NOW_REAL_PERSON": 0.5867184400558472,
+   "HG2_CONF_HALF_F20_REAL_PERSON": 0.594389796257019,
+   "rule": "displayed/alarm half-width = max(1.645*sd_sim, HG2_CONF_HALF_*_REAL) until wear-test wrist data exists; _PERSON = width for >= 90 % of held-out people to get >= 80 % coverage"
+  }
+ },
+ "export": {
+  "HG2_CONF_HALF_NOW_REAL": 0.605,
+  "HG2_CONF_HALF_F20_REAL": 0.688,
+  "HG2_CONF_HALF_NOW_REAL_PERSON": 0.605,
+  "HG2_CONF_HALF_F20_REAL_PERSON": 0.688
+ }
+}

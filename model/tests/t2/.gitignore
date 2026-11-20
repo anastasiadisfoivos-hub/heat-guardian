@@ -1,0 +1,5 @@
+out/loso_cache/
+out/members_repro/
+out/*.bin
+out/host_test
+out/t02_harness

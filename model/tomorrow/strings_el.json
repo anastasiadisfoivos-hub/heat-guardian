@@ -1,0 +1,127 @@
+{
+ "font": "u8g2_font_10x20_t_greek (07_all_parts.ino:155-159, fw/08_logger.ino:932), monospace 10 px advance, drawn x2 -> 20 px per character, ~35-40 px glyphs",
+ "screen": "240 px wide, 8 px side margins -> 224 px -> 11 characters per line; max 2 lines (R3 §6.2); greedy word wrap",
+ "rule": "one action per message (status lines HEAT_DAY / STALE_FORECAST have none); name the room/action, never the person (R3 §6.1)",
+ "approval": "Foivos approves all strings at once: set 'approved': true per id",
+ "strings": [
+  {
+   "id": "HEAT_DAY",
+   "text": "Αύριο καύσωνας",
+   "kind": "new-short",
+   "source_or_reason": "ARCH §6 «Αύριο: ημέρα καύσωνα» (20 chars, 3 lines at 35 px) shortened; status line, no action",
+   "approved": false
+  },
+  {
+   "id": "SAFE_HOURS_T",
+   "text": "Έξοδος {ranges}",
+   "kind": "template",
+   "source_or_reason": "ARCH §6 «Ώρες για έξοδο: 06:00–08:00» shortened; ONE range only (first daylight OK run), ASCII '-'",
+   "approved": false
+  },
+  {
+   "id": "SAFE_HOURS_LABEL",
+   "text": "Ώρες για έξοδο",
+   "kind": "sourced",
+   "source_or_reason": "ARCH §6 / R4 A5 0x14 label, verbatim",
+   "approved": false
+  },
+  {
+   "id": "NO_SAFE_HOURS",
+   "text": "Όχι έξοδος αύριο",
+   "kind": "new",
+   "source_or_reason": "no daylight OK hour tomorrow; one action (do not go out)",
+   "approved": false
+  },
+  {
+   "id": "DRINK_PLENTY",
+   "text": "Πίνετε άφθονα υγρά",
+   "kind": "sourced",
+   "source_or_reason": "EODY leaflet (R3 §6.6), verbatim",
+   "approved": false
+  },
+  {
+   "id": "DRINK_NOW",
+   "text": "Πιείτε νερό τώρα",
+   "kind": "sourced",
+   "source_or_reason": "R3 §6.6 band-length set, verbatim",
+   "approved": false
+  },
+  {
+   "id": "GO_COOL",
+   "text": "Πάτε κάπου δροσερό",
+   "kind": "new-short",
+   "source_or_reason": "replaces R3 §6.6 «Πάτε σε πιο δροσερό δωμάτιο» (27 chars, 3 lines); wording of v1 REPORT §9 «Πηγαίνετε κάπου δροσερό» shortened",
+   "approved": false
+  },
+  {
+   "id": "SHOWER",
+   "text": "Χλιαρό ντους",
+   "kind": "new-short",
+   "source_or_reason": "R3 §6.6 «Χλιαρό ντους ή κρύα κομπρέσα» had 2 actions; first action kept (EODY «χλιαρά ντους»)",
+   "approved": false
+  },
+  {
+   "id": "ARE_YOU_OK",
+   "text": "Είστε καλά; Πατήστε",
+   "kind": "new-short",
+   "source_or_reason": "R3 §6.6 «Είστε καλά; Πατήστε το κουμπί» (29 chars, 3 lines); «το κουμπί» dropped (one button only)",
+   "approved": false
+  },
+  {
+   "id": "NIGHT_HEAT_T",
+   "text": "Ανοίξτε στις {hh}:00",
+   "kind": "template-new",
+   "source_or_reason": "replaces ARCH §6 «Νύχτα ζεστή: ανοίξτε το παράθυρο μετά τις 22:00» (47 chars); hour = first hour >= 20:00 with outdoor < room - 0.5 degC; object (window) implied — Foivos to confirm wording",
+   "approved": false
+  },
+  {
+   "id": "NIGHT_CLOSED",
+   "text": "Κλειστά παράθυρα",
+   "kind": "new",
+   "source_or_reason": "hot night but outdoor never cooler than the room before 06:00: keep windows closed",
+   "approved": false
+  },
+  {
+   "id": "MOVE_ERRAND_T",
+   "text": "Μην βγείτε στις {usual}",
+   "kind": "template-new",
+   "source_or_reason": "the wearer's usual errand hour is AVOID tomorrow; one action",
+   "approved": false
+  },
+  {
+   "id": "STALE_FORECAST",
+   "text": "Χθεσινή πρόγνωση",
+   "kind": "new",
+   "source_or_reason": "R3 §5: on a failed nightly call say the forecast is from last night; shown when the plan uses a cache >= 20 h old; status line",
+   "approved": false
+  },
+  {
+   "id": "OPEN_WINDOWS_EVENING",
+   "text": "Ανοίξτε παράθυρα το βράδυ",
+   "kind": "retired",
+   "source_or_reason": "R3 §6.6 verbatim but 3 lines at 35 px; replaced by NIGHT_HEAT_T",
+   "approved": false
+  },
+  {
+   "id": "HOUSE_WILL_REACH_T",
+   "text": "Σπίτι {t} βαθμοί",
+   "kind": "retired",
+   "source_or_reason": "no action (manager rule: one action per message); temperature stays in the phone dashboard numbers",
+   "approved": false
+  },
+  {
+   "id": "OPEN_AT_BEDTIME",
+   "text": "Ανοίξτε τα παράθυρα",
+   "kind": "new",
+   "source_or_reason": "night ventilation at bedtime (EODY / WHO heat-wave advice: ventilate at night); used when the outdoor air gets cooler than the room overnight but the hour falls inside the sleep window (manager rule: never instruct an action during sleep)",
+   "approved": false
+  },
+  {
+   "id": "CLOSE_MORNING",
+   "text": "Κλείστε παράθυρα",
+   "kind": "new",
+   "source_or_reason": "morning, at wake (or 1 h before the outdoor air overtakes the room if that is later): close the windows opened for night ventilation; one action",
+   "approved": false
+  }
+ ]
+}

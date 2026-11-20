@@ -1,0 +1,43 @@
+{
+ "minutes": 4623,
+ "worst_abs_diff_C": 0.0,
+ "per_trace": {
+  "P1/Control": {
+   "minutes": 101,
+   "max_abs_diff_C": 0.0,
+   "mean_w": 0.5042774677276611,
+   "level_changes_vs_freeze5": 0
+  },
+  "P1/Water": {
+   "minutes": 101,
+   "max_abs_diff_C": 0.0,
+   "mean_w": 0.533095121383667,
+   "level_changes_vs_freeze5": 0
+  },
+  "P1/Menthol": {
+   "minutes": 101,
+   "max_abs_diff_C": 0.0,
+   "mean_w": 0.6264989376068115,
+   "level_changes_vs_freeze5": 0
+  },
+  "sim0/d3": {
+   "minutes": 1440,
+   "max_abs_diff_C": 0.0,
+   "mean_w": 0.8713937401771545,
+   "level_changes_vs_freeze5": 0
+  },
+  "sim1/d3": {
+   "minutes": 1440,
+   "max_abs_diff_C": 0.0,
+   "mean_w": 0.824305534362793,
+   "level_changes_vs_freeze5": 0
+  },
+  "sim2/d3": {
+   "minutes": 1440,
+   "max_abs_diff_C": 0.0,
+   "mean_w": 0.9305555820465088,
+   "level_changes_vs_freeze5": 0
+  }
+ },
+ "verdict": "PASS"
+}

@@ -1,0 +1,32 @@
+PRINTED PARTS (bounding box incl. curved skin skirt, stitch flanges and strain posts)
+coupon: 74.0 x 50.0 x 5.4 mm, volume 9.30 cm3, watertight=True {}
+cable_guide_test: 35.5 x 24.0 x 4.7 mm, volume 1.18 cm3, watertight=True {}
+brain_pod: 35.1 x 67.6 x 31.8 mm, volume 12.82 cm3, watertight=True {'interior': '29.1 x 54.6', 'screen': 'PCB back at 12.95 (6.0 free over the XIAO top 6.95), top 17.55', 'cable': 'wire garage: ONE fold R 4.7-5.7 (flat ribbon; 45-50 mm wires), fold 10.0 past the 5V edge, pod 12.4 longer across'}
+brain_frame: 35.1 x 60.6 x 10.1 mm, volume 3.54 cm3, watertight=True {'note': 'print plate-down (top face on the bed), no supports'}
+power_pod: 43.6 x 62.9 x 24.2 mm, volume 11.44 cm3, watertight=True {'interior': '34.6 x 49.9', 'lid_top': 10.5, 'lane': '5.0 mm wide, 7.6 mm free height'}
+power_lid: 40.6 x 55.9 x 3.7 mm, volume 4.18 cm3, watertight=True {'note': 'print plate-down (top face on the bed), no supports'}
+island_skin: 89.8 x 48.9 x 20.5 mm, volume 13.51 cm3, watertight=True {'interior': '86.8 x 35.9', 'hop3_C': 'R 12.3, apex 13.5 into the bay', 'hop4_C': 'R 15.8, apex 11.1', 'hop5_C': 'straight up round the pad edges, 17.5 mm', 'strap_tongue_max_width': 26.8, 'hop6_loop': 'R 14.9', 'tmp2': 'chip down 10.10-11.70, chip on its rest at 9.30'}
+island_shelf: 26.4 x 19.5 x 4.2 mm, volume 0.62 cm3, watertight=True {'shelf_top': 6.8, 'underside': 5.6, 'shtc3_bottom': 7.8, 'lip_top': 8.5, 'seat': '26.8 x 18.48 (+0.7 fit)', 'pin_d': 1.8}
+island_air: 34.7 x 19.9 x 13.9 mm, volume 0.84 cm3, watertight=True {'mount': "keyed feet on TMP117 #2's plate (glue)", 'shtc3_bottom': 15.3, 'still_air_over_tmp2': 3.0, 'top': 20.26, 'vents': 'open on 4 sides and on top (drop-in)', 'pocket': '25.4 x 17.8 + 0.5 per side, + 3.5 at the pad edge'}
+
+ASSEMBLY (v6.1 digital twin, flat layout) - outer sizes incl. frame / lid skirts, without stitch flanges and strain posts
+part                        along forearm   across   height
+brain pod (tray + frame)             35.1     60.6     17.6
+power pod (tray + lid)               40.6     55.9     10.5
+skin island (+ SHTC3 shelf)           89.8     38.9     14.2
+gaps (free neoprene): brain -> power 8.0, power -> skin 8.0, skin -> air (round the wrist) 0.0
+TOTAL band length along the forearm: 181.5 mm   (v6: 174.9, v4.3: 117.2)
+band width across the wrist (all parts): 64.2 mm (v6: 78.3)
+
+WIRE RUNS: free length each run needs (pad to pad, incl. joints, fan-out and 5 mm slack per gap) vs what you have (min-normal)
+run                               needs       has  action                                   how
+hop 1  XIAO -> DRV2605L            45.1     50-60  OK as is (5 spare)                       straight: far end -> gap -> power-pod lane (the 50-60 spread is the pad-row fan)
+hop 2  DRV2605L -> ICM-20649       45.4     45-60  OK as is (within 0.4 of the shortest wire: measure it) straight: lane -> gap -> along the ICM pad row
+battery leads                      40.2        45  OK as is (5 spare)                       straight out of the hand wall, under the XIAO
+HELP button pair                   33.7      34.5  OK as is (within 0.8 of the shortest wire: measure it) straight, then along the XIAO's D-row edge
+screen wires 1-7                   45.2     45-50  OK as is (the fold takes up the spare)   ONE fold in the wire garage (R 4.7-5.7, flat ribbon): 45-50 all fit, no re-solder
+screen wire 8 (blue)               25.7        25  0.7 mm over a 25 mm wire: see WARNINGS   tight U-turn R4 at the plug, diagonal down to D6 (shortest route)
+hop 3  ICM -> MAX30102             51.0        51  OK as is (the shape takes up exactly this) ONE C in the skin bay, R 12.3: takes up 16 mm over the straight line
+hop 4  MAX30102 -> TMP117 #1       50.0        50  OK as is (the shape takes up exactly this) ONE C in the skin bay, R 15.8: takes up 10 mm
+hop 5  TMP117 #1 -> TMP117 #2      17.5     20-30  OK if your wires reach this (your dry fit) straight up round the two pad edges (pads aligned)
+hop 6  TMP117 #2 -> SHTC3          60.0        60  OK as is (the shape takes up exactly this) ONE C (R 14.9) over the bay, leaning 45 deg up, from #2's pads to the SHTC3's pads

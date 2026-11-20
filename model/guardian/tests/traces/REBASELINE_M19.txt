@@ -1,0 +1,56 @@
+M19 (Marble Danger replaces M13 persistence; Exception DRINK): crafted-trace expectation diff vs hg2-freeze-4
+
+trace_behaviour_acknowledged.csv: 62 of 420 minutes changed
+   old: OK@0 DRINK@40 COOL@127 DANGER@147 COOL@209 DRINK@282 OK@369
+   new: OK@0 DRINK@40 COOL@127 DRINK@282 OK@369
+   why: M19: the M13 persistence rule is removed (HG_PD 0). This 40 C / 40 % resting-room trace (420 min, < 24 h so Marble is not armed) now shows COOL only - the PSU-evidenced persistence DANGER of freeze-3/4 is gone. KNOWN GAP of M19 (R6 s3.4 "rest events"): at rest in humid heat the Danger defence is the v1.2 logistic and the behaviour path (still wearer) only.
+
+trace_check_danger_family.csv: 3 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@57 COOL@273 OK@274
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@273 OK@274
+   why: M19: DANGER at 60 (v1.2 logistic) instead of 57 (M13 persistence); CHECK/family follow.
+
+trace_check_press_imok_snooze.csv: 5 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@57 IMOK@60 DANGER@61 COOL@273 OK@274
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 IMOK@63 DANGER@64 COOL@273 OK@274
+   why: M19: same 3-min shift; IMOK and re-ask follow.
+
+trace_cool_dose.csv: 62 of 420 minutes changed
+   old: OK@0 DRINK@40 COOL@127 DANGER@147 COOL@209 DRINK@282 OK@369
+   new: OK@0 DRINK@40 COOL@127 DRINK@282 OK@369
+   why: M19: as above - COOL from the heat dose, no DANGER without the M13 persistence rule.
+
+trace_cool_f20_danger_logistic.csv: 3 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@57 COOL@233 OK@234
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@233 OK@234
+   why: M19: same 3-min shift (v1.2 logistic onset).
+
+trace_hr_gating.csv: 25 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@57 COOL@253 OK@254
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@166 DANGER@188 COOL@253 OK@254
+   why: M19: back to the freeze-2 expectation: v1.2 logistic DANGER 60-166, HR-gap, DANGER again 188 (persistence no longer bridges the gap).
+
+trace_m19_marble_cool_room.csv: NEW trace
+trace_m19_marble_warm_chores.csv: NEW trace
+trace_older_margin.csv: 15 of 240 minutes changed
+   old: OK@0 DRINK@28 COOL@35 DANGER@55 OK@192
+   new: OK@0 DRINK@28 COOL@35 DANGER@70 OK@192
+   why: M19: DANGER at 70 (v1.2 logistic cut), as before M13; the 15-min earlier persistence onset is gone.
+
+
+NEW m19_marble_warm_chores: independent float32 Marble in the spec engine == C == mirror; -DHG_MARBLE=0 fails it (46 minutes). It shows R6 s3.4 KNOWN RISK on purpose: 0.12-g chores in a 32 C room fire Marble at an ordinary forecast (~37.3 C).
+NEW m19_marble_cool_room: same chores at 26 C: heat-context gate holds, no DANGER. trace_m13_persistence_env removed (rule removed).
+Exception DRINK changes no crafted trace: the traces are < 24 h, so no calm baseline / movement slope is learned; the settled rule never holds a protected (v1.2 / env) start.
+
+M19 job 2 (impact CHECK, REAL HeatIN DEV): HG_IMPACT_G 2.0 -> 3.0 g and HG_IMPACT_STILL_MIN = 2 still minutes with no press (was: the next
+minute still). trace_routine_impact_stillness.csv: CHECK input now 2 minutes later (4 minutes changed). NEW trace_routine_impact_ordinary_2g6
+(2.6-g peak + stillness -> no CHECK) and trace_routine_impact_press_cancels (a press in the stillness window -> no CHECK).
+
+M19b (manager review of ea8f8a1): Marble jump term rising only (HG_MB_JUMP_RISE) + COOL stepping stone silenced (HG_COOL_TRANSIT)
+trace_m19_marble_warm_chores.csv: 1 of 1680 minutes changed
+   old: OK@0 DRINK@1446 COOL@1486 DANGER@1487 DRINK@1532 OK@1570
+   new: OK@0 DRINK@1446 DANGER@1486 DRINK@1532 OK@1570
+   why: M19b: the level-2 minute is a stepping stone to an already-on Danger tier -> DANGER screen, no COOL vibration.
+NEW trace_m19b_cool_stepping_stone (same inputs, asserts no COOL state at all; -DHG_COOL_TRANSIT=0 fails it by 1 minute) and
+NEW trace_m19b_cool_holds (COOL@37 held 23 min before DANGER@60: COOL screen + vibration unchanged).
+The rising-only jump term changes no crafted trace (their forecasts rise when Marble is armed).

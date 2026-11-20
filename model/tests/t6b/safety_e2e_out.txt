@@ -1,0 +1,17 @@
+INFO  A: CHECK at step 661 (reason 0x10), family_alert at step 666
+PASS  A impact CHECK -> family flag 5 minute-steps after the CHECK screen (5)
+PASS  B press in wall minute 1 after the CHECK appeared -> IMOK 1, family 0
+PASS  B press in wall minute 2 after the CHECK appeared -> IMOK 1, family 0
+PASS  B press in wall minute 3 after the CHECK appeared -> IMOK 1, family 0
+PASS  B press in wall minute 4 after the CHECK appeared -> IMOK 1, family 0
+PASS  B press in wall minute 5 after the CHECK appeared -> IMOK 1, family 0  (pressed in the last minute before the flag: still counts)
+PASS  B press in wall minute 6 after the CHECK appeared -> IMOK 1, family 1  (after the flag: expected family=1)
+PASS  C long press -> HELP + family_alert
+INFO  C after dashboard ack (type 1) + 3 short presses: state 8 (8 = HELP), family_alert 0, help latch 1 -> screen stays on at 100 % (uiAlert)
+PASS  C HELP is NOT cleared by the dashboard's only ack (type 1) nor by short presses (needs 0x12 type 3, which no shipped tool sends)
+INFO  C after console 'profile ...' (guardian re-init): state 0, family_alert 0, help 0
+FAIL  C console 'profile' must not clear a latched HELP / pending family alert (it does: guardian_layer.inc:374)
+INFO  D 1440 real minutes with a TIME frame per minute stepping the local day: nightly updates 1440, twin saves requested 1440
+FAIL  D <= 5 InternalFS twin saves per REAL day under a clock that jumps (got 1440; the cap is per *local* day)
+INFO  E VBAT 3.38 V: guardian state 3 emits haptic 5 (HG_HAP_SOFT = R4 A8.2 soft tick); 09 vibrate() returns early when pofHold (VBAT < 3.40 V) -> nothing plays
+SAFETY_E2E: FINDINGS

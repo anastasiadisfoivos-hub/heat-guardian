@@ -1,0 +1,165 @@
+#!/usr/bin/env python3
+"""
+R4 PoC: export an MLP (24 -> 32 -> 16 -> 3, ReLU) and a 5-member ensemble
+to a C header the band compiles in, plus an int8 copy and a test vector.
+
+This is the RECOMMENDED EXPORT FORMAT for the Core Sense / Guardian Loop nets:
+  - one generated header `hg_weights.h`, float32 weights as `static const` arrays
+    (they land in flash, not RAM, because the Cortex-M4 reads const data in place).
+    LESSON (measured): the arrays must be DEFINED in one generated hg_weights.c and
+    only DECLARED `extern` in hg_weights.h. A `static const` array in a header that
+    two .c/.ino files include is emitted TWICE in flash (we saw 27.6 KB -> 55 KB).
+  - layer sizes as #defines so the C code and the Python trainer cannot disagree
+  - a CRC-32 of the raw little-endian bytes of every weight array, so the firmware
+    can print it at boot and the reviewer can match it against the training log
+  - a test vector (input + expected output) so `make test` proves the C == Python
+
+Weights here are RANDOM (seeded). Replace `make_params()` with the trained model.
+"""
+import struct, zlib, json, sys, os
+import numpy as np
+
+N_IN, H1, H2, N_OUT = 24, 32, 16, 3
+N_ENS = 5
+rng = np.random.default_rng(42)
+
+def make_params(seed_shift=0):
+    r = np.random.default_rng(42 + seed_shift)
+    # He-style init so activations stay O(1)
+    W1 = (r.standard_normal((H1, N_IN)) * np.sqrt(2 / N_IN)).astype(np.float32)
+    b1 = (r.standard_normal(H1) * 0.1).astype(np.float32)
+    W2 = (r.standard_normal((H2, H1)) * np.sqrt(2 / H1)).astype(np.float32)
+    b2 = (r.standard_normal(H2) * 0.1).astype(np.float32)
+    W3 = (r.standard_normal((N_OUT, H2)) * np.sqrt(2 / H2)).astype(np.float32)
+    b3 = (r.standard_normal(N_OUT) * 0.1).astype(np.float32)
+    return [W1, b1, W2, b2, W3, b3]
+
+def forward(p, x):
+    W1, b1, W2, b2, W3, b3 = p
+    h = np.maximum(W1 @ x + b1, 0)
+    h = np.maximum(W2 @ h + b2, 0)
+    return W3 @ h + b3
+
+def _braces(arr, fmt):
+    """Nested-brace C initializer for a 1-D or 2-D array."""
+    if arr.ndim == 1:
+        return "{" + ",".join(fmt(v) for v in arr) + "}"
+    return "{" + ",\n ".join(_braces(row, fmt) for row in arr) + "}"
+
+DECLS = []   # extern declarations collected for the header
+
+def c_array_f32(name, arr):
+    dims = "".join(f"[{d}]" for d in arr.shape)
+    DECLS.append(f"extern const float {name}{dims};\n")
+    return f"const float {name}{dims} = {_braces(arr.astype(np.float32), lambda v: f'{v:.8e}f')};\n"
+
+def c_array_i8(name, arr):
+    dims = "".join(f"[{d}]" for d in arr.shape)
+    DECLS.append(f"extern const int8_t {name}{dims};\n")
+    return f"const int8_t {name}{dims} = {_braces(arr, lambda v: str(int(v)))};\n"
+
+def c_array_i32(name, arr):
+    dims = "".join(f"[{d}]" for d in arr.shape)
+    DECLS.append(f"extern const int32_t {name}{dims};\n")
+    return f"const int32_t {name}{dims} = {_braces(arr, lambda v: str(int(v)))};\n"
+
+def quantize(p, calib_x):
+    """Post-training int8 quantization, the way TFLite-Micro does it but by hand:
+      - weights: per-tensor symmetric int8, s_w = max|W| / 127
+      - activations: per-layer symmetric int8, s_a = max|a| over a CALIBRATION set
+        (here 256 random z-scored inputs; on the real model use the dev set)
+      - bias: int32 in units of s_w * s_in
+      - requantize: y_q = sat8((acc * M) >> (31 + S)), M = Q0.31 multiplier of s_w*s_in/s_out
+    Input scale s_x is chosen from the calibration set too (clipped at 4 sigma)."""
+    W1, b1, W2, b2, W3, b3 = p
+    layers = [(W1, b1), (W2, b2), (W3, b3)]
+    # calibration: collect activation ranges per layer
+    a = calib_x.T                                   # (24, N)
+    amax = [float(min(np.abs(a).max(), 4.0))]        # input range (z-scored, clip 4 sigma)
+    for i, (W, b) in enumerate(layers):
+        a = W @ a + b[:, None]
+        if i < 2: a = np.maximum(a, 0)
+        amax.append(float(np.abs(a).max()))
+    scales = [m / 127.0 for m in amax]               # s_x, s_a1, s_a2, s_out
+    out = {"s_x": scales[0], "s_out": scales[3]}
+    for i, (W, b) in enumerate(layers, 1):
+        s_in, s_o = scales[i - 1], scales[i]
+        s_w = float(np.max(np.abs(W))) / 127.0
+        Wq = np.clip(np.round(W / s_w), -127, 127).astype(np.int8)
+        bq = np.round(b / (s_w * s_in)).astype(np.int32)
+        m = (s_w * s_in) / s_o
+        shift = 0
+        while m < 0.5:
+            m *= 2; shift += 1
+        out[f"W{i}q"] = Wq; out[f"b{i}q"] = bq
+        out[f"M{i}"] = int(round(m * (1 << 31))); out[f"S{i}"] = shift
+    return out
+
+def main(outdir):
+    ens = [make_params(k) for k in range(N_ENS)]
+    crc = 0
+    for p in ens:
+        for a in p:
+            crc = zlib.crc32(a.astype('<f4').tobytes(), crc)
+    crc &= 0xFFFFFFFF
+
+    hdr = []   # hg_weights.h : sizes, CRC, extern declarations, member table decl
+    h = []     # hg_weights.c : the definitions (flash)
+    hdr.append("/* GENERATED by export_weights.py -- do not edit by hand */\n")
+    hdr.append("#pragma once\n#include <stdint.h>\n")
+    hdr.append(f"#define HG_NN_IN  {N_IN}\n#define HG_NN_H1  {H1}\n#define HG_NN_H2  {H2}\n#define HG_NN_OUT {N_OUT}\n#define HG_NN_ENS {N_ENS}\n")
+    hdr.append(f"#define HG_NN_CRC32 0x{crc:08X}u   /* CRC-32 of all float32 weight bytes, little-endian */\n")
+    hdr.append("#define HG_NN_VERSION \"r4-poc-random-42\"\n")
+    hdr.append("typedef struct { const float *W1,*b1,*W2,*b2,*W3,*b3; } hg_nn_member_t;\n")
+    hdr.append("extern const hg_nn_member_t HG_NN_MEMBERS[HG_NN_ENS];\n")
+    h.append("/* GENERATED by export_weights.py -- do not edit by hand. Definitions live here ONCE. */\n")
+    h.append('#include "hg_weights.h"\n\n')
+    # float32 ensemble
+    for k, p in enumerate(ens):
+        W1, b1, W2, b2, W3, b3 = p
+        h.append(c_array_f32(f"W1_{k}", W1)); h.append(c_array_f32(f"b1_{k}", b1))
+        h.append(c_array_f32(f"W2_{k}", W2)); h.append(c_array_f32(f"b2_{k}", b2))
+        h.append(c_array_f32(f"W3_{k}", W3)); h.append(c_array_f32(f"b3_{k}", b3))
+    # table of members (pointers, so hg_nn.c loops over them)
+    h.append("\nconst hg_nn_member_t HG_NN_MEMBERS[HG_NN_ENS] = {\n")
+    for k in range(N_ENS):
+        h.append(f"  {{&W1_{k}[0][0], b1_{k}, &W2_{k}[0][0], b2_{k}, &W3_{k}[0][0], b3_{k}}},\n")
+    h.append("};\n\n")
+    # int8 copy of member 0 only (enough to measure size; x5 for the ensemble)
+    calib = rng.standard_normal((256, N_IN)).astype(np.float32)
+    q = quantize(ens[0], calib)
+    h.append("/* int8 copy of member 0 (per-tensor symmetric, int32 bias, Q31 requant, calibrated activation scales) */\n")
+    hdr.append(f"#define HG_NN_I8_SX {q['s_x']:.8e}f   /* input scale: x_q = round(x / HG_NN_I8_SX) */\n")
+    hdr.append(f"#define HG_NN_I8_SOUT {q['s_out']:.8e}f /* output scale: y = y_q * HG_NN_I8_SOUT */\n")
+    for i in (1, 2, 3):
+        h.append(c_array_i8(f"W{i}q_0", q[f"W{i}q"])); h.append(c_array_i32(f"b{i}q_0", q[f"b{i}q"]))
+        hdr.append(f"#define HG_NN_M{i}_0 {q[f'M{i}']}\n#define HG_NN_S{i}_0 {q[f'S{i}']}\n")
+    hdr.extend(DECLS)
+    open(os.path.join(outdir, "hg_weights.h"), "w").write("".join(hdr))
+    open(os.path.join(outdir, "hg_weights.c"), "w").write("".join(h))
+
+    # test vectors: 4 inputs, expected float ensemble mean+spread and int8 member-0 output
+    xs = rng.standard_normal((4, N_IN)).astype(np.float32)
+    tv = []
+    for x in xs:
+        ys = np.stack([forward(p, x) for p in ens])
+        tv.append({"x": x.tolist(), "mean": ys.mean(0).tolist(), "std": ys.std(0).tolist(),
+                   "y0": ys[0].tolist()})
+    json.dump(tv, open(os.path.join(outdir, "host", "test_vectors.json"), "w"))
+    # also as a C header for the host test
+    t = ["#pragma once\n#define HG_TV_N 4\n",
+         "static const float HG_TV_X[4][24] = {" + ",".join("{" + ",".join(f"{v:.8e}f" for v in r["x"]) + "}" for r in tv) + "};\n",
+         "static const float HG_TV_MEAN[4][3] = {" + ",".join("{" + ",".join(f"{v:.8e}f" for v in r["mean"]) + "}" for r in tv) + "};\n",
+         "static const float HG_TV_STD[4][3] = {" + ",".join("{" + ",".join(f"{v:.8e}f" for v in r["std"]) + "}" for r in tv) + "};\n",
+         "static const float HG_TV_Y0[4][3] = {" + ",".join("{" + ",".join(f"{v:.8e}f" for v in r["y0"]) + "}" for r in tv) + "};\n"]
+    open(os.path.join(outdir, "host", "hg_test_vectors.h"), "w").write("".join(t))
+
+    n_w = N_IN*H1 + H1*H2 + H2*N_OUT
+    n_b = H1 + H2 + N_OUT
+    print(f"MACs per member: {n_w}; params per member: {n_w+n_b}")
+    print(f"float32 bytes: 1 member {4*(n_w+n_b)}, ensemble x{N_ENS} {4*N_ENS*(n_w+n_b)}")
+    print(f"int8 bytes (int8 W + int32 b): 1 member {n_w + 4*n_b}, ensemble {N_ENS*(n_w + 4*n_b)}")
+    print(f"CRC32 0x{crc:08X}")
+
+if __name__ == "__main__":
+    main(sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__)))

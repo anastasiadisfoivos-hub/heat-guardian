@@ -1,0 +1,30 @@
+
+probe.o:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 <probe_isnan>:
+   0:	movs	r0, #0
+   2:	bx	lr
+
+00000004 <probe_isfinite>:
+   4:	movs	r0, #1
+   6:	bx	lr
+
+00000008 <probe_selfcmp>:
+   8:	movs	r0, #0
+   a:	bx	lr
+
+0000000c <probe_volatile>:
+   c:	sub	sp, #8
+   e:	vstr	s0, [sp, #4]
+  12:	vldr	s14, [sp, #4]
+  16:	vldr	s15, [sp, #4]
+  1a:	vcmp.f32	s14, s15
+  1e:	vmrs	APSR_nzcv, fpscr
+  22:	ite	ne
+  24:	movne	r0, #1
+  26:	moveq	r0, #0
+  28:	add	sp, #8
+  2a:	bx	lr

@@ -1,0 +1,19 @@
+  0.005 mA  XIAO floor, QSPI deep power-down [R4]
+  0.010 mA  CPU: loop wakes 100 Hz (delay(10)) ~30 us each x 3.3 mA [09 est]
+  0.066 mA  CPU: IMU 25 Hz, 7-byte TWIM read @100 kHz busy-polled ~0.8 ms x 3.3 mA [09]
+  0.091 mA  CPU: PPG FIFO every 100 ms, 10 samples x 6 B (SpO2 mode) @100 kHz ~5.5 ms x 3.3 mA x duty 0.5 [09]
+  0.510 mA  MAX30102 IR LED 6.2 mA x 411 us x 400 sps (SPO2_CONFIG 0x2F) = 16.4 % duty, x PPG duty 0.5 [09]
+  0.127 mA  MAX30102 red LED same PA, 1 s in 4, x PPG duty 0.5 [09]
+  0.340 mA  MAX30102 AFE 0.6 + module LDO 0.08 mA, x PPG duty 0.5 [R4 values, 09 duty]
+  0.050 mA  ICM-20649 accel-only LP 25 Hz [R4]
+  0.008 mA  TMP117 x2 one-shot 8x avg every 5 s (135 uA x 125 ms / 5 s x 2) + SHTC3 [09]
+  0.015 mA  BLE connected 990 ms / adv 1022.5 ms [R4]
+  0.206 mA  Screen 15 min/day at 60 % (15 mA) + panel SLPIN 0.05 mA [R4]
+  0.120 mA  Haptics 2 min/day at 80 mA + DRV standby [R4]
+  0.002 mA  Battery divider [R4]
+  0.200 mA  Breakout regulators and pull-ups [R4 estimate]
+  1.750 mA  SUM;  +20 % margin -> 2.10 mA
+ESTIMATE calm day (above): 2.10 mA -> 101 h = 4.2 days on 250 mAh x 0.85
+ESTIMATE a tier on all day (PPG continuous: LEDs + AFE + FIFO CPU x2): 3.38 mA -> 63 h = 2.6 days on 250 mAh x 0.85
+ESTIMATE HELP latched with no phone ack: screen on at 100 % (~25 mA) + PPG continuous: 33.27 mA -> 6 h = 0.3 days on 250 mAh x 0.85
+R4 A6 assumed 100 sps x 411 us (4.1 % LED duty) and 25 % PPG duty: 0.23 mA for the PPG; 09 runs 400 sps (avg 4) and 50 % duty.

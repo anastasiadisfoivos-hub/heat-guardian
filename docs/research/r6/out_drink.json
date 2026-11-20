@@ -1,0 +1,134 @@
+{
+ "raw|frozen": {
+  "s1_persons": 110,
+  "drink_per_day_median": 4.0,
+  "drink_min_median": 119.0,
+  "drink_per_day_mean": 5.3442171717171725,
+  "drink_min_mean": 171.47674242424242,
+  "s2_events": 578,
+  "s2_sens": 0.9290657439446367,
+  "s2_informed": 0.9480968858131488,
+  "emu_agree": 0.9897449494949494
+ },
+ "raw|D0": {
+  "s1_persons": 110,
+  "drink_per_day_median": 4.0,
+  "drink_min_median": 125.1,
+  "drink_per_day_mean": 5.155378787878788,
+  "drink_min_mean": 187.32949494949492,
+  "s2_events": 578,
+  "s2_sens": 0.9550173010380623,
+  "s2_informed": 0.9653979238754326,
+  "emu_agree": 0.9897449494949494
+ },
+ "raw|D1": {
+  "s1_persons": 110,
+  "drink_per_day_median": 3.3499999999999996,
+  "drink_min_median": 80.5,
+  "drink_per_day_mean": 4.562070707070708,
+  "drink_min_mean": 150.21469696969697,
+  "s2_events": 578,
+  "s2_sens": 0.8875432525951558,
+  "s2_informed": 0.9065743944636678,
+  "emu_agree": 0.9623787878787878
+ },
+ "raw|D2": {
+  "s1_persons": 110,
+  "drink_per_day_median": 3.275,
+  "drink_min_median": 102.75,
+  "drink_per_day_mean": 3.9661363636363633,
+  "drink_min_mean": 148.22861111111112,
+  "s2_events": 578,
+  "s2_sens": 0.9100346020761245,
+  "s2_informed": 0.9429065743944637,
+  "emu_agree": 0.9583705808080808
+ },
+ "raw|D3": {
+  "s1_persons": 110,
+  "drink_per_day_median": 2.8,
+  "drink_min_median": 60.25,
+  "drink_per_day_mean": 3.450025252525253,
+  "drink_min_mean": 112.80984848484849,
+  "s2_events": 578,
+  "s2_sens": 0.8408304498269896,
+  "s2_informed": 0.8927335640138409,
+  "emu_agree": 0.9317083333333335
+ },
+ "raw|D4": {
+  "s1_persons": 110,
+  "drink_per_day_median": 4.0,
+  "drink_min_median": 122.65,
+  "drink_per_day_mean": 5.199368686868687,
+  "drink_min_mean": 177.0042171717172,
+  "s2_events": 578,
+  "s2_sens": 0.9532871972318339,
+  "s2_informed": 0.9653979238754326,
+  "emu_agree": 0.9802752525252526
+ },
+ "sc|frozen": {
+  "s1_persons": 110,
+  "drink_per_day_median": 3.0,
+  "drink_min_median": 99.75,
+  "drink_per_day_mean": 4.102449494949495,
+  "drink_min_mean": 151.4567424242424,
+  "s2_events": 578,
+  "s2_sens": 0.9013840830449827,
+  "s2_informed": 0.9256055363321799,
+  "emu_agree": 0.9920858585858585
+ },
+ "sc|D0": {
+  "s1_persons": 110,
+  "drink_per_day_median": 3.0,
+  "drink_min_median": 103.25,
+  "drink_per_day_mean": 3.914242424242424,
+  "drink_min_mean": 165.4011111111111,
+  "s2_events": 578,
+  "s2_sens": 0.9290657439446367,
+  "s2_informed": 0.9377162629757786,
+  "emu_agree": 0.9920858585858585
+ },
+ "sc|D1": {
+  "s1_persons": 110,
+  "drink_per_day_median": 2.0,
+  "drink_min_median": 60.75,
+  "drink_per_day_mean": 3.3222222222222224,
+  "drink_min_mean": 127.88118686868688,
+  "s2_events": 578,
+  "s2_sens": 0.828719723183391,
+  "s2_informed": 0.8442906574394463,
+  "emu_agree": 0.9641635101010101
+ },
+ "sc|D2": {
+  "s1_persons": 110,
+  "drink_per_day_median": 2.5,
+  "drink_min_median": 83.0,
+  "drink_per_day_mean": 3.165909090909091,
+  "drink_min_mean": 132.93593434343433,
+  "s2_events": 578,
+  "s2_sens": 0.8754325259515571,
+  "s2_informed": 0.9186851211072664,
+  "emu_agree": 0.9647152777777777
+ },
+ "sc|D3": {
+  "s1_persons": 110,
+  "drink_per_day_median": 1.7,
+  "drink_min_median": 47.9375,
+  "drink_per_day_mean": 2.5873989898989898,
+  "drink_min_mean": 98.3584090909091,
+  "s2_events": 578,
+  "s2_sens": 0.7716262975778547,
+  "s2_informed": 0.8321799307958477,
+  "emu_agree": 0.9389684343434344
+ },
+ "sc|D4": {
+  "s1_persons": 110,
+  "drink_per_day_median": 3.0,
+  "drink_min_median": 99.5,
+  "drink_per_day_mean": 3.974469696969697,
+  "drink_min_mean": 157.3376262626263,
+  "s2_events": 578,
+  "s2_sens": 0.9273356401384083,
+  "s2_informed": 0.9377162629757786,
+  "emu_agree": 0.9847184343434344
+ }
+}

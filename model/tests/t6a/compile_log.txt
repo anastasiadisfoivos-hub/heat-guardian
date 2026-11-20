@@ -1,0 +1,23 @@
+/root/Arduino/libraries/GFX_Library_for_Arduino/src/Arduino_GFX.cpp: In member function 'void Arduino_GFX::printCenterText(const String&, int16_t, int16_t)':
+/root/Arduino/libraries/GFX_Library_for_Arduino/src/Arduino_GFX.cpp:3072:15: warning: 'h' may be used uninitialized in this function [-Wmaybe-uninitialized]
+ 3072 |   uint16_t w, h;
+      |               ^
+/root/Arduino/libraries/GFX_Library_for_Arduino/src/Arduino_GFX.cpp:3072:12: warning: 'w' may be used uninitialized in this function [-Wmaybe-uninitialized]
+ 3072 |   uint16_t w, h;
+      |            ^
+/root/Arduino/libraries/SparkFun_MAX3010x_Pulse_and_Proximity_Sensor_Library/src/heartRate.cpp: In function 'bool checkForBeat(int32_t)':
+/root/Arduino/libraries/SparkFun_MAX3010x_Pulse_and_Proximity_Sensor_Library/src/heartRate.cpp:108:33: warning: suggest parentheses around comparison in operand of '&' [-Wparentheses]
+  108 |     if ((IR_AC_Max - IR_AC_Min) > 20 & (IR_AC_Max - IR_AC_Min) < 1000)
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/root/Arduino/libraries/SparkFun_MAX3010x_Pulse_and_Proximity_Sensor_Library/src/MAX30105.cpp: In member function 'void MAX30105::enableSlot(uint8_t, uint8_t)':
+/root/Arduino/libraries/SparkFun_MAX3010x_Pulse_and_Proximity_Sensor_Library/src/MAX30105.cpp:292:11: warning: unused variable 'originalContents' [-Wunused-variable]
+  292 |   uint8_t originalContents;
+      |           ^~~~~~~~~~~~~~~~
+Library Adafruit nRFCrypto has been declared precompiled:
+Using precompiled library in /root/.arduino15/packages/Seeeduino/hardware/nrf52/1.1.13/libraries/Adafruit_nRFCrypto/src/cortex-m4/fpv4-sp-d16-hard
+Sketch uses 216280 bytes (26%) of program storage space. Maximum is 811008 bytes.
+Global variables use 29352 bytes (12%) of dynamic memory, leaving 208216 bytes for local variables. Maximum is 237568 bytes.
+
+real	9m7.864s
+user	4m50.393s
+sys	0m41.951s

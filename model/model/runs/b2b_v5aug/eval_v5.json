@@ -1,0 +1,193 @@
+{
+ "label": "B2b-v5: Core Sense retrained on Virtual Elders v5; AR bounds R_down 0.30 / R_up 0.50",
+ "sim_v5": {
+  "label": "SIMULATION - SIM-DEV v5 calibration persons (100)",
+  "AR_mean_w": 0.931,
+  "v5_NN": {
+   "now": {
+    "n": 650339,
+    "mae": 0.195,
+    "bias": -0.005
+   },
+   "f20": {
+    "n": 650339,
+    "mae": 0.198,
+    "bias": 0.037
+   },
+   "now_core_ge_38": {
+    "n": 15185,
+    "mae": 0.331,
+    "bias": -0.329
+   },
+   "now_low_kappa": {
+    "n": 240619,
+    "mae": 0.193,
+    "bias": 0.007
+   }
+  },
+  "v12_alone": {
+   "now": {
+    "n": 650339,
+    "mae": 0.342,
+    "bias": 0.224
+   },
+   "f20": {
+    "n": 650339,
+    "mae": 0.436,
+    "bias": 0.362
+   },
+   "now_core_ge_38": {
+    "n": 15185,
+    "mae": 0.379,
+    "bias": -0.324
+   },
+   "now_low_kappa": {
+    "n": 240619,
+    "mae": 0.345,
+    "bias": 0.25
+   }
+  },
+  "v5_AR": {
+   "now": {
+    "n": 650339,
+    "mae": 0.234,
+    "bias": 0.079
+   },
+   "f20": {
+    "n": 650339,
+    "mae": 0.289,
+    "bias": 0.182
+   },
+   "now_core_ge_38": {
+    "n": 15185,
+    "mae": 0.342,
+    "bias": -0.294
+   },
+   "now_low_kappa": {
+    "n": 240619,
+    "mae": 0.236,
+    "bias": 0.093
+   }
+  },
+  "gain_core_per_t1_hot": 0.17,
+  "gain_core_per_10bpm_hot": 0.045,
+  "core_minus_t1_hot_iqr": [
+   0.636,
+   1.284
+  ],
+  "corr_member_spread_abs_err": 0.022
+ },
+ "htt": {
+  "v5_NN": {
+   "now": {
+    "n": 13670,
+    "mae": 0.28,
+    "bias": 0.036
+   },
+   "f20": {
+    "n": 11001,
+    "mae": 0.274,
+    "bias": 0.014
+   }
+  },
+  "v12_alone": {
+   "now": {
+    "n": 13670,
+    "mae": 0.261,
+    "bias": 0.001
+   },
+   "f20": {
+    "n": 11001,
+    "mae": 0.259,
+    "bias": -0.001
+   }
+  },
+  "v5_AR": {
+   "now": {
+    "n": 13670,
+    "mae": 0.261,
+    "bias": 0.001
+   },
+   "f20": {
+    "n": 11001,
+    "mae": 0.259,
+    "bias": -0.001
+   }
+  },
+  "label": "REAL young adults 18-33 (65), NN leave-one-subject-out; no skin channel",
+  "gain_core_per_10bpm": 0.059
+ },
+ "brighton_calibration": {
+  "label": "REAL 65-76 Brighton P1..P10, 30 sessions - CALIBRATION (spent exam, used to fit sim v5); NOT held-out",
+  "v5_NN": {
+   "now": {
+    "n": 433,
+    "mae": 0.326,
+    "bias": 0.072
+   },
+   "f20": {
+    "n": 313,
+    "mae": 0.334,
+    "bias": 0.135
+   },
+   "share_low_by_0p3": 15.242
+  },
+  "v12_alone": {
+   "now": {
+    "n": 433,
+    "mae": 0.279,
+    "bias": 0.225
+   },
+   "f20": {
+    "n": 313,
+    "mae": 0.376,
+    "bias": 0.325
+   },
+   "share_low_by_0p3": 1.848
+  },
+  "v5_AR": {
+   "now": {
+    "n": 433,
+    "mae": 0.277,
+    "bias": 0.17
+   },
+   "f20": {
+    "n": 313,
+    "mae": 0.321,
+    "bias": 0.221
+   },
+   "share_low_by_0p3": 5.543
+  },
+  "rise_30_65_rectal_nn_v12_ar": [
+   0.51,
+   0.376,
+   0.456,
+   0.485
+  ],
+  "gain_core_per_t1": 0.145,
+  "gain_core_per_10bpm": 0.04,
+  "share_t1_minus_air_inside_envelope": 77.778,
+  "v5_AR_mean_w_at_refs": null,
+  "sessions_with_tier_any": {
+   "drink": 27,
+   "cool": 5,
+   "danger": 0
+  }
+ },
+ "range_real": {
+  "now": {
+   "half_pooled_90": 0.527,
+   "half_brighton_only_90": 0.605,
+   "loso_coverage_minutes_pct": 89.811,
+   "loso_share_persons_below_80_pct": 17.333,
+   "loso_brighton_mean_coverage_pct": 85.04
+  },
+  "f20": {
+   "half_pooled_90": 0.542,
+   "half_brighton_only_90": 0.688,
+   "loso_coverage_minutes_pct": 89.756,
+   "loso_share_persons_below_80_pct": 16.0,
+   "loso_brighton_mean_coverage_pct": 80.124
+  }
+ }
+}

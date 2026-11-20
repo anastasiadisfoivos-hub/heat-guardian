@@ -1,0 +1,45 @@
+{
+ "version": "hg2-20261113-ca75ce4-simv5aug",
+ "crc32": "0xEE4F7E9E",
+ "weight_bytes": 26900,
+ "n_params_per_member": 1345,
+ "test_vectors": 22,
+ "golden": {
+  "rows": 4320,
+  "persons": [
+   0,
+   23,
+   3
+  ],
+  "kf_v12_max_abs_diff_vs_B5_scalar_mirror": 0.0,
+  "features_max_abs_diff_vs_B5_scalar_mirror": 0.0,
+  "outputs_max_abs_diff_vs_B5_scalar_mirror": {
+   "core_now": 0.0,
+   "core_20": 0.0,
+   "core_30": 0.0,
+   "sd_now": 0.0,
+   "sd_20": 0.0,
+   "sd_30": 0.0,
+   "logit_p38": 0.0,
+   "logit_p385": 0.0,
+   "strain": 0.0,
+   "f20_eff": 0.0
+  },
+  "note": "features are FeatureState == B5 mirror bitwise (tests_features); NN outputs follow the M6 sd rule documented in hg2_weights.h"
+ },
+ "cuts": {
+  "HG2_LOGIT_CUT_38": 1000000000.0,
+  "HG2_LOGIT_CUT_385": 1000000000.0,
+  "HG2_SD_K": 0.0,
+  "note": "1e9 = NN path never fires (the pooled choice found no cut that adds sensitivity within the FA budget)"
+ },
+ "provenance": {
+  "minutes_dev_file": "minutes_dev_v5.parquet",
+  "minutes_dev_sha256": "cff1dcf09535532465ff2bc8da0d593d29308a40d5eea8003a374ffa9a983ee6",
+  "persons_sha256": "eb9ad75e3b52caebffa3c7f61a90caffd41d950e64e41ccc0276b0f09e4b5aca",
+  "run_tag": "v5aug",
+  "sim_version": "v5 (B1-v5 @ f055fcb: v4 + per-person skin-core coupling fitted on Brighton, DECISIONS M20)",
+  "hr_rise_augmentation": true,
+  "htt_db": "/home/claude/hgdata/heat_guardian_train.sqlite dataset 1 (all 65 = DEV for hg2)"
+ }
+}

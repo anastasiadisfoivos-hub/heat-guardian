@@ -1,0 +1,16 @@
+# Heat Guardian staged scene v1: fast heat build-up
+# Back from the market at 13:00 on a 39 C day into a 37 C flat, still and tired: skin, air and pulse high within 20 min.
+# She answers the «Είστε καλά;» question within 2 min and moves to the cool bedroom with the A/C at 14:10.
+# expect=COOL,CHECK,CLEAR
+# start=13:00 warmup=1440
+# keyframes, linear between rows. columns: min,t1_skin_c,t2_ref_c,air_c,rh_pct,hr_bpm,hr_q,pi_pct,a_std_g,z_deg,button
+# ('-' = no value; hr_q 4 OK, 2 motion, 0 no skin; button 1 = a short press at that minute)
+0,34.0,32.6,27.0,45,72,4,0.5,0.030,10,0
+5,35.5,35.0,34.0,40,105,4,0.5,0.080,10,0
+20,36.5,36.5,37.0,38,118,4,0.5,0.010,10,0
+40,37.0,37.0,37.5,38,124,4,0.5,0.004,10,0
+67,37.1,37.1,37.5,38,125,4,0.5,0.003,10,1
+70,37.1,37.1,37.5,38,124,4,0.5,0.040,10,0
+85,35.2,33.8,26.5,45,96,4,0.5,0.020,10,0
+150,34.2,32.6,25.5,45,80,4,0.5,0.020,10,0
+240,33.9,32.3,25.0,45,74,4,0.5,0.020,10,0

@@ -1,0 +1,533 @@
+{
+ "agree": [
+  {
+   "id": "JI-AGREE",
+   "target": "numpy two-node vs pythermalcomfort.two_nodes_gagge_ji, 480 min, 9 conditions (26/31/36 C x met 0.86/1.37, clo 0.4, 45 %; 44 C/30 % x2; 36 C met 0.95), features off",
+   "tol": "|dCore| <= 0.05, |dSkin| <= 0.3",
+   "value": "max |dCore| 0.00e+00 C, max |dSkin| 0.00e+00 C",
+   "result": "PASS",
+   "why": "",
+   "section": "agree",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section agree",
+   "note": ""
+  },
+  {
+   "id": "ENERGY",
+   "target": "energy balance closes per step (M - E_res - C_res - Q_sens - E_sk = storage)",
+   "tol": "< 1 W/m2",
+   "value": "max residual 6.42e-11 W/m2 over 600 steps x 400 persons, all features on",
+   "result": "PASS",
+   "why": "",
+   "section": "agree",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section agree",
+   "note": ""
+  },
+  {
+   "id": "MONO",
+   "target": "monotonicity of dT_core in T_db (22..40 C step 2) at fixed met 0.86 / 1.37, every person",
+   "tol": "non-decreasing",
+   "value": "min step -0.0243 C",
+   "result": "FAIL",
+   "why": "",
+   "section": "agree",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section agree",
+   "note": ""
+  }
+ ],
+ "rest": [
+  {
+   "id": "V2",
+   "target": "core rise 8 h seated 26/31/36 C = +0.2/+0.7/+0.9 C (Meade 2024)",
+   "tol": "+-0.15",
+   "value": "+0.16 / +0.72 / +0.96 (population mean, n=136; minus the 22 C arm)",
+   "result": "PASS",
+   "why": "",
+   "section": "rest",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section rest",
+   "note": ""
+  },
+  {
+   "id": "V1",
+   "target": "resting core thermoneutral 36.7 +-0.2 C (baseline); accept 36.8-37.2 at other times of day (R1 V1)",
+   "tol": "36.5-36.9 baseline OR 36.8-37.2 daytime",
+   "value": "baseline 08:00 after 6 h at 22 C: 36.40 C; 08:00-16:00 mean 36.63 C",
+   "result": "FAIL",
+   "why": "",
+   "section": "rest",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section rest",
+   "note": ""
+  },
+  {
+   "id": "V3",
+   "target": "mean skin 22/26/31/36 C = 31.7/32.9/34.9/35.9 C",
+   "tol": "+-0.5",
+   "value": "31.29 / 33.29 / 34.64 / 35.85 (fix: i_cl 0.45, report offset k 0.12)",
+   "result": "PASS",
+   "why": "",
+   "section": "rest",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section rest",
+   "note": ""
+  },
+  {
+   "id": "V4",
+   "target": "resting HR 22/26/31/36 C = 60/62/69/74 bpm",
+   "tol": "+-3 bpm",
+   "value": "60.0 / 61.5 / 69.7 / 85.9 (60 + population-mean change vs 22 C; drawn rest HR is N(66,9), ARCH)",
+   "result": "FAIL",
+   "why": "",
+   "section": "rest",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section rest",
+   "note": ""
+  },
+  {
+   "id": "V5",
+   "target": "whole-body sweat 22/26/31/36 C = 20/26/31/80 g/(h m2)",
+   "tol": "+-15",
+   "value": "12 / 14 / 35 / 66 (skin water loss E_sk/0.68 = regulatory + diffusion; regulatory alone 0 / 1 / 26 / 69)",
+   "result": "PASS",
+   "why": "",
+   "section": "rest",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section rest",
+   "note": ""
+  },
+  {
+   "id": "V6",
+   "target": "fluid intake 8 h 0.48 L (22 C) -> 1.22 L (36 C); deficit -0.5..-0.7 %",
+   "tol": "+-0.2 L",
+   "value": "0.48 -> 1.21 L; deficit at 36 C 0.88 %",
+   "result": "PASS",
+   "why": "",
+   "section": "rest",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section rest",
+   "note": ""
+  },
+  {
+   "id": "V7",
+   "target": "8 h bed rest 31 C: peak core +1.1 C; with 1.5 m/s fan +0.9 C (O'Connor 2026)",
+   "tol": "+-0.2",
+   "value": "+0.70 / fan +0.63 (lying met 0.82, sleepwear+sheet clo 0.6 (R1 \u00a71.7); peak rise minus the 22 C arm's peak rise +0.47, same convention as V2)",
+   "result": "FAIL",
+   "why": "",
+   "section": "rest",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section rest",
+   "note": ""
+  },
+  {
+   "id": "V8",
+   "target": "8 h seated 36 C, fans 0/2/4 m/s: +1.0 C in all three (Lee 2025)",
+   "tol": "+-0.2",
+   "value": "+0.96 / +0.88 / +0.88 (minus the 22 C arm, same convention as V2: same lab and protocol as Meade 2024)",
+   "result": "PASS",
+   "why": "",
+   "section": "rest",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section rest",
+   "note": ""
+  },
+  {
+   "id": "V9",
+   "target": "circadian amplitude 0.30-0.40 C, nadir ~04:30",
+   "tol": "+-0.1 C, +-1 h",
+   "value": "cosinor amplitude 0.28 (sd 0.07); nadir median 4.30 h (constant routine 24 C)",
+   "result": "PASS",
+   "why": "",
+   "section": "rest",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section rest",
+   "note": "partly by construction: amplitude and nadir are drawn per person (ARCH \u00a73.3)"
+  },
+  {
+   "id": "V10",
+   "target": "mean skin range indoors 22-36 C: 31.5-36.0 C",
+   "tol": "-",
+   "value": "31.3-35.8",
+   "result": "PASS",
+   "why": "",
+   "section": "rest",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section rest",
+   "note": ""
+  }
+ ],
+ "limits": [
+  {
+   "id": "V12",
+   "target": "critical P_a older ADL 34/36/38/40 C = 3.41/3.21/3.07/2.54 kPa",
+   "tol": "+-0.3 kPa",
+   "value": "3.62 / 3.38 / 3.07 / 2.73",
+   "result": "PASS",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V13",
+   "target": "critical P_a older REST 34/36/38/40 C = 3.53/3.52/3.57/2.88 kPa",
+   "tol": "+-0.3 kPa",
+   "value": "4.48 / 4.37 / 4.01 / 3.55",
+   "result": "FAIL",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V14",
+   "target": "critical T_db older ADL 12/16 mmHg = 42.9/40.3 C",
+   "tol": "+-2 C",
+   "value": "42.3 / 41.5",
+   "result": "PASS",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V15",
+   "target": "critical T_db older REST 12/16 mmHg = 46.1/44.1 C",
+   "tol": "+-2 C",
+   "value": "47.3 / 45.6",
+   "result": "PASS",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V16",
+   "target": "critical T_wb humid: ADL 27.0-28.3, Rest 28.3-29.9 C",
+   "tol": "+-0.5 C (range edges)",
+   "value": "ADL 28.9/28.7/28.3/27.7; Rest 31.6/31.8/31.2/30.4",
+   "result": "FAIL",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V17",
+   "target": "core rise rate above the limit 0.62 +-0.48 (ADL), 0.69 +-0.50 (Rest) C/h",
+   "tol": "within 1 SD",
+   "value": "ADL 0.42 (sd 0.06); Rest 0.43 (sd 0.10) C/h, first 30 min after inflection",
+   "result": "PASS",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V18",
+   "target": "core rise rate just below the limit 0.06-0.15 C/h (Cottle 2022 compensable fixed environment)",
+   "tol": "range",
+   "value": "median 0.150 C/h (IQR 0.13-0.21); fixed 36 C at each person's P_a,crit - 0.3 kPa, ADL and Rest, last 60 of 180 min (09:00-12:00, circadian rise included)",
+   "result": "PASS",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V19",
+   "target": "HR drift onset precedes core inflection by 2-6 RH points at 36 C (ADL) for >= 80 % of persons (Kenney 2025: 53 vs 57 % RH; 41 vs 43 C at 12 mmHg)",
+   "tol": ">= 80 % in [2, 6]",
+   "value": "51 % in [2,6] (66 % without beta-blockers); median lead 3.1 RH points (HR onset RH 54 %, core 56 %); 12 mmHg: median lead 0.8 C (HR 42.0, core 42.0)",
+   "result": "FAIL",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V19-dry",
+   "target": "dry half of V19: at 12 mmHg (ADL) HR drift onset precedes the core inflection (Kenney 2025: HR 41 C vs core 43 C, lead ~2 C)",
+   "tol": "HR first (lead > 0) for >= 80 % of persons",
+   "value": "60 % HR first; median lead +0.8 C (HR onset T_db 42.0, core inflection 42.0)",
+   "result": "FAIL",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V20",
+   "target": "omega_max 65+: 0.47/0.40 ADL, 0.31/0.34 Rest, never 0.85",
+   "tol": "-",
+   "value": "person omega_max U(0.31,0.57) x(1-0.3f), rest factor 0.85, then x1.6 frame factor -> model-frame cap ADL 0.67 (max 0.90)",
+   "result": "PASS",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": "the measured omega distribution is used exactly; the frame factor converts Kenney's partitional-calorimetry E_max convention into the Gagge-Ji E_max"
+  },
+  {
+   "id": "V21",
+   "target": "sweat rate at the limit older/young 0.44-0.63 (young twin)",
+   "tol": "range",
+   "value": "0.63 (older 152, young twin 242 g/(h m2), humid 36/40 C ADL)",
+   "result": "PASS",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V22",
+   "target": "cardiac output at tolerance older/young 0.67x; same absolute HR rise",
+   "tol": "-",
+   "value": "not represented: the model has no stroke-volume/cardiac-output state; proxy = SkBF ceiling ratio 0.70 (63/90)",
+   "result": "FAIL",
+   "why": "No cardiac-output state in a two-node model; the HR model gives the same absolute HR rise by construction (kappa ranges are age-independent). Not needed for training targets.",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V24",
+   "target": "decrement appears from 40-44 y",
+   "tol": "-",
+   "value": "not testable: population is 65-85 only; young twin uses the R1 \u00a71.4 young column",
+   "result": "FAIL",
+   "why": "The simulator has no middle-aged parameterisation (ARCH draws age U(65,85)); an age sweep 20-70 would need a Ji-to-Gagge interpolation that R1 does not source.",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V23",
+   "target": "fraction of 64-79 y exceeding +1.0 C in 9 h at 40 C = 39 %",
+   "tol": "+-10 points",
+   "value": "99 % (seated, 40 C / 9 % RH assumed, no drinking)",
+   "result": "FAIL",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V25",
+   "target": "T_crit SD across persons at 12 mmHg ~4 C (ARCH: 3-5 C)",
+   "tol": "3-5 C",
+   "value": "2.01 C (ADL); Rest 4.01 C",
+   "result": "FAIL",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "V26",
+   "target": "women's limits below men's",
+   "tol": "sign",
+   "value": "women - men T_crit(12 mmHg, ADL) = +0.05 C",
+   "result": "FAIL",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "FRAIL",
+   "target": "frailty tercile 3 limits below tercile 1",
+   "tol": "sign",
+   "value": "T3 - T1 T_crit = -0.94 C",
+   "result": "PASS",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": "frailty axis unvalidated by construction (R1 \u00a78.9)"
+  },
+  {
+   "id": "V11",
+   "target": "3 h at 44 C / 30 % RH: end core 37.8 +-0.3 (young 37.6); storage 358 vs 202 kJ (1.8x)",
+   "tol": "+-0.3 C",
+   "value": "end core 37.90 C (young twin 37.04); storage 572 vs young twin 333 kJ (1.7x)",
+   "result": "PASS",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  },
+  {
+   "id": "KAPPA",
+   "target": "per-kappa-tercile summary (ARCH \u00a73.3: report all results per kappa tercile)",
+   "tol": "-",
+   "value": "kappa T1: HR-onset lead median 2.7 RH pts, HR at inflection 102 bpm; kappa T2: HR-onset lead median 2.9 RH pts, HR at inflection 101 bpm; kappa T3: HR-onset lead median 3.8 RH pts, HR at inflection 102 bpm",
+   "result": "PASS",
+   "why": "",
+   "section": "limits",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section limits",
+   "note": ""
+  }
+ ],
+ "multiday": [
+  {
+   "id": "V27",
+   "target": "S2: day-2 core peak >= day-1 peak + 0.2 C with HR peak within +-3 bpm (extrapolated multi-day; Meade 2017 workers 38.1 -> 38.4, HR unchanged)",
+   "tol": ">= +0.2 C; |dHR| <= 3",
+   "value": "day-2 minus day-1 peak core -0.01 C (sd 0.05); peak HR +0.3 bpm; day-1 peak 37.86 C; controlled run, class-B indoor, identical routine, n=136",
+   "result": "FAIL",
+   "why": "",
+   "section": "multiday",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section multiday",
+   "note": "extrapolated multi-day"
+  },
+  {
+   "id": "V28",
+   "target": "hydration carry-over: dehydrated before and after on both days (USG 1.025 -> 1.029)",
+   "tol": "deficit > 0 both mornings",
+   "value": "07:00 deficit day 1 1.52 %, day 2 1.63 %",
+   "result": "PASS",
+   "why": "",
+   "section": "multiday",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section multiday",
+   "note": "extrapolated multi-day; USG not modelled, deficit used"
+  },
+  {
+   "id": "V29",
+   "target": "AC respite: 2 h at 23 C cuts core by 0.8 C; benefit gone within ~2 h",
+   "tol": "gone in 1-3 h",
+   "value": "benefit at end of respite 0.79 C; back within 20 % of control after 158 min",
+   "result": "PASS",
+   "why": "",
+   "section": "multiday",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section multiday",
+   "note": ""
+  },
+  {
+   "id": "V30",
+   "target": "acclimatisation: heat storage over 3 h at 44 C falls by 213 kJ (CI 131-295)",
+   "tol": "within CI",
+   "value": "-204 kJ (638 -> 434) with the switch on at 10 hot days",
+   "result": "PASS",
+   "why": "",
+   "section": "multiday",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section multiday",
+   "note": ""
+  }
+ ],
+ "indoor": [
+  {
+   "id": "R3-i",
+   "target": "Sakka: S2 indoor night min >= 28 C, > 30 C for >= 85 % of hours, creep 0.2-0.8 K/day (class B, B4 Tomorrow-Engine model)",
+   "tol": "as stated",
+   "value": "night min 27.8 C; >30 C 54 %; creep 0.48 K/day",
+   "result": "FAIL",
+   "why": "",
+   "section": "indoor",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section indoor",
+   "note": ""
+  },
+  {
+   "id": "R3-ii",
+   "target": "Bath: lag 2-4 h, amplitude ratio 0.1-0.3, bedroom peak 18-19 h (class A = Bath-like parameters, S1 days)",
+   "tol": "as stated",
+   "value": "lag median 4 h; amplitude ratio 0.21; bedroom peak hour median 21",
+   "result": "PASS",
+   "why": "",
+   "section": "indoor",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section indoor",
+   "note": ""
+  },
+  {
+   "id": "R3-iii",
+   "target": "Zuurbier: +3.5 C over 5 warm days; bedroom 0.4-0.6 C warmer",
+   "tol": "+-1 C; range",
+   "value": "rise +5.7 C (outdoor daily mean +6 C step, class A); bedroom +0.50 C",
+   "result": "FAIL",
+   "why": "",
+   "section": "indoor",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section indoor",
+   "note": "the +3.5 C depends on the size of the outdoor step, which Zuurbier does not give; +6 C assumed"
+  }
+ ],
+ "sensor": [
+  {
+   "id": "R2-dT34",
+   "target": "at T_air >= 34 C, dT = T1 - T2 <= 0.6 C for 100 % of worn minutes (R2 \u00a76.5)",
+   "tol": "100 %",
+   "value": "65.8 % of worn home minutes at T_in >= 34 C (n=45687); p99 1.15 C; 99.9 % holds from T_in >= 36.0 C",
+   "result": "FAIL",
+   "why": "",
+   "section": "sensor",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section sensor",
+   "note": ""
+  },
+  {
+   "id": "R2-dT-cool",
+   "target": "in 20-26 C rooms dT 2-5 C (R2 \u00a72.2); constructed 4-h seated runs, 100 persons",
+   "tol": "2-5 C, every person",
+   "value": "20 C: mean 5.10 (range 4.10-5.95); 24 C: mean 3.92 (range 3.15-4.56); 26 C: mean 3.36 (range 2.68-3.96); 36 C: mean 0.43",
+   "result": "FAIL",
+   "why": "",
+   "section": "sensor",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section sensor",
+   "note": ""
+  },
+  {
+   "id": "R2-PI",
+   "target": "PI rises 2-4x from vasoconstricted to dilated (R2 \u00a76.3)",
+   "tol": "2-4x",
+   "value": "median PI 36 C / 20 C = 2.31 (s 0.29 -> 0.64)",
+   "result": "PASS",
+   "why": "",
+   "section": "sensor",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section sensor",
+   "note": ""
+  },
+  {
+   "id": "R2-loose",
+   "target": "a loose band changes T1, dT, PI and IMU together (R2 \u00a76.5)",
+   "tol": "all move",
+   "value": "loose vs worn: T1 -0.35 C, dT -0.24 C, PI x0.42, slip rotations in z-angle at loose onset",
+   "result": "PASS",
+   "why": "",
+   "section": "sensor",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section sensor",
+   "note": ""
+  },
+  {
+   "id": "R2-HRout",
+   "target": "HR outlier minutes 15-25 % at rest (p_out 0.20 red/IR, R2 \u00a76.3)",
+   "tol": "15-25 %",
+   "value": "15.7 % (no reading or |error| > 10 bpm; worn, still)",
+   "result": "PASS",
+   "why": "",
+   "section": "sensor",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section sensor",
+   "note": ""
+  },
+  {
+   "id": "R2-don",
+   "target": "donning transient 20-30 min (R2 \u00a72.3, \u00a76.1)",
+   "tol": "20-30 min",
+   "value": "median 23 min to 95 % of the step (IQR 20-27, n=120)",
+   "result": "PASS",
+   "why": "",
+   "section": "sensor",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section sensor",
+   "note": "shower re-donning includes the 1-3 C evaporative flash"
+  },
+  {
+   "id": "PROP",
+   "target": "property: no NaN in truth, core 35-41 C, T1 <= T_core (worn, no sun, air cooler than core; +TMP117 offset 0.1)",
+   "tol": "all",
+   "value": "NaN truth 0; core range 36.13-39.15; T1 <= core+0.11 in 100.00 %",
+   "result": "PASS",
+   "why": "",
+   "section": "sensor",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section sensor",
+   "note": ""
+  }
+ ],
+ "routine": [
+  {
+   "id": "R3-IS",
+   "target": "routine: IS 0.7-0.9 and IV 0.5-0.8 (R3 \u00a73.3, Van Someren descriptors on hourly mean activity, met as the count proxy)",
+   "tol": "ranges",
+   "value": "IS median 0.69 (IQR 0.64-0.74); IV median 1.07",
+   "result": "FAIL",
+   "why": "",
+   "section": "routine",
+   "cmd": "cd /home/claude/hg_ai/sim && python3 -I -m velders.validate --section routine",
+   "note": ""
+  }
+ ]
+}

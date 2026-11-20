@@ -1,0 +1,6 @@
+hg2_step.c:31:10:hg2_state_size	0	static
+hg2_step.c:35:6:hg2_set_twin	40	static
+hg2_step.c:44:6:hg2_init	48	static
+hg2_step.c:95:5:hg2_check_crc	12	static
+hg2_step.c:111:6:hg2_step_aux	752	static
+hg2_step.c:109:6:hg2_step	0	static

@@ -1,0 +1,20 @@
+B5-v7 re-baseline of crafted traces: hg2-freeze-6 -> freeze-7 candidate (skin-floor Danger, skin DRINK, Marble skin arming >= 35.5 C, NN-DRINK heat/skin context; same weights 0xEE4F7E9E)
+
+trace_b5v7_marble_cool_skin.csv: NEW trace
+trace_b5v7_skin_floor_bb_earlier.csv: NEW trace
+trace_b5v7_skin_floor_cool_room.csv: NEW trace
+trace_b5v7_skin_floor_flat_hr.csv: NEW trace
+trace_b5v7_skin_floor_noflag.csv: NEW trace
+trace_m19_marble_warm_chores.csv: 14 of 1680 minutes changed
+   old: OK@0 DRINK@1446 DANGER@1471 DRINK@1569 OK@1570
+   new: OK@0 DRINK@1446 DANGER@1485 DRINK@1569 OK@1570
+   why: B5-v7: marble_day() now feeds a 36.0 C wrist skin (was 35.0) so Marble passes its new skin arming (HG_MB_SKIN_C 35.5); the 35.0 C case is the new trace b5v7_marble_cool_skin (no DANGER). The warmer T1 also moves the AR NN residual: tiers' f20 - v1.2 f20 on thermal-valid minutes median -0.300 C (p10 -0.300, p90 -0.299); M5.2 uncalibrated lowering active 1660 of 1660 of them (sd scale 1.04, h_cal 0.34 PROVISIONAL)
+
+trace_m19b_cool_stepping_stone.csv: 14 of 1680 minutes changed
+   old: OK@0 DRINK@1446 DANGER@1471 DRINK@1569 OK@1570
+   new: OK@0 DRINK@1446 DANGER@1485 DRINK@1569 OK@1570
+   why: B5-v7: marble_day() now feeds a 36.0 C wrist skin (was 35.0) so Marble passes its new skin arming (HG_MB_SKIN_C 35.5); the 35.0 C case is the new trace b5v7_marble_cool_skin (no DANGER). The warmer T1 also moves the AR NN residual: tiers' f20 - v1.2 f20 on thermal-valid minutes median -0.300 C (p10 -0.300, p90 -0.299); M5.2 uncalibrated lowering active 1660 of 1660 of them (sd scale 1.04, h_cal 0.34 PROVISIONAL)
+
+trace_m19_marble_cool_room.csv: input changed, 0 of 1680 state minutes changed
+   why: same marble_day() input change (wrist skin 35.0 -> 36.0 C in the 240 Marble minutes) so the trace still tests what it was written
+        for (Marble NOT firing in a cool room, room < HG_MB_WARM_C) rather than being silenced by the new skin arming; states unchanged.

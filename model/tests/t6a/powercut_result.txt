@@ -1,0 +1,4 @@
+power-cut test: 1 day(s), 26071 flash ops, torn op every 13 -> 2005 reboots simulated
+  mount OK 2005 | mount FAILED but signature found (FS_CORRUPT, logging stops) 0 | would FORMAT (data loss) 0
+  after OK mounts: 86809498 records read back, 0 CRC-bad records / unopenable files
+T6A_POWERCUT: PASS

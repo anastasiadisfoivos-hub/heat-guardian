@@ -1,0 +1,1 @@
+minute 0: quality per second [222222222224444444444444444444]  OK seconds 19  first OK at s=11  last HR 69.8  PI mean(30 s) 0.392 vs steady 0.354

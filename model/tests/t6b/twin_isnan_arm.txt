@@ -1,0 +1,10 @@
+== fz_hg_twin.c.o
+hg_twin_unpack: self-compares (isnan) 0 of 15 vcmp
+hg_twin_set_calm: self-compares (isnan) 0 of 2 vcmp
+hg_twin_sanitize: self-compares (isnan) 0 of 14 vcmp
+hg_twin_ingest_minute: self-compares (isnan) 0 of 14 vcmp
+== twin_O2.o
+hg_twin_unpack: self-compares (isnan) 2 of 20 vcmp
+hg_twin_set_calm: self-compares (isnan) 0 of 3 vcmp
+hg_twin_sanitize: self-compares (isnan) 0 of 23 vcmp
+hg_twin_ingest_minute: self-compares (isnan) 0 of 15 vcmp

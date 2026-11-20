@@ -1,0 +1,7 @@
+hg_util.c:3:5:hg_isnan	8	static
+hg_util.c:16:7:hg_psat_kpa	0	static
+hg_util.c:25:7:hg_pa_kpa	8	static
+hg_util.c:27:7:hg2_sigmoid_lut	0	static
+hg_util.c:33:7:hg_ln1p	0	static
+hg_util.c:41:7:hg_sin_tod	4	static
+hg_util.c:47:7:hg_cos_tod	12	static

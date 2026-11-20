@@ -1,0 +1,5 @@
+  5 resets,    10 s between resets: full hour files 17 -> 15 (lost 2 h of 1 Hz data); 1 Hz seconds kept on flash: 54050 (15.0 h)
+ 20 resets,    10 s between resets: full hour files 17 -> 0 (lost 17 h of 1 Hz data); 1 Hz seconds kept on flash: 200 (0.1 h)
+ 30 resets,    10 s between resets: full hour files 17 -> 0 (lost 17 h of 1 Hz data); 1 Hz seconds kept on flash: 200 (0.1 h)
+ 30 resets,    60 s between resets: full hour files 17 -> 0 (lost 17 h of 1 Hz data); 1 Hz seconds kept on flash: 1200 (0.3 h)
+ 60 resets,     8 s between resets: full hour files 17 -> 0 (lost 17 h of 1 Hz data); 1 Hz seconds kept on flash: 160 (0.0 h)

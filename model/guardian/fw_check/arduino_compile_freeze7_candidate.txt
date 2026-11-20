@@ -1,0 +1,11 @@
+---- B5-v7 freeze-7 candidate (working tree, 2026-11-13): skin-floor Danger + skin DRINK + Marble skin arming + NN-DRINK heat/skin
+     context + twin file v4 (Exception sums) + Greek screen-text fix; same weights 0xEE4F7E9E ----
+fw/09_guardian, scratch copy (scratchpad) with frozen/ replaced by this working tree's guardian/c + model/export + twin/c;
+  fw/09_guardian/frozen itself NOT modified (B6b re-syncs from the hg2-freeze-7 tag with fw/tools/sync_frozen.sh after the manager tags).
+  The scratch copy includes B5-v7's two fw edits (09_guardian.ino IMPACT_G = HG_IMPACT_G, hg_fw.c log impact flag = HG_IMPACT_G,
+  PROFILE console med <= 31).
+  frozen = hg2-freeze-6 + the fw edits : Sketch uses 302320 bytes (37%) of program storage space; Global variables use 68776 bytes (28%)
+  freeze-7 candidate                  : Sketch uses 303728 bytes (37%) of program storage space; Global variables use 68800 bytes (28%)
+  -> +1408 B flash, +24 B RAM (hg_guardian_t +12 B: sf_t1, sf_ta, sf_run, x_warm; two static instances in 09)
+  re-run after the container restart (cold Arduino build cache, 5 min 9 s; frozen/ re-copied from the working tree at the B5-v7 final
+  sources incl. the hg_frames.h field-5 comment): Sketch uses 303728 bytes (37%), Global variables use 68800 bytes (28%) - identical.

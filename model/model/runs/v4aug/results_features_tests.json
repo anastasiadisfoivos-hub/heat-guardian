@@ -1,0 +1,21 @@
+{
+ "vs_B5_scalar": {
+  "persons": [
+   0,
+   1,
+   2
+  ],
+  "minutes": 8640,
+  "mismatching_values": 0,
+  "max_abs_diff": 0
+ },
+ "batch_vs_single": {
+  "mismatching_values": 0
+ },
+ "causality": {
+  "t0": 700,
+  "changed_past_values": 0,
+  "changed_future_values": 133757
+ },
+ "pass": true
+}

@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heat Guardian simulation</title>
+<style>
+:root{
+  /* light, printed-instrument look: white field, 1 px grey rules, one accent (DESIGN.md brand/primary, deep Greek blue) */
+  --bg:#FFFFFF; --rule:#D9D9D9; --rule2:#BDBDBD;
+  --text:#111111; --text2:#4A4A4A; --label:#6B6B6B;
+  --accent:#003F88;
+  /* heat-state colours darkened for white (DESIGN.md hues), only where they carry meaning */
+  --water:#1F63C6; --heat:#C25E00; --danger:#C62828; --warm:#8A6200;
+  --good:#1B7F4B; --off:#B35C00;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.lbl{font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--label)}
+
+.stage{height:100vh;display:grid;grid-template-rows:64px minmax(0,1fr) 34px;grid-template-columns:minmax(0,1fr)}
+
+/* top rule bar */
+.top{display:flex;align-items:center;gap:20px;padding:0 24px;border-bottom:1px solid var(--rule)}
+.top h1{font-size:19px;font-weight:700;letter-spacing:.02em}
+.top .preview{display:none;font-family:var(--mono);font-size:13px;color:var(--heat);border:1px solid var(--heat);padding:3px 8px;border-radius:2px}
+body.preview .top .preview{display:inline-block}
+.controls{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn{height:40px;padding:0 16px;border:1px solid var(--rule2);background:transparent;border-radius:3px;font-size:16px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F2F2F2}
+.btn:disabled{opacity:.35;cursor:default}
+.btn.go{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.go:hover{background:#00336E}
+.lnk{background:none;border:0;color:var(--text2);font-size:15px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.chk{display:flex;align-items:center;gap:8px;font-size:16px;cursor:pointer;white-space:nowrap;user-select:none;padding:0 6px}
+.chk input{appearance:none;width:18px;height:18px;border:1px solid var(--text2);background:#fff;border-radius:2px;display:grid;place-content:center;cursor:pointer}
+.chk input:checked{background:var(--danger);border-color:var(--danger)}
+.chk input:checked::after{content:"";width:8px;height:8px;background:#fff}
+select.btn{font-weight:500;padding:0 10px;background:var(--bg)}
+body.linked .conn{display:none}
+body:not(.linked) #btnGo,body:not(.linked) #btnStop{display:none}
+.top>*,.controls>*{transition:opacity .4s}
+body.running .top>*:not(.controls):not(.preview),body.running .controls>*:not(#btnStop){opacity:.15;pointer-events:none}
+body.running #btnStop{border-color:var(--text);opacity:1}
+
+/* three columns separated by rules */
+.main{display:grid;grid-template-columns:360px minmax(0,1fr) 410px;min-height:0}
+.col{min-height:0;padding:20px 28px;border-right:1px solid #EEEEEE}
+.col:last-child{border-right:0}
+
+/* terminal: plain */
+.term{display:flex;flex-direction:column;padding:20px 0 12px 20px;background:#FAFAFA}
+.term .lbl{padding-right:22px;display:flex}
+.term .lbl span:last-child{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:400;font-family:var(--mono)}
+.tbody{position:relative;flex:1;min-height:0;margin-top:10px;overflow:hidden}
+.tscroll{position:absolute;left:0;right:14px;bottom:0;font-family:var(--mono);font-size:12.5px;line-height:1.4;color:#7A7A7A}
+.tl{white-space:pre-wrap;overflow-wrap:anywhere;padding-left:2ch;text-indent:-2ch}
+.tl .k{color:#ABABAB}
+.tl .pre{color:#ABABAB}
+.tl.cmd{color:var(--text);font-weight:600}
+.tl.rep{color:#7A7A7A}
+.tl.ctl{color:#6B6B6B}
+.tl.ev{color:#6B6B6B}
+.tl.ev.newest{color:var(--accent);font-weight:600}
+.tl.ev .k{color:#9AA9C0;font-weight:400}
+.tl.dim{color:#8A8A8A}
+.tl .st-DRINK{color:#6F93CC}.tl .st-COOL{color:#C99062}.tl .st-CHECK,.tl .st-DANGER,.tl .st-HELP{color:#C98080}
+.cur{display:inline-block;width:.62em;height:1.1em;background:#9A9A9A;vertical-align:-3px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+
+.center{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:18px}
+.clock{font-size:92px;line-height:.95;font-weight:500;letter-spacing:-.03em;transition:opacity .4s}
+.clock.pending{opacity:.25}
+.chartwrap{position:relative;min-height:0}
+#chart{position:absolute;inset:0;width:100%;height:100%}
+.key{position:absolute;right:4px;top:2px;display:flex;gap:18px;font-size:14px;color:var(--text2)}
+.key span{display:flex;align-items:center;gap:7px}
+.key i{display:inline-block;width:20px;border-top:2px solid}
+
+.ladder{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px;border-top:1px solid #EEEEEE}
+.rung{padding:12px 0 4px;border-top:3px solid transparent;margin-top:-1px;color:var(--label);transition:border-color .6s,color .6s}
+.rung .sq{width:9px;height:9px;background:#E0E0E0;border:1px solid var(--rule2)}
+.rung.lit{border-top-color:var(--c)}
+.rung.lit .sq{background:var(--c);border-color:var(--c)}
+.rung .meta{font-family:var(--mono);font-size:14px;margin-top:8px;line-height:1.5;color:var(--text2);min-height:42px;white-space:pre-line}
+.rung .meta .y{color:var(--good)}.rung .meta .n{color:var(--danger)}.rung .meta .w{color:var(--warm)}
+
+.band{display:flex;flex-direction:column;align-items:center;gap:8px}
+.bandbody{width:132px;height:158px;border-radius:30px;background:#1A1A1A;border:1px solid #000;padding:8px}
+.screen{width:100%;height:100%;border-radius:22px;background:#5a5a5a;position:relative;overflow:hidden;transition:background-color .8s}
+.screen svg{position:absolute;inset:0}
+.screen .stxt{position:absolute;left:6px;right:6px;bottom:12px;text-align:center;font-size:13px;font-weight:700;line-height:1.15}
+.v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:27px;font-weight:500;margin-top:4px;transition:color .5s}
+.v small{font-size:14px;color:var(--text2);margin-left:3px}
+.v .wait{font-family:var(--sans);font-size:15px;color:var(--label);font-weight:400}
+.v.good{color:var(--good)}.v.off{color:var(--off)}
+.acc{flex:none;padding-top:2px}
+.acc p{font-size:15.5px;line-height:1.35;color:var(--text);padding:4px 0}
+.acc b.good{color:var(--good)}
+.acc .wait{color:var(--label);font-weight:400}
+.acc b{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+.acc .pop{font-size:13.5px;color:var(--label);padding-top:2px}
+/* evidence: proves the pipeline is live (real link, real firmware build, real clock) */
+.evi{flex:none;margin-top:auto;border-top:1px solid #EEEEEE;padding-top:8px;font-family:var(--mono);font-size:12px;line-height:1.4;color:#7A7A7A}
+.evi .lbl{font-size:11px}
+.evi .lbl{font-family:var(--sans);margin-bottom:3px}
+.evi .ln{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.evi b{font-weight:600;color:var(--text)}
+.evi .ldot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#BDBDBD;margin-right:7px;vertical-align:0}
+.evi .ldot.on{background:var(--good);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+.evi .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}
+.evi canvas{display:block;image-rendering:pixelated}
+.evi canvas[hidden],.evi .src[hidden]{display:none}
+.evi .src{white-space:normal;overflow-wrap:anywhere}
+
+/* view switch: Now | Tomorrow */
+.views{display:flex;height:40px;border:1px solid var(--rule2);border-radius:3px;overflow:hidden}
+.vw{padding:0 18px;border:0;background:transparent;font-size:16px;font-weight:600;color:var(--text2);cursor:pointer}
+.vw+.vw{border-left:1px solid var(--rule2)}
+.vw.on{background:#111;color:#fff;cursor:default}
+body.view-tmr .center>.readline,body.view-tmr .center>.chartwrap,body.view-tmr .center>.ladder{display:none}
+body.view-tmr .center{grid-template-rows:minmax(0,1fr)}
+.tmr{display:none}
+body.view-tmr .tmr{display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto auto;min-height:0}
+.t-head{display:grid;grid-template-columns:1fr auto;align-items:end;gap:28px;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+.t-city{font-size:24px;font-weight:600;margin-top:6px}
+.t-date{font-size:17px;color:var(--text2);margin-top:2px}
+.t-max{text-align:right}
+.t-num{font-size:48px;line-height:1;font-weight:500;margin-top:6px;letter-spacing:-.01em}
+.t-num small{font-size:20px;color:var(--text2);margin-left:4px}
+.t-say{padding:22px 0 6px}
+.t-verdict{font-size:44px;line-height:1.12;font-weight:700;letter-spacing:-.01em;max-width:24ch;text-wrap:balance}
+.t-best{font-size:22px;margin-top:10px;color:var(--good);font-weight:600}
+.t-chart{position:relative;min-height:0}
+#tChart{position:absolute;inset:0;width:100%;height:100%}
+.t-band{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:0;border-top:1px solid var(--rule);padding-top:10px}
+.t-band .lbl{padding:4px 22px 0 0;max-width:150px;line-height:1.35}
+.t-band .bl{padding:0 14px;border-left:1px solid var(--rule)}
+.t-band .gr{font-size:20px;font-weight:600;line-height:1.25}
+.t-band .en{font-size:15px;color:var(--text2);margin-top:2px}
+.t-foot{font-size:13.5px;color:var(--label);padding-top:12px;line-height:1.45}
+.t-miss{display:none;font-size:20px;color:var(--label);padding-top:28px;max-width:40ch;line-height:1.4}
+.tmr.empty>*{display:none}.tmr.empty>.t-miss{display:block}
+
+.status{display:flex;align-items:center;gap:26px;padding:0 24px;border-top:1px solid var(--rule);font-size:14px;color:var(--text2)}
+.status .num{font-size:13px}
+.dot{display:inline-block;width:8px;height:8px;margin-right:8px;background:#BDBDBD;vertical-align:0}
+.dot.on{background:var(--good)}.dot.wait{background:var(--warm);animation:blink 1s steps(2) infinite}
+.status .r{margin-left:auto}
+.toast{position:fixed;left:50%;top:76px;transform:translateX(-50%);background:var(--bg);border:1px solid var(--rule2);padding:10px 16px;font-size:16px;z-index:5;display:none;max-width:900px}
+.toast.on{display:block}
+@media (prefers-reduced-motion:reduce){.cur,.dot.wait,.evi .ldot.on{animation:none}*{transition-duration:.01ms!important}}
+
+/* ===== SIMPLE NOW VIEW: hero (state word + band) -> chart -> steps; everything else small and quiet ===== */
+/* three type sizes: 64 px (hero), 16 px (body), 12.5 px (small) */
+.main{grid-template-columns:330px minmax(0,1fr)}
+.center{grid-template-rows:auto minmax(0,1fr) auto auto;gap:22px;padding:26px 40px 18px}
+.hero{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:32px}
+.band{display:flex;flex-direction:column;align-items:center;gap:6px}
+.bandbody{width:120px;height:144px}
+.band .cap{font-size:12.5px;color:var(--label);text-align:center;min-height:0}
+.state .w{font-size:64px;line-height:1;font-weight:700;letter-spacing:-.02em;transition:color .8s}
+.state .g{font-size:16px;color:var(--text2);margin-top:10px}
+.state .g:empty{display:none}
+.state .g.fam{color:var(--accent);font-weight:600}
+.state .est b{font-family:var(--mono);font-weight:600;color:var(--text)}
+.meta-r{align-self:start;text-align:right;color:var(--label)}
+.clock{font-size:16px;font-weight:600;color:var(--text);letter-spacing:0;line-height:1.4;transition:opacity .4s}
+.clock.pending{opacity:.35}
+.small{font-size:12.5px;color:var(--label)}
+.who{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:4px}
+.who svg{width:13px;height:13px;flex:none}
+.key{font-size:12.5px;gap:16px;color:var(--label)}
+.ladder{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px;border-top:0}
+.rung{padding:8px 0 0;border-top:3px solid #EEEEEE;color:#ABABAB;transition:border-color .6s,color .6s}
+.rung.lit{border-top-color:var(--c);color:var(--text)}
+.rung .nm{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600}
+.rung .sq{width:8px;height:8px;background:#E6E6E6;border:0;flex:none}
+.rung.lit .sq{background:var(--c)}
+.rung .meta{font-family:var(--mono);font-size:12.5px;margin-top:4px;line-height:1.45;color:var(--text2);min-height:18px;white-space:pre-line}
+.rung.out .alt+.alt{margin-top:4px}
+.foot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:end}
+.acc p{font-size:16px;color:var(--text2);padding:0}
+.acc b{font-family:var(--mono);font-weight:600;color:var(--text)}
+.acc .pop{font-size:12.5px;color:var(--label);padding-top:4px}
+.evi{margin-top:0;border-top:0;padding-top:0;font-size:11px;line-height:1.38;color:#9A9A9A;max-width:430px}
+.evi .row{gap:10px}
+.evi .ldot{width:7px;height:7px;margin-right:6px}
+.tl{font-size:12px}
+body.view-tmr .center>.hero,body.view-tmr .center>.foot{display:none}
+
+/* ===== APPLE LOOK (Apple Health light): #f5f5f7 page, white 20 px cards, system colours, SF Pro / SF Mono ===== */
+:root{--bg:#F5F5F7;--card:#FFFFFF;--text:#1D1D1F;--text2:#86868B;--label:#86868B;--rule:#E5E5EA;--rule2:#D2D2D7;
+  --accent:#007AFF;--water:#007AFF;--good:#34C759;--goodtxt:#248A3D;--warm:#FFCC00;--heat:#FF9500;--danger:#FF3B30;
+  --ease:cubic-bezier(.42,0,.58,1)}
+body{background:var(--bg);color:var(--text)}
+.top{border-bottom:0;background:transparent;padding:0 28px}
+.top h1{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.btn{border-radius:980px;border:0;background:#E8E8ED;font-weight:500;font-size:15px;height:36px;padding:0 18px}
+.btn:hover{background:#DCDCE1}
+.btn.go{background:var(--accent);color:#fff}.btn.go:hover{background:#0068DA}
+select.btn{background:#E8E8ED}
+.views{border:0;background:#E8E8ED;border-radius:980px;padding:3px;height:36px}
+.vw{border-radius:980px;font-weight:500;font-size:15px;color:var(--text)}
+.vw+.vw{border-left:0}
+.vw.on{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.chk input:checked{background:var(--accent);border-color:var(--accent)}
+.chk input{border-radius:5px;border-color:#C7C7CC}
+.top .preview{border-radius:980px;color:#C93400;border-color:#FFB37A;background:#FFF4EA}
+body.running #btnStop{background:#1D1D1F;color:#fff}
+.main{gap:20px;padding:4px 20px 16px;grid-template-columns:320px minmax(0,1fr)}
+.col{border-right:0}
+.term{background:#1C1C1E;border-radius:20px;padding:18px 0 14px 18px}
+.term .lbl{color:#8E8E93;font-size:12.5px;letter-spacing:.02em;text-transform:none;font-weight:600}
+.tscroll{color:#8E8E93}
+.tl .k,.tl .pre{color:#5A5A5E}
+.tl.rep,.tl.ctl,.tl.ev{color:#AEAEB2}
+.tl.ev .k{color:#5A6E8A}
+.tl.ev.newest{color:#64D2FF}
+.tl.cmd{color:#fff}
+.tl .st-DRINK{color:#D9B840}.tl .st-COOL{color:#E39A4A}.tl .st-CHECK,.tl .st-DANGER,.tl .st-HELP{color:#E07A72}
+.cur{background:#8E8E93}
+.center{padding:0;gap:16px}
+.hero,.chartwrap,.foot>*,.tmr{background:var(--card);border-radius:20px}
+.hero{padding:22px 30px}
+.chartwrap{padding:0}
+.foot{gap:16px;align-items:stretch}
+.acc{padding:16px 24px;display:flex;flex-direction:column;justify-content:center}
+.evi{padding:12px 16px;max-width:480px}
+.evi .ldot.on{background:var(--good)}
+.state .w{font-weight:700;letter-spacing:-.025em;transition:color .3s var(--ease)}
+.state .g{color:var(--text2)}
+.state .g.fam{color:var(--accent)}
+.acc b.good{color:var(--goodtxt)}
+.acc .pop{color:var(--text2)}
+.key{top:16px;left:30px;right:auto}
+.key i{border-top-width:3px;border-radius:2px}
+/* the band: an Apple-Watch-like device, coloured screen, gauge ring */
+.bandbody{width:118px;height:142px;border-radius:36px;background:linear-gradient(160deg,#3A3A3C,#1C1C1E);border:0;padding:7px;box-shadow:0 8px 24px rgba(0,0,0,.18),inset 0 0 0 1px rgba(255,255,255,.08)}
+.screen{border-radius:30px;transition:background-color .3s var(--ease)}
+.screen .stxt{font-family:var(--sans);font-weight:600;font-size:12.5px}
+/* steps: rounded chips */
+.ladder{gap:12px}
+.rung{border-top:0;padding:0;color:var(--text2)}
+.rung .nm{background:#E8E8ED;border-radius:14px;padding:12px 14px;font-size:15px;font-weight:600;color:#8E8E93;transition:background-color .3s var(--ease),color .3s var(--ease)}
+.rung .sq{display:none}
+.rung.lit .nm{background:var(--c);color:#fff}
+#r-water.lit .nm,#r-still.lit .nm{color:#1D1D1F}
+#r-out.lit #o-ok .nm{background:var(--good)}
+.rung .meta{text-align:center;margin-top:6px;color:var(--text2)}
+.rung .meta .y{color:var(--goodtxt)}.rung .meta .n{color:var(--danger)}
+.rung.out .alt+.alt{margin-top:0}
+.tmr{padding:22px 30px}
+.status{border-top:0;color:var(--text2)}
+.t-steps{display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:14px;margin-bottom:18px}
+.ts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;background:#F5F5F7;border-radius:16px;padding:14px 16px}
+.tn{width:26px;height:26px;border-radius:50%;background:#007AFF;color:#fff;font-weight:600;font-size:14px;display:grid;place-content:center}
+.ts .tt{font-size:16px;font-weight:600}
+.ts .sub{font-size:14px;color:#1D1D1F;margin-top:4px;line-height:1.35}
+.ts .small{margin-top:4px;line-height:1.35}
+.tw{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;margin-top:6px}
+#twChart{width:100%;height:78px;display:block}
+.twf{font-size:14px;line-height:1.45}
+.twf b{font-weight:600}
+.ts .warn{color:#C93400}
+.tmr{grid-template-rows:auto auto auto minmax(0,1fr) auto auto}
+.t-head{border-bottom:0}
+.t-verdict{font-size:44px}
+.t-best{color:var(--goodtxt)}
+.acc b{font-family:var(--sans);font-variant-numeric:tabular-nums}
+#eLast,#eCommit,#ePid{display:inline}
+#eLink+*{}
+.evi .ln.cat{white-space:normal}
+</style>
+</head>
+<body>
+<div class="stage">
+  <header class="top">
+    <h1>HEAT GUARDIAN</h1>
+    <span class="preview">PREVIEW: RECORDED BAND OUTPUT</span>
+    <div class="views" role="tablist" aria-label="View"><button class="vw on" id="vNow" role="tab" aria-selected="true">Now</button><button class="vw" id="vTmr" role="tab" aria-selected="false">Tomorrow</button></div>
+    <div class="controls">
+      <span class="conn"><button class="btn" id="btnBle">Connect band</button></span>
+      <span class="conn"><button class="lnk" id="btnUsb">USB instead</button></span>
+      <span class="conn"><button class="lnk" id="btnPreview">Preview without band</button></span>
+      <label class="chk"><input type="checkbox" id="noresp"> She doesn't respond</label>
+      <select class="btn" id="speed" aria-label="Seconds per simulated minute">
+        <option value="1">1 s / sim min</option>
+        <option value="2" selected>2 s / sim min</option>
+        <option value="3">3 s / sim min</option>
+        <option value="4">4 s / sim min</option>
+        <option value="6">6 s / sim min</option>
+      </select>
+      <button class="btn" id="btnStop" disabled>Stop</button>
+      <button class="btn go" id="btnGo" disabled>Simulate heat episode</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="col term" aria-label="The band's output, live">
+      <div class="lbl"><span>Band output</span><span id="termSrc">not connected</span></div>
+      <div class="tbody"><div class="tscroll" id="term"><div class="tl dim">waiting for the band</div><div class="tl"><span class="cur"></span></div></div></div>
+    </section>
+
+    <section class="col center">
+      <div class="hero">
+        <div class="band" aria-label="The band's screen, mirrored">
+          <div class="bandbody"><div class="screen" id="screen">
+            <svg viewBox="0 0 190 226" aria-hidden="true">
+              <path d="M39.6 150 A64 64 0 1 1 150.4 150" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="10" stroke-linecap="round"/>
+              <circle id="gDot" cx="95" cy="67" r="11" fill="#fff" stroke="rgba(0,0,0,.35)" stroke-width="2" opacity="0"/>
+            </svg>
+            <div class="stxt" id="sTxt"></div>
+          </div></div>
+          <div class="cap" id="bandCap"></div>
+        </div>
+        <div class="state">
+          <div class="w" id="stEn">Not connected</div>
+          <div class="g" id="stGr">Connect the band, then simulate</div>
+          <div class="g est" id="roLine">Band's estimate of her body temperature <b id="roBand"></b></div>
+        </div>
+        <div class="meta-r">
+          <div><span class="clock num" id="clock">--:--</span> <span class="small">simulated time</span></div>
+          <div class="small who"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="4.5" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 15 Q3 9 8 9 Q13 9 13.5 15" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><span id="whoName">Simulated person</span></div>
+        </div>
+      </div>
+      <div class="chartwrap">
+        <canvas id="chart" aria-label="Her simulated core temperature, the band's estimate and its 20-minute forecast"></canvas>
+        <div class="key">
+          <span><i style="border-color:#AEAEB2"></i>Her body temperature (true)</span>
+          <span><i style="border-color:#007AFF"></i>Band's estimate</span>
+          <span><i style="border-color:#007AFF;border-top-style:dotted"></i>Prediction, 20 min ahead</span>
+        </div>
+      </div>
+      <div class="ladder" id="ladder" aria-label="The band's steps">
+        <div class="rung" id="r-water" style="--c:var(--warm)"><div class="nm"><span class="sq"></span>Drink water</div><div class="meta"></div></div>
+        <div class="rung" id="r-still" style="--c:#FFB340"><div class="nm"><span class="sq"></span>Still heating</div><div class="meta"></div></div>
+        <div class="rung" id="r-cool" style="--c:var(--heat)"><div class="nm"><span class="sq"></span>Go somewhere cool</div><div class="meta"></div></div>
+        <div class="rung" id="r-seeme" style="--c:var(--danger)"><div class="nm"><span class="sq"></span>Press if you see me</div><div class="meta"></div></div>
+        <div class="rung out" id="r-out" style="--c:var(--accent)">
+          <div class="alt" id="o-fam"><div class="nm"><span class="sq"></span>Family alerted</div><div class="meta"></div></div>
+          <div class="alt" id="o-ok"><div class="nm"><span class="sq"></span>Cooling down</div><div class="meta"></div></div>
+          <div class="alt" id="o-none"><div class="nm"><span class="sq"></span>Outcome</div><div class="meta"></div></div></div>
+      </div>
+      <div class="foot">
+        <div class="acc" aria-label="How close the band is">
+          <p>This run: band estimate <b id="aMae"></b> off on average &middot; 20-min prediction <b id="aFcMae"></b></p>
+          <p class="pop" id="aPop"></p>
+        </div>
+        <div class="evi" id="evi" aria-label="Evidence: live link, firmware build, frozen model, clock">
+          <div class="row">
+            <div style="min-width:0">
+              <div class="ln"><span class="ldot" id="eDot"></span><span id="eLink">Live link: not connected</span></div>
+              <div class="ln"><span id="eLast">Last band message: &mdash;</span></div>
+              <div class="ln"><span id="eFw">Firmware: &mdash;</span></div>
+              <div class="ln"><span id="eCommit"></span> &middot; <span id="eHash"></span></div>
+              <div class="ln"><span id="ePid"></span> &middot; <span id="eClock">--:--:--</span></div>
+              <div class="ln src" id="eSrc" hidden></div>
+            </div>
+            <canvas id="eQr" width="84" height="84" aria-label="QR code: source code repository" hidden></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="tmr empty" id="tmr" aria-label="Tomorrow: the simulated elder on a real weather forecast">
+        <div class="t-steps" aria-label="How tomorrow's plan is made">
+          <div class="ts"><div class="tn">1</div><div><div class="tt">The band collected her measurements</div>
+            <div class="sub">Every minute for <span id="twDays">7</span> days: wrist skin, air, heart rate, movement, sleep.</div>
+            <div class="small">7 simulated days (Virtual Elders simulator), not a real person</div></div></div>
+          <div class="ts"><div class="tn">2</div><div style="min-width:0"><div class="tt">The Body Twin learned her body</div>
+            <div class="tw"><canvas id="twChart" aria-label="Her learned resting heart rate, night by night"></canvas>
+              <div class="twf"><div id="twHr"></div><div id="twOff"></div></div></div>
+            <div class="small" id="twNote"></div></div></div>
+          <div class="ts"><div class="tn">3</div><div><div class="tt">Tomorrow&rsquo;s real weather &rarr; her day tomorrow</div>
+            <div class="sub" id="tsPlan"></div></div></div>
+        </div>
+        <div class="t-head">
+          <div><div class="lbl">Tomorrow</div><div class="t-city" id="tCity"></div><div class="t-date" id="tDate"></div></div>
+          <div class="t-max"><div class="lbl">Forecast high</div><div class="t-num num" id="tMax"></div></div>
+        </div>
+        <div class="t-say"><div class="t-verdict" id="tVerdict"></div><div class="t-best" id="tBest"></div></div>
+        <div class="t-chart"><canvas id="tChart" aria-label="Tomorrow hour by hour: the temperature outside and her body temperature at home, risky hours shaded"></canvas></div>
+        <div class="t-band" id="tBand"></div>
+        <div class="t-foot" id="tFoot"></div>
+        <div class="t-miss" id="tMiss">No forecast for tomorrow yet. Run make_tomorrow.command in this folder, then reload the page.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="status">
+    <span><span class="dot" id="connDot"></span><span id="connTxt">Band not connected</span></span>
+    <span class="num" id="fwTxt">firmware: unknown</span>
+    <span id="lagTxt"></span>
+    <span class="r">Hardware in the loop: real band firmware, simulated elder</span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script id="core">
+/*CORE*/
+</script>
+<script id="qr">
+/*QR*/
+</script>
+<script id="build">
+/*BUILD*/
+/*TWIN_WEEK*/
+</script>
+<script type="text/plain" id="tx-ble-press">
+/*TX_BLE_PRESS*/</script>
+<script type="text/plain" id="tx-ble-noresp">
+/*TX_BLE_NORESP*/</script>
+<script>
+(function () {
+'use strict';
+var $ = function (id) { return document.getElementById(id); };
+var S = HG.fresh();
+var NUS = '6e400001-b5a3-f393-e0a9-e50e24dcca9e', NUS_RX = '6e400002-b5a3-f393-e0a9-e50e24dcca9e', NUS_TX = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+var HGS = '0c760000-038b-46d5-8532-954dd1c5e01d', HG_STATUS = '0c760001-038b-46d5-8532-954dd1c5e01d', HG_EVENTS = '0c760004-038b-46d5-8532-954dd1c5e01d';
+var link = null;               // { kind:'ble'|'usb'|'preview', send(text) }
+var lastMinuteAt = 0, wantNoresp = false, lastRxAt = 0, connCls = '';
+
+/* ---------- colours (meaningful only) ---------- */
+var BAND_COL = { 'green': '#007832', 'yellow-green': '#96C81E', 'yellow': '#FADC28', 'orange': '#EB7800', 'red': '#AA0000', 'grey': '#5a5a5a' };   // hg_fw_ladder.c COL[]
+var BAND_TXT_WHITE = { 'green': 1, 'red': 1, 'grey': 1 };
+function hex2rgb(h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
+function mix(a, b, t) { var A = hex2rgb(a), B = hex2rgb(b); return 'rgb(' + A.map(function (v, i) { return Math.round(v + (B[i] - v) * t); }).join(',') + ')'; }
+function heatColour(t) {   // core temperature -> DESIGN.md state hues, keyed to the band's own lines
+  var L = S.lines, stops = [[L.w - 0.55, '#13A89E'], [L.w - 0.15, '#13A89E'], [L.w, '#C98A00'], [L.c, '#E07B12'], [L.d, '#D32F2F']];
+  if (t == null) return '#13A89E';
+  if (t <= stops[0][0]) return stops[0][1];
+  for (var i = 1; i < stops.length; i++) if (t <= stops[i][0]) return mix(stops[i - 1][1], stops[i][1], (t - stops[i - 1][0]) / (stops[i][0] - stops[i - 1][0]));
+  return stops[stops.length - 1][1];
+}
+var WORD = {   // the headline only; the band's own Greek words are on the mirrored screen and in the steps (not repeated here)
+  OK: ['All good', ''], DRINK: ['Drink water', ''], COOL: ['Cool down', ''],
+  CHECK: ['Are you OK?', ''], DANGER: ['Too hot', ''], HELP: ['Help asked', ''], IMOK: ['She is OK', ''],
+  NOT_WORN: ['Band not worn', ''], BATTERY: ['Charge the band', '']
+};
+var RED = { CHECK: 1, DANGER: 1, HELP: 1 };
+var WORD_COL = { OK: '#248A3D', DRINK: '#B98900', COOL: '#FF9500', CHECK: '#FF3B30', DANGER: '#FF3B30', HELP: '#FF3B30' };   // Apple system colours (yellow darkened for text)
+var FAM_COL = '#007AFF';
+
+/* ---------- terminal: every line the band sends, as it arrives ---------- */
+var term = $('term'), cursorRow = term.lastChild, termN = 0;
+function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function termAdd(text, cls) {
+  if (termN === 0 && term.firstChild && term.firstChild.classList.contains('dim')) term.removeChild(term.firstChild);
+  var d = document.createElement('div'); d.className = 'tl ' + (cls || '');
+  if (cls === 'ev') { var old = term.querySelector('.tl.ev.newest'); if (old) old.classList.remove('newest'); d.classList.add('newest'); }
+  if (cls === undefined || cls === 'ev') {
+    var m = /^(#[RE]|# DEMO|#) ([\s\S]*)$/.exec(text) || [null, '', text];
+    d.innerHTML = (m[1] ? '<span class="pre">' + esc(m[1]) + '</span> ' : '') + esc(m[2]).replace(/(\S+?=)/g, '<span class="k">$1</span>')
+      .replace(/(st=<\/span>)(DRINK|COOL|CHECK|DANGER|HELP)\b/, '$1<span class="st-$2">$2</span>');
+  }
+  else d.textContent = text;
+  term.insertBefore(d, cursorRow); termN++;
+  while (term.childNodes.length > 240) term.removeChild(term.firstChild);
+}
+function classOf(l) {
+  if (/^#E /.test(l)) return 'ev';
+  if (/^#R k=/.test(l)) return undefined;
+  if (/^#R /.test(l)) return 'ctl';
+  if (/^# DEMO /.test(l)) return /^# DEMO \d\d:\d\d t=/.test(l) ? 'dim' : undefined;
+  return 'rep';
+}
+
+/* ---------- feeding ---------- */
+function onLine(line) {
+  if (!link || link.kind !== 'preview') lastRxAt = Date.now();   // evidence: a real message from the band (never the recording)
+  termAdd(line, classOf(line));
+  var r = HG.parseLine(line); if (!r) return;
+  if (r.kind === 'minute' || r.kind === 'rmin') lastMinuteAt = performance.now();
+  HG.applyRec(S, r);
+  if (r.kind === 'replayMsg') toast(r.text.indexOf('replay [') >= 0 && wantNoresp && r.text.indexOf('noresp') < 0 ? 'This band firmware does not know "replay noresp". Flash 0.9.17-demo-b7n, or untick "She doesn\'t respond".' : r.text);
+  if (r.kind === 'fw') { S.fw = r.version; setPlain('fwTxt', 'firmware ' + r.version); }
+  paintDiscrete();
+}
+function onStatusFrame(u8) { lastRxAt = Date.now(); var r = HG.parseStatus(u8); if (!r) return; if (!S.rLines && !S.minuteLines) lastMinuteAt = performance.now(); HG.applyRec(S, r); paintDiscrete(); }
+function onEventFrame(u8) { lastRxAt = Date.now(); var r = HG.parseEventFrame(u8); if (!r) return; HG.applyRec(S, r, true); paintDiscrete(); }
+function LineSplitter(cb) { var dec = new TextDecoder('utf-8'), buf = '';   // UTF-8 safe across chunk boundaries (Greek is 2 bytes a letter)
+  this.push = function (u8) { buf += dec.decode(u8, { stream: true }); var i; while ((i = buf.indexOf('\n')) >= 0) { var l = buf.slice(0, i).replace(/\r$/, ''); buf = buf.slice(i + 1); if (l.charAt(0) === '#') cb(l); } if (buf.length > 4096) buf = ''; };
+}
+
+/* ---------- transports ---------- */
+var bleDevice = null, bleWanted = false, bleRetry = 0, bleSplit = null;
+function onNusTx(e) { bleSplit.push(new Uint8Array(e.target.value.buffer)); }
+function onStTx(e) { onStatusFrame(new Uint8Array(e.target.value.buffer)); }
+function onEvTx(e) { onEventFrame(new Uint8Array(e.target.value.buffer)); }
+function listen(ch, fn) { ch.removeEventListener('characteristicvaluechanged', fn); ch.addEventListener('characteristicvaluechanged', fn); }   // never twice after a reconnect
+async function connectBle() {
+  if (!navigator.bluetooth) { toast('No Web Bluetooth in this browser. Use Chrome on the Mac at http://localhost:8765'); return; }
+  try {
+    bleDevice = await navigator.bluetooth.requestDevice({ filters: [{ name: 'HeatGuardian' }, { services: [HGS] }], optionalServices: [NUS, HGS, 'device_information'] });
+  } catch (e) { if (e && e.name !== 'NotFoundError') toast('Bluetooth: ' + e.message); return; }
+  bleWanted = true; bleDevice.removeEventListener('gattserverdisconnected', onBleDrop); bleDevice.addEventListener('gattserverdisconnected', onBleDrop);
+  await bleOpen();
+}
+async function bleOpen() {
+  setConn('wait', 'Connecting to ' + (bleDevice.name || 'the band') + ' (Bluetooth)');
+  try {
+    var server = await bleDevice.gatt.connect();
+    var nus = await server.getPrimaryService(NUS);
+    var tx = await nus.getCharacteristic(NUS_TX), rx = await nus.getCharacteristic(NUS_RX);
+    bleSplit = new LineSplitter(onLine);   // fresh: a half line from before a drop is dropped, never glued
+    listen(tx, onNusTx); await tx.startNotifications();
+    try {   // binary STATUS / EVENTS live on their own characteristics: a fallback for older firmware
+      var hg = await server.getPrimaryService(HGS);
+      var st = await hg.getCharacteristic(HG_STATUS), ev = await hg.getCharacteristic(HG_EVENTS);
+      listen(st, onStTx); listen(ev, onEvTx); await st.startNotifications(); await ev.startNotifications();
+    } catch (e) { console.warn('HG service', e); }
+    try { var dis = await server.getPrimaryService('device_information'); var fr = await dis.getCharacteristic('firmware_revision_string');
+      var v = new TextDecoder().decode(await fr.readValue()); S.fw = v.split(' ')[0]; setPlain('fwTxt', 'firmware ' + S.fw); } catch (e) { }
+    var q = Promise.resolve();
+    link = { kind: 'ble', send: function (text) {   // NUS RX: 20 bytes per write
+      var b = new TextEncoder().encode(text + '\n');
+      q = q.then(async function () { for (var i = 0; i < b.length; i += 20) await rx.writeValue(b.slice(i, i + 20)); }).catch(function (e) { toast('Send failed: ' + e.message); });
+      return q; } };
+    bleRetry = 0; setConn('on', 'Band connected (Bluetooth)'); setPlain('termSrc', 'bluetooth nus'); setReady(true);
+  } catch (e) { onBleDrop(); }
+}
+function onBleDrop() {
+  if (!bleWanted) return;
+  setReady(false); link = null;
+  var wait = Math.min(8000, 800 * Math.pow(2, bleRetry++));
+  setConn('wait', 'Band out of reach, reconnecting'); setPlain('termSrc', 'reconnecting');
+  setTimeout(function () { if (bleWanted && bleDevice && !bleDevice.gatt.connected) bleOpen(); }, wait);
+}
+async function connectUsb() {
+  if (!navigator.serial) { toast('No Web Serial in this browser. Use Chrome on the Mac.'); return; }
+  try {
+    var port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 115200 });
+    var w = port.writable.getWriter(), enc = new TextEncoder();
+    link = { kind: 'usb', send: function (t) { return w.write(enc.encode(t + '\n')); } };
+    setConn('on', 'Band connected (USB)'); setPlain('termSrc', 'usb 115200'); setReady(true);
+    var sp = new LineSplitter(onLine);
+    (async function () { var rd = port.readable.getReader(); try { for (;;) { var r = await rd.read(); if (r.done) break; sp.push(r.value); } } catch (e) { }
+      setConn('', 'USB disconnected'); setReady(false); link = null; document.body.classList.remove('linked'); })();
+    setTimeout(function () { link && link.send('stat'); }, 300);
+  } catch (e) { if (e && e.name !== 'NotFoundError') toast('USB: ' + e.message + ' (close band_cmd / screen: only one program can hold the port)'); }
+}
+
+/* ---------- preview: the recorded Bluetooth output of the b7n replay, with the band's timing ---------- */
+var timers = [];
+function startPreview() {
+  document.body.classList.add('preview');
+  link = { kind: 'preview', send: function (cmd) {
+    if (cmd === 'replay stop') { stopTimers(); onLine('#R stop why=command'); return; }
+    var m = /^replay(?: (noresp))?(?: (\d+))?$/.exec(cmd); if (!m) return;
+    playTranscript(m[1] ? 'tx-ble-noresp' : 'tx-ble-press', +(m[2] || 2));
+  } };
+  setConn('on', 'Preview, no band'); setPlain('termSrc', 'recording'); setPlain('fwTxt', 'recorded: ' + BUILD.FW + ' replay, host build'); setReady(true); paintEvidence();
+}
+function stopTimers() { timers.forEach(clearTimeout); timers = []; }
+function txLines(id) { return $(id).textContent.split('\n').filter(function (l) { return l.charAt(0) === '#'; }); }
+var MIN_RE = /^#R k=(\d+) /;
+function speedLine(l, sp) {   // the recording ran at 2 s; the start lines print the chosen speed, with the band's own formulas
+  return l.replace(/\((\d+) s per simulated minute, (\d+) s in all\)/, '(' + sp + ' s per simulated minute, ' + (sp * 110) + ' s in all)')
+          .replace(/^(#R start .*?) s=\d+ /, '$1 s=' + sp + ' ')
+          .replace(/first reminder ~\d+ s, repeat ~\d+ s, no-response note ~\d+ s/, 'first reminder ~' + 25 * sp + ' s, repeat ~' + 35 * sp + ' s, no-response note ~' + 45 * sp + ' s');
+}
+function playTranscript(id, sp) {
+  stopTimers();
+  var lines = txLines(id), i = 0, base = 1200;
+  function at(ms, ls) { timers.push(setTimeout(function () { ls.forEach(onLine); }, ms)); }
+  for (; i < lines.length && !MIN_RE.test(lines[i]); i++) at(200 + i * 150, [speedLine(lines[i], sp)]);
+  var cur = [], k = -1;
+  for (; i < lines.length; i++) { var m = MIN_RE.exec(lines[i]); if (m) { if (cur.length) at(base + k * sp * 1000, cur); k = +m[1]; cur = [lines[i]]; } else cur.push(lines[i]); }
+  if (cur.length) at(base + k * sp * 1000, cur);
+}
+function seekPreview(id, k) {   // ?preview=1&seek=49&noresp=1 : the band's output up to and including minute k (its #E too)
+  stopTimers(); var fw0 = S.fw; S = HG.fresh(); S.fw = fw0;
+  var lines = txLines(id);
+  for (var i = 0; i < lines.length; i++) { var m = MIN_RE.exec(lines[i]); if (m && +m[1] > k) break; onLine(i < 4 ? speedLine(lines[i], 2) : lines[i]); }
+  lastMinuteAt = performance.now() - 60000; disp = S.k; prevK = S.k; glideFrom = S.k; paintDiscrete();
+}
+window.__seek = function (k, noresp) { if (!link) startPreview(); seekPreview(noresp ? 'tx-ble-noresp' : 'tx-ble-press', k); };
+
+/* ---------- controls ---------- */
+$('btnBle').onclick = connectBle;
+$('btnUsb').onclick = connectUsb;
+$('btnPreview').onclick = startPreview;
+$('btnGo').onclick = function () {
+  if (!link) return;
+  wantNoresp = $('noresp').checked;
+  var sp = +$('speed').value, cmd = (wantNoresp ? 'replay noresp ' : 'replay ') + sp;
+  var fw0 = S.fw; S = HG.fresh(); S.fw = fw0; disp = -1; prevK = -1;
+  termAdd('> ' + cmd, 'cmd');
+  link.send(cmd);
+  S.phase = 'warm'; S.S = sp; paintDiscrete();
+};
+$('btnStop').onclick = function () { if (link) { termAdd('> replay stop', 'cmd'); link.send('replay stop'); } };
+function setReady(on) { $('btnGo').disabled = !on; $('btnStop').disabled = !on; if (on) document.body.classList.add('linked'); }
+function setConn(cls, txt) { connCls = cls; $('connDot').className = 'dot' + (cls ? ' ' + cls : ''); $('connTxt').textContent = txt; }
+var toastT = 0; function toast(t) { var el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove('on'); }, 6000); }
+function setPlain(id, v) { var el = $(id); if (el.textContent !== v) el.textContent = v; }
+function setHtml(el, h) { if (el.innerHTML !== h) el.innerHTML = h; }
+
+/* ---------- discrete paint (on every line) ---------- */
+function paintDiscrete() {
+  var st = S.state || null, w = WORD[st] || null;
+  if (S.phase !== 'run' && S.phase !== 'end') $('stGr').className = 'g';
+  if (S.phase === 'idle') { setPlain('stEn', link ? 'Ready' : 'Not connected'); setPlain('stGr', link ? 'Press "Simulate heat episode"' : 'Connect the band over Bluetooth'); $('stEn').style.color = ''; }
+  else if (S.phase === 'warm' && S.k < 0) { setPlain('stEn', 'Starting'); setPlain('stGr', 'The band runs the simulated morning first'); $('stEn').style.color = ''; }
+  else if (S.phase === 'stopped') { setPlain('stEn', 'Stopped'); setPlain('stGr', 'The band is back on its live sensors'); $('stEn').style.color = ''; }
+  else if (w) {
+    var over = S.phase === 'end' && st === 'OK', R0 = S.rungs, word = w[0], col = WORD_COL[st] || '';
+    // what the band is asking her right now (its reminder), so the headline matches the mirrored band screen
+    if (!over && S.ladderState !== 'escalated' && (S.rm === 'cool' || (!S.rLines && S.active === 'cool' && (S.ladderState === 'remind' || S.ladderState === 'check20')))) { word = 'Go somewhere cool'; col = WORD_COL.COOL; }
+    // an alarming red word only when the band reached that step (step 4 lit, or a HELP the band reported)
+    if (RED[st] && !(R0.seeme.lit || (st === 'HELP' && S.alert))) col = WORD_COL.OK;
+    if (R0.family.lit && !over) { word = 'Family alerted'; col = FAM_COL; }
+    setPlain('stEn', over ? 'Episode over' : word);
+    var fam = R0.family.lit && !over ? R0.family.lit.clock + (R0.family.why === 'no response' ? ' · she did not answer the band' : ' · the band escalated') :
+              R0.still.lit && !over && S.phase === 'run' ? 'Quiet note to family at ' + R0.still.lit.clock : '';
+    setPlain('stGr', over ? (S.allClear ? 'All clear at ' + S.allClear.clock : '') : fam);
+    $('stGr').className = 'g' + (fam ? ' fam' : '');
+    $('stEn').style.color = over ? '#34C759' : col;
+  }
+  document.body.classList.toggle('running', S.phase === 'warm' || S.phase === 'run');
+  // band mirror
+  var step = S.gauge.step || 'grey';
+  $('screen').style.backgroundColor = BAND_COL[step] || BAND_COL.grey;
+  var txt = S.ladderState === 'escalated' ? 'Πατήστε αν με βλέπετε' : S.rm === 'cool' ? 'Πηγαίνετε κάπου δροσερά' : S.rm === 'water' ? 'Πιείτε νερό' :
+    (!S.rLines && (S.ladderState === 'remind' || S.ladderState === 'check20')) ? (S.active === 'cool' ? 'Πηγαίνετε κάπου δροσερά' : S.active === 'water' ? 'Πιείτε νερό' : '') : '';
+  setPlain('sTxt', txt); $('sTxt').style.color = BAND_TXT_WHITE[step] ? '#fff' : '#111';
+  setPlain('bandCap', S.noresp && S.btnIgnored ? S.btnIgnored + ' press' + (S.btnIgnored > 1 ? 'es' : '') + ' ignored' : 'Her band, live');
+  // ladder
+  var R = S.rungs;
+  function pressLine(g) { return g.pressed ? ' · <span class="y">pressed ' + g.pressed.clock + '</span>' : g.noResponse ? ' · <span class="n">no answer</span>' : ''; }
+  function shown(g) { return g.lit ? g.lit.clock : ''; }
+  var lit = { water: !!R.water.lit, still: !!R.still.lit, cool: !!R.cool.lit, seeme: !!R.seeme.lit, out: !!(R.family.lit || R.worked.lit) };
+  ['water', 'still', 'cool', 'seeme'].forEach(function (k) { $('r-' + k).classList.toggle('lit', lit[k]); });
+  $('r-out').classList.toggle('lit', lit.out);
+  setHtml($('r-water').querySelector('.meta'), R.water.lit ? shown(R.water) + pressLine(R.water) : '');
+  setHtml($('r-still').querySelector('.meta'), R.still.lit ? R.still.lit.clock + ' · note to family' : '');
+  setHtml($('r-cool').querySelector('.meta'), R.cool.lit ? shown(R.cool) + pressLine(R.cool) : '');
+  setHtml($('r-seeme').querySelector('.meta'), R.seeme.lit ? R.seeme.lit.clock + (R.seeme.pressed ? ' · <span class="y">pressed ' + R.seeme.pressed.clock + '</span>' : '') : '');
+  var anyOut = lit.out;
+  $('o-fam').style.display = R.family.lit ? '' : 'none'; $('o-ok').style.display = R.worked.lit ? '' : 'none'; $('o-none').style.display = anyOut ? 'none' : '';
+  setHtml($('o-fam').querySelector('.meta'), R.family.lit ? R.family.lit.clock + (R.family.why === 'no response' ? ' · no answer' : '') : '');
+  setHtml($('o-ok').querySelector('.meta'), R.worked.lit ? R.worked.lit.clock : '');
+  // the elder
+  paintAccuracy(); paintEvidence();
+}
+
+/* ---------- how close the band is: only from minutes the band printed (HG.accuracy in the core) ---------- */
+var DASH = '\u2014';
+function pct(x) { return x != null ? Math.round(x * 100) + ' %' : DASH; }
+var GOOD_EST = 0.3, GOOD_FC = 0.5;   // green: estimate off by <= 0.3 C on average, 20-min prediction <= 0.5 C
+function accB(id, txt, good, wait) { var el = $(id); setPlain(id, txt); el.className = wait ? 'wait' : good ? 'good' : ''; }
+function paintAccuracy() {
+  var A = HG.accuracy(S), started = S.k >= 0, wait = started ? 'measuring' : 'when she starts';
+  accB('aMae', A.mae != null ? A.mae.toFixed(2) + ' \u00b0C' : wait, A.mae != null && A.mae <= GOOD_EST + 1e-9, A.mae == null);
+  var fcFrom = 'checked from ' + HG.clockOf(S, 20);   // a 20-minute prediction can first be checked 20 simulated minutes in
+  accB('aFcMae', A.fcMae != null ? A.fcMae.toFixed(2) + ' \u00b0C' : fcFrom, A.fcMae != null && A.fcMae <= GOOD_FC + 1e-9, A.fcMae == null);
+}
+setPlain('aPop', BUILD.POP_TEXT);
+setPlain('whoName', BUILD.WHO);
+
+/* ---------- evidence corner: only real values (the link, the band's own firmware string, the build constants, the wall clock) ---------- */
+var WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function two(n) { return (n < 10 ? '0' : '') + n; }
+function paintEvidence() {
+  var kind = link ? link.kind : null, preview = kind === 'preview';
+  var dot = $('eDot');
+  if (preview) { dot.className = 'ldot'; setPlain('eLink', 'Preview \u2014 not connected'); }
+  else if (kind && connCls === 'on') { dot.className = 'ldot on'; setPlain('eLink', 'Live link: band connected over ' + (kind === 'usb' ? 'USB' : 'Bluetooth')); }
+  else if (connCls === 'wait') { dot.className = 'ldot'; setPlain('eLink', 'Live link: reconnecting'); }
+  else { dot.className = 'ldot'; setPlain('eLink', 'Live link: not connected'); }
+  setPlain('eLast', preview ? 'Last band message: none (plays a recording)' : lastRxAt ? 'Last band message: ' + Math.max(0, Math.round((Date.now() - lastRxAt) / 1000)) + ' s ago' : 'Last band message: none yet');
+  var fw = preview ? BUILD.FW : S.fw;
+  setPlain('eFw', 'Firmware: ' + (fw || 'not reported yet'));
+  setPlain('eCommit', fw === BUILD.FW ? 'commit ' + BUILD.COMMIT : fw ? 'commit: not this page\'s build' : 'commit: when the band reports');
+  setPlain('eHash', 'frozen model ' + BUILD.FROZEN12);
+  var pid = S.el && /^velders-pid(\d+)$/.exec(S.el); setPlain('ePid', 'Virtual Elder pid ' + (pid ? pid[1] : BUILD.PID));
+  var d = new Date();
+  setPlain('eClock', WD[d.getDay()] + ' ' + d.getDate() + ' ' + MO[d.getMonth()] + ' ' + d.getFullYear() + '  ' + two(d.getHours()) + ':' + two(d.getMinutes()) + ':' + two(d.getSeconds()));
+}
+(function drawQr() {   // offline QR (tools/qr.js), only when build.py has a REPO_URL
+  if (!BUILD.REPO_URL) return;
+  var m = HGQR.matrix(BUILD.REPO_URL), n = m.length, q = 2, cvq = $('eQr'), c = cvq.getContext('2d'), sc = Math.max(2, Math.floor(84 / (n + 2 * q)));
+  cvq.width = cvq.height = (n + 2 * q) * sc; cvq.style.width = cvq.style.height = cvq.width + 'px'; c.fillStyle = '#fff'; c.fillRect(0, 0, cvq.width, cvq.height); c.fillStyle = '#000';
+  for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (m[r][k]) c.fillRect((k + q) * sc, (r + q) * sc, sc, sc);
+  cvq.hidden = false; $('eSrc').hidden = false; $('eSrc').textContent = 'Source code: ' + BUILD.REPO_URL;
+})();
+setInterval(paintEvidence, 1000);
+
+/* ---------- continuous paint: chart + figure. Between two minutes the band printed the line is drawn straight (visual only) ---------- */
+var cv = $('chart'), ctx = cv.getContext('2d'), disp = -1, prevK = -1, glideFrom = -1, FONT = '';
+function sizeCanvas() { var r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); ctx.setTransform(d, 0, 0, d, 0, 0); }
+window.addEventListener('resize', function () { sizeCanvas(); paintDiscrete(); });
+function valAt(arr, key, x) {   // between the two nearest minutes the band printed (minute lines can be thinned on a slow link)
+  var i = Math.floor(x), lo = -1, hi = -1;
+  for (var a = Math.min(i, arr.length - 1); a >= 0; a--) if (arr[a] && arr[a][key] != null) { lo = a; break; }
+  if (lo < 0) return null; if (lo === x) return arr[lo][key];
+  for (var b = lo + 1; b < arr.length; b++) if (arr[b] && arr[b][key] != null) { hi = b; break; }
+  if (hi < 0 || x <= lo) return arr[lo][key]; if (x >= hi) return arr[hi][key];
+  return arr[lo][key] + (arr[hi][key] - arr[lo][key]) * (x - lo) / (hi - lo);
+}
+function frame(now) {
+  var target = S.k;
+  if (target < 0) { disp = -1; prevK = -1; }
+  else if (disp < 0 || target < disp - 0.01) { disp = target; prevK = target; glideFrom = target; }
+  else {   // the head moves from the previous received minute to the new one within one step, never past it
+    if (target !== prevK) { glideFrom = Math.min(disp, target); prevK = target; }
+    var f = Math.min(1, (now - lastMinuteAt) / ((S.S || 2) * 850));
+    disp = Math.max(disp, Math.min(target, glideFrom + (target - glideFrom) * (1 - (1 - f) * (1 - f))));
+  }
+  drawChart(); drawFigure();
+  requestAnimationFrame(frame);
+}
+function fmt(v) { return v == null ? '<span class="wait">' + (S.phase === 'warm' ? 'starting' : S.phase === 'idle' ? '' : 'waiting') + '</span>' : v.toFixed(2) + '<small>°C</small>'; }
+function drawFigure() {
+  var M = S.minutes, x = disp, t = x >= 0 ? valAt(M, 'trueCore', x) : null, b = x >= 0 ? valAt(M, 'bandCore', x) : null;
+  setHtml($('roBand'), fmt(b)); $('roLine').style.visibility = S.phase === 'idle' ? 'hidden' : '';
+  var f = S.f20 != null && S.f20k != null && S.k - S.f20k <= 1 ? S.f20 : null;
+  setPlain('clock', S.k >= 0 ? HG.clockOf(S, Math.round(Math.max(0, x))) : link ? HG.clockOf(S, 0) : '--:--');   // before the first minute: the start time, dimmed
+  $('clock').classList.toggle('pending', S.k < 0);
+  var dot = S.gauge.dot; if (!S.rLines && f != null) dot = HG.dotFor(S.lines, f);   // b7n prints dot=; older firmware: its own formula on its f20
+  var g = $('gDot');
+  if (dot == null || !S.gauge.step) g.setAttribute('opacity', '0');
+  else { var ang = (150 + (dot + 10) / 20 * 240) * Math.PI / 180; g.setAttribute('cx', (95 + 64 * Math.cos(ang)).toFixed(1)); g.setAttribute('cy', (118 + 64 * Math.sin(ang)).toFixed(1)); g.setAttribute('opacity', '1'); }
+  var gap = performance.now() - lastMinuteAt, lag = link && link.kind !== 'preview' && S.phase === 'run' && lastMinuteAt && gap > (S.S || 2) * 1000 * 6 + 2000;
+  setPlain('lagTxt', lag ? 'no minute line from the band for ' + Math.round(gap / 1000) + ' s' : '');
+}
+function drawChart() {   // Apple Health style: smooth lines, soft fill under the estimate, minimal axes, the current point highlighted
+  var r = cv.getBoundingClientRect(), W = r.width, H = r.height; if (!W) return;
+  var dpr = window.devicePixelRatio || 1; if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) sizeCanvas();   // layout changed
+  if (!FONT) FONT = getComputedStyle(document.body).getPropertyValue('--mono');
+  var SANS = getComputedStyle(document.body).getPropertyValue('--sans');
+  ctx.clearRect(0, 0, W, H);
+  var L = S.lines, padL = 64, padR = 130, padT = 52, padB = 40;
+  var y0 = Math.min(36.9, L.w - 0.95), y1 = Math.max(38.7, L.d + 0.2), n = S.n || 110, xmax = n - 1 + 20;
+  var X = function (k) { return padL + (W - padL - padR) * k / xmax; }, Y = function (v) { return padT + (H - padT - padB) * (1 - (v - y0) / (y1 - y0)); };
+  ctx.font = '12.5px ' + SANS; ctx.lineWidth = 1;
+  ctx.fillStyle = '#86868B'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for (var v = Math.ceil(y0 * 2) / 2; v <= y1 + 1e-9; v += 0.5) { var yy = Math.round(Y(v)) + .5; ctx.strokeStyle = '#F0F0F2'; ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(W - padR + 4, yy); ctx.stroke(); ctx.fillText(v.toFixed(1) + '°', padL - 12, yy); }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (var k = 0; k <= n - 1 + 10; k += 15) ctx.fillText(HG.clockOf(S, k), X(k), H - padB + 12);
+  [[L.w, '#B98900', 'Drink water'], [L.c, '#FF9500', 'Cool down'], [L.d, '#FF3B30', 'Danger']].forEach(function (t) {
+    var yy = Math.round(Y(t[0])) + .5; ctx.strokeStyle = t[1]; ctx.globalAlpha = .55; ctx.setLineDash([2, 5]); ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(W - padR + 4, yy); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+    ctx.fillStyle = t[1]; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(t[2] + ' ' + t[0].toFixed(2), W - padR + 14, yy); });
+  var M = S.minutes, x = disp;
+  if (x < 0) return;
+  function pts(key) { var a = []; for (var i = 0; i <= Math.floor(x); i++) { var p = M[i]; if (p && p[key] != null) a.push([X(i), Y(p[key])]); }
+    var hv = valAt(M, key, x); if (a.length && hv != null && X(x) > a[a.length - 1][0]) a.push([X(x), Y(hv)]); return { a: a, v: hv }; }
+  function smooth(a) { ctx.moveTo(a[0][0], a[0][1]); for (var i = 1; i < a.length - 1; i++) { var mx = (a[i][0] + a[i + 1][0]) / 2, my = (a[i][1] + a[i + 1][1]) / 2; ctx.quadraticCurveTo(a[i][0], a[i][1], mx, my); } if (a.length > 1) ctx.lineTo(a[a.length - 1][0], a[a.length - 1][1]); }
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  var T = pts('trueCore'), B = pts('bandCore');
+  if (B.a.length > 1) {   // soft area fill under the band's estimate
+    var g = ctx.createLinearGradient(0, padT, 0, H - padB); g.addColorStop(0, 'rgba(0,122,255,.20)'); g.addColorStop(1, 'rgba(0,122,255,0)');
+    ctx.beginPath(); smooth(B.a); ctx.lineTo(B.a[B.a.length - 1][0], H - padB); ctx.lineTo(B.a[0][0], H - padB); ctx.closePath(); ctx.fillStyle = g; ctx.fill();
+  }
+  if (T.a.length > 1) { ctx.beginPath(); smooth(T.a); ctx.strokeStyle = '#AEAEB2'; ctx.lineWidth = 3; ctx.stroke(); }
+  if (B.a.length > 1) { ctx.beginPath(); smooth(B.a); ctx.strokeStyle = '#007AFF'; ctx.lineWidth = 3.5; ctx.stroke(); }
+  ctx.lineWidth = 1;
+  var hb = B.v, ht = T.v, base = hb != null ? hb : ht;
+  var f = S.f20 != null && S.f20k != null && S.k - S.f20k <= 1 ? S.f20 : null;
+  if (f != null && base != null) {
+    ctx.setLineDash([1, 7]); ctx.strokeStyle = '#007AFF'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(X(x), Y(base)); ctx.lineTo(X(x + 20), Y(f)); ctx.stroke(); ctx.setLineDash([]); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(X(x + 20), Y(f), 4.5, 0, 2 * Math.PI); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = '#007AFF'; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = '#007AFF'; ctx.font = '600 12.5px ' + SANS; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; ctx.fillText(f.toFixed(2) + '° in 20 min', X(x + 20) + 9, Y(f) - 5);
+  }
+  if (hb != null) {   // the current point, highlighted with its value
+    var cx = X(x), cy = Y(hb);
+    ctx.strokeStyle = 'rgba(0,0,0,.08)'; ctx.beginPath(); ctx.moveTo(Math.round(cx) + .5, padT); ctx.lineTo(Math.round(cx) + .5, H - padB); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 2 * Math.PI); ctx.fillStyle = '#007AFF'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#fff'; ctx.stroke(); ctx.lineWidth = 1;
+    var lbl = hb.toFixed(2) + '°'; ctx.font = '600 12.5px ' + SANS; var tw = ctx.measureText(lbl).width + 16, lx = cx - tw / 2, ly = Math.max(6, cy - 40);
+    ctx.fillStyle = '#007AFF'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(lx, ly, tw, 22, 11); else ctx.rect(lx, ly, tw, 22); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(lbl, cx, ly + 11);
+  }
+  S.presses.forEach(function (p) { ctx.beginPath(); ctx.arc(X(p.k), H - padB - 6, 4, 0, 2 * Math.PI); ctx.fillStyle = '#34C759'; ctx.fill(); });
+}
+
+/* ---------- Tomorrow: the simulated elder on a real forecast (tomorrow_plan.json from make_tomorrow.command) ---------- */
+var TM = null, TMplan = null, tc = $('tChart'), tx = tc.getContext('2d');
+var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+var HOME = { A: 'an insulated house', B: 'a middle-floor flat', C: 'a top-floor flat under the roof', D: 'a ground-floor flat with thick walls' };
+var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+function longDate(iso) { var p = iso.split('-').map(Number), d = new Date(Date.UTC(p[0], p[1] - 1, p[2])); return DAYS[d.getUTCDay()] + ' ' + p[2] + ' ' + MONTHS[p[1] - 1] + ' ' + p[0]; }
+function utcStamp(iso) { var d = new Date(iso); if (isNaN(d)) return null; var h = d.getUTCHours(), m = d.getUTCMinutes();
+  return d.getUTCDate() + ' ' + MONTHS[d.getUTCMonth()].slice(0, 3) + ' ' + d.getUTCFullYear() + ', ' + (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m + ' UTC'; }
+function loadTomorrow() {
+  fetch('tomorrow_plan.json', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function (plan) { TMplan = plan; var T = HG.tomorrow(plan); if (!T.ok) { setPlain('tMiss', T.why + '. Run make_tomorrow.command again, then reload the page.'); return; } TM = T; paintTomorrow(); })
+    .catch(function () { TM = null; });
+}
+function paintTomorrow() {
+  var T = TM; $('tmr').classList.toggle('empty', !T); if (!T) return;
+  setPlain('tCity', (T.city || 'Forecast point') + (T.country ? ', ' + T.country : ''));
+  setPlain('tDate', longDate(T.date));
+  setHtml($('tMax'), T.tmax.toFixed(1) + '<small>°C</small>');
+  setPlain('tVerdict', T.verdict); setPlain('tBest', T.bestText);
+  $('tBest').style.color = T.best ? '' : 'var(--text2)';
+  setHtml($('tBand'), '<div class="lbl">Her band will show</div>' + T.band.map(function (b) { return '<div class="bl"><div class="gr">«' + esc(b.gr) + '»</div><div class="en">' + esc(b.en) + '</div></div>'; }).join(''));
+  var f = utcStamp(T.fetchedAt);
+  setPlain('tFoot', 'Simulated elder, real forecast: a computer simulation, not a medical prediction. ' + T.attribution +
+    (f ? ', forecast fetched ' + f : '') + (HOME[T.homeClass] ? '. Her simulated home: ' + HOME[T.homeClass] + (T.fan ? ', with a fan' : '') + ', no air conditioning.' : '.'));
+  paintTwinWeek();
+  drawTomorrow();
+}
+/* steps 1-2: what the Body Twin learned over the simulated week (tools/make_twin_week.py -> twin_week.json, inlined) */
+function paintTwinWeek() {
+  var W7 = window.TWIN_WEEK; if (!W7) return;
+  var Lr = W7.learned, Tr = W7.truth;
+  setPlain('twDays', String(W7.days));
+  setHtml($('twHr'), 'Resting heart rate <b>' + Math.round(Lr.rest_hr) + ' bpm</b><br><span class="small">true value ' + Math.round(Tr.rest_hr_same_definition) + ' bpm</span>');
+  setHtml($('twOff'), 'Temperature offset <b>' + (Lr.core_offset >= 0 ? '+' : '') + Lr.core_offset.toFixed(1) + ' °C</b><br><span class="small">no thermometer reading yet</span>');
+  setPlain('twNote', 'Started from 70 bpm, learned night by night. Resting HR = her lowest sleeping heart rate + 5 bpm (the twin\'s rule); her awake, seated rest in the simulation is ' + Math.round(Tr.rest_hr_drawn_seated) + ' bpm.');
+  var name = TMplan && TMplan.twin_used && TMplan.twin_used.name || '', ok = name.indexOf('pid ' + W7.pid + ', Body Twin learned') === 0;
+  setHtml($('tsPlan'), ok ? 'The Tomorrow Engine ran her learned twin through ' + esc(TM ? TM.city || 'the city' : 'the city') + '&rsquo;s real forecast.'
+    : '<span class="warn">This plan was made before her twin was learned (' + esc(name.replace(/ \(.*$/, '') || 'unknown person') + '). Run make_tomorrow.command, then reload.</span>');
+  drawTwinWeek();
+}
+function drawTwinWeek() {
+  var W7 = window.TWIN_WEEK, c = $('twChart'); if (!W7 || !c) return;
+  var r = c.getBoundingClientRect(), Wd = r.width, Hd = r.height; if (!Wd || !Hd) return;
+  var d = window.devicePixelRatio || 1; c.width = Math.round(Wd * d); c.height = Math.round(Hd * d);
+  var g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, Wd, Hd);
+  var SANS = getComputedStyle(document.body).getPropertyValue('--sans');
+  var vals = [W7.defaults.rest_hr].concat(W7.nights.map(function (n) { return n.rest_hr; })), tru = W7.truth.rest_hr_same_definition;
+  var lo = Math.floor(Math.min.apply(null, vals.concat([tru])) - 2), hi = Math.ceil(Math.max.apply(null, vals.concat([tru])) + 2);
+  var pl = 6, pr = 56, pt = 8, pb = 18, X = function (i) { return pl + (Wd - pl - pr) * i / (vals.length - 1); }, Y = function (v) { return pt + (Hd - pt - pb) * (1 - (v - lo) / (hi - lo)); };
+  g.font = '11.5px ' + SANS; g.textBaseline = 'middle';
+  g.strokeStyle = '#34C759'; g.setLineDash([2, 4]); g.lineCap = 'round'; g.beginPath(); g.moveTo(pl, Y(tru)); g.lineTo(Wd - pr, Y(tru)); g.stroke(); g.setLineDash([]);
+  g.fillStyle = '#248A3D'; g.textAlign = 'left'; g.fillText('true ' + Math.round(tru), Wd - pr + 6, Y(tru));
+  g.strokeStyle = '#007AFF'; g.lineWidth = 2.5; g.lineJoin = 'round'; g.beginPath(); vals.forEach(function (v, i) { i ? g.lineTo(X(i), Y(v)) : g.moveTo(X(i), Y(v)); }); g.stroke(); g.lineWidth = 1;
+  vals.forEach(function (v, i) { g.beginPath(); g.arc(X(i), Y(v), i === vals.length - 1 ? 4 : 2.5, 0, 2 * Math.PI); g.fillStyle = '#007AFF'; g.fill(); });
+  g.fillStyle = '#86868B'; g.textAlign = 'center'; g.textBaseline = 'top';
+  g.textAlign = 'left'; g.fillText('start', X(0) - 4, Hd - pb + 4); g.textAlign = 'center'; g.fillText('night ' + (vals.length - 1), X(vals.length - 1), Hd - pb + 4);
+}
+window.addEventListener('resize', drawTwinWeek);
+function drawTomorrow() {
+  var T = TM; if (!T) return;
+  var r = tc.getBoundingClientRect(), W = r.width, H = r.height; if (!W || !H) return;
+  var d = window.devicePixelRatio || 1; if (tc.width !== Math.round(W * d) || tc.height !== Math.round(H * d)) { tc.width = Math.round(W * d); tc.height = Math.round(H * d); }
+  tx.setTransform(d, 0, 0, d, 0, 0); tx.clearRect(0, 0, W, H);
+  if (!FONT) FONT = getComputedStyle(document.body).getPropertyValue('--mono');
+  var SANS = getComputedStyle(document.body).getPropertyValue('--sans');
+  var padL = 56, padR = 20, top = 34, bottom = H - 30, gap = 26, split = top + (bottom - top - gap) * 0.42;
+  var P1 = [top, split], P2 = [split + gap, bottom];   // outside (top), her body (bottom)
+  var X = function (h) { return padL + (W - padL - padR) * h / 24; };
+  function rng(a, step, minSpan) { var lo = Math.min.apply(null, a), hi = Math.max.apply(null, a); lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step; if (hi - lo < minSpan) hi = lo + minSpan; return [lo, hi]; }
+  var R1 = rng(T.out, 5, 10), R2 = rng(T.body, 0.5, 1.5);
+  function Y(P, R, v) { return P[0] + (P[1] - P[0]) * (1 - (v - R[0]) / (R[1] - R[0])); }
+  // risky hours: pale heat band through both panels, named in words
+  T.risky.forEach(function (q) {
+    tx.fillStyle = '#FFF0DE'; tx.fillRect(X(q[0]), top, X(q[1]) - X(q[0]), bottom - top);
+  });
+  if (T.risky.length) {
+    var a = T.risky[0][0], b = T.risky[T.risky.length - 1][1];
+    tx.fillStyle = '#C93400'; tx.font = '600 15px ' + SANS; tx.textAlign = 'center'; tx.textBaseline = 'bottom';
+    tx.fillText('Risky hours', (X(a) + X(b)) / 2, top - 8);
+  }
+  if (T.best) {   // best time to go out: a green mark under the axis
+    tx.fillStyle = '#248A3D'; tx.fillRect(X(T.best[0]), bottom - 4, X(T.best[1]) - X(T.best[0]), 4);
+  }
+  // grids + axes
+  tx.lineWidth = 1; tx.font = '13px ' + FONT;
+  function grid(P, R, step, fmt) {
+    tx.textAlign = 'right'; tx.textBaseline = 'middle';
+    for (var v = R[0]; v <= R[1] + 1e-9; v += step) { var y = Math.round(Y(P, R, v)) + .5; tx.strokeStyle = '#F0F0F2'; tx.beginPath(); tx.moveTo(padL, y); tx.lineTo(W - padR, y); tx.stroke(); tx.fillStyle = '#86868B'; tx.fillText(fmt(v), padL - 10, y); }
+    
+  }
+  grid(P1, R1, 5, function (v) { return v.toFixed(0); }); grid(P2, R2, 0.5, function (v) { return v.toFixed(1); });
+  tx.textAlign = 'center'; tx.textBaseline = 'top'; tx.fillStyle = '#86868B';
+  for (var h = 0; h <= 24; h += 3) { var xx = Math.round(X(h)) + .5; tx.strokeStyle = '#F0F0F2'; [P1, P2].forEach(function (P) { tx.beginPath(); tx.moveTo(xx, P[0]); tx.lineTo(xx, P[1]); tx.stroke(); }); tx.fillText((h < 10 ? '0' : '') + h + ':00', xx, bottom + 8); }
+  // panel names, in words
+  tx.font = '600 15px ' + SANS; tx.textAlign = 'left'; tx.textBaseline = 'top';
+  tx.fillStyle = '#4A4A4A'; tx.fillText('Outside, °C', padL + 10, P1[0] + 8);
+  tx.fillStyle = '#007AFF'; tx.fillText('Her body temperature at home, °C', padL + 10, P2[0] + 8);
+  // lines: outside at each hour (forecast hour value), her body = the highest minute of each hour, drawn mid-hour
+  function line(vals, off, P, R, col, w) { tx.strokeStyle = col; tx.lineWidth = w; tx.lineJoin = 'round'; tx.lineCap = 'round'; tx.beginPath(); vals.forEach(function (v, i) { var x = X(i + off), y = Y(P, R, v); i ? tx.lineTo(x, y) : tx.moveTo(x, y); }); tx.stroke(); tx.lineWidth = 1; }
+  line(T.out, 0, P1, R1, '#AEAEB2', 3); line(T.body, 0.5, P2, R2, '#007AFF', 3.5);
+  function peak(vals, off, P, R, col, dec) { var i = vals.indexOf(Math.max.apply(null, vals)), x = X(i + off), y = Y(P, R, vals[i]);
+    var below = y < P[0] + 26;
+    tx.fillStyle = col; tx.fillRect(x - 3, y - 3, 6, 6); tx.font = '600 14px ' + FONT; tx.textAlign = x > W - 120 ? 'right' : 'left'; tx.textBaseline = below ? 'top' : 'bottom'; tx.fillText(vals[i].toFixed(dec), x + (x > W - 120 ? -8 : 8), below ? y + 6 : y - 4); }
+  peak(T.out, 0, P1, R1, '#4A4A4A', 1); peak(T.body, 0.5, P2, R2, '#007AFF', 2);
+  if (T.best) { tx.fillStyle = '#248A3D'; tx.font = '600 13px ' + SANS; tx.textAlign = 'left'; tx.textBaseline = 'bottom'; tx.fillText('Best time to go out', X(T.best[0]) + 2, bottom - 8); }
+}
+function setView(v) {
+  var t = v === 'tomorrow'; document.body.classList.toggle('view-tmr', t);
+  $('vNow').classList.toggle('on', !t); $('vTmr').classList.toggle('on', t);
+  $('vNow').setAttribute('aria-selected', String(!t)); $('vTmr').setAttribute('aria-selected', String(t));
+  if (t) { loadTomorrow(); paintTomorrow(); }
+  try { localStorage.setItem('hg-view', v); } catch (e) { }
+}
+$('vNow').onclick = function () { setView('now'); }; $('vTmr').onclick = function () { setView('tomorrow'); };
+window.addEventListener('resize', drawTomorrow);
+
+sizeCanvas(); paintDiscrete(); requestAnimationFrame(frame);
+var qs = new URLSearchParams(location.search);
+loadTomorrow();
+var v0 = qs.get('view'); if (!v0) { try { v0 = localStorage.getItem('hg-view'); } catch (e) { } }
+if (v0 === 'tomorrow') setView('tomorrow');
+if (qs.get('preview')) { startPreview(); if (qs.get('seek') != null) window.__seek(+qs.get('seek'), qs.get('noresp') === '1'); }
+})();
+</script>
+</body>
+</html>

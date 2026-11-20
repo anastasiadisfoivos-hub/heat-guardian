@@ -1,0 +1,117 @@
+{
+ "sim": {
+  "label": "SIMULATION, SIM-DEV v4 calibration persons (100, ages 65-85), every 3rd minute",
+  "rows": 433559,
+  "nn_mae": 0.149,
+  "nn_bias": -0.012,
+  "v12_mae": 0.342,
+  "v12_bias": 0.224,
+  "hot_rows": 29399,
+  "hot_core_minus_t1_median": 0.825,
+  "hot_core_minus_t1_iqr": [
+   0.711,
+   0.961
+  ],
+  "hot_t1_minus_air_median": 1.521,
+  "hot_t1_minus_air_p01_p99": [
+   -0.084,
+   2.861
+  ],
+  "hot_share_t1_below_air": 1.527,
+  "hot_nn_bias": -0.015,
+  "hot_v12_bias": 0.117,
+  "hot_gain_core_per_t1": 0.525,
+  "hot_gain_core_per_10bpm": 0.046,
+  "hot_gain_core_per_air": -0.058,
+  "hot_slope_nn_on_core": 0.639,
+  "hot_slope_v12_on_core": 0.205,
+  "t1_minus_air_envelope_by_air_2C": {
+   "22": [
+    9.807,
+    13.713
+   ],
+   "24": [
+    6.33,
+    11.323
+   ],
+   "26": [
+    5.875,
+    9.731
+   ],
+   "28": [
+    4.616,
+    8.106
+   ],
+   "30": [
+    3.184,
+    6.579
+   ],
+   "32": [
+    1.7,
+    4.829
+   ],
+   "34": [
+    0.203,
+    2.989
+   ],
+   "36": [
+    -1.644,
+    1.297
+   ],
+   "38": [
+    -3.471,
+    -0.514
+   ]
+  },
+  "corr_member_spread_abs_err": 0.034
+ },
+ "htt": {
+  "label": "REAL young adults 18-33 (HTT-DEV, 65 people), NN leave-one-subject-out; skin/flux masked (none in HTT)",
+  "rows": 13670,
+  "nn_mae": 0.284,
+  "nn_bias": 0.039,
+  "v12_mae": 0.261,
+  "v12_bias": 0.001,
+  "slope_nn_on_core": 0.328,
+  "slope_v12_on_core": 0.439,
+  "nn_bias_core_ge_38": -0.216,
+  "v12_bias_core_ge_38": -0.196,
+  "corr_member_spread_abs_err": 0.001,
+  "resid_nn_minus_v12_sd": 0.124,
+  "corr_resid_with_v12_error": -0.047,
+  "gain_core_per_10bpm_deployed": 0.07
+ },
+ "brighton_p1": {
+  "label": "REAL 65-76, Brighton P1 only (DEV), bicep skin as T1, lab HR, 35 C chamber",
+  "samples": 45,
+  "nn": [
+   0.372,
+   0.048
+  ],
+  "v12": [
+   0.685,
+   0.685
+  ],
+  "rest_rectal_minus_bicep_median": 1.55,
+  "rest_bicep_minus_air_median": -0.23,
+  "share_t1_minus_air_outside_sim_envelope": 88.372,
+  "rest_core_mean": 36.551,
+  "rise_30_to_65_rectal_nn_v12_mean": [
+   0.457,
+   0.124,
+   0.337
+  ],
+  "gain_core_per_t1": 0.512,
+  "gain_core_per_10bpm": 0.014,
+  "cf_skin_to_sim_coupling_shift_C": 0.725,
+  "cf_skin_to_sim_coupling": [
+   0.62,
+   0.397
+  ],
+  "cf_no_skin": [
+   0.623,
+   0.622
+  ],
+  "note": "P1 is one cool person (rest rectal ~36.5) and never exceeds 37.4 C; its pooled NN bias is near 0 while v1.2 reads +0.6, so P1 cannot reproduce the sealed mean bias; it shows the mechanism (gain, coupling, tracking)."
+ }
+}

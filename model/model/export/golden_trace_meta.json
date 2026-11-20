@@ -1,0 +1,131 @@
+{
+ "persons": [
+  0,
+  23,
+  3
+ ],
+ "twins": {
+  "0": {
+   "profile": {
+    "age": 82.49227571293827,
+    "sex_m": 1.0,
+    "bmi": 25.466089765780932,
+    "med_flags": 10
+   },
+   "twin": {
+    "rest_hr": 71.50428664260302,
+    "k_person": 0.12,
+    "core_offset": 0.0,
+    "c_bodyheat": 0.15,
+    "t1_night_base": [
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "23": {
+   "profile": {
+    "age": 72.30777170036481,
+    "sex_m": 1.0,
+    "bmi": 27.64026076951535,
+    "med_flags": 5
+   },
+   "twin": {
+    "rest_hr": 78.51211192189118,
+    "k_person": 0.12,
+    "core_offset": 0.0,
+    "c_bodyheat": 0.15,
+    "t1_night_base": [
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "3": {
+   "profile": {
+    "age": 75.03775039432215,
+    "sex_m": 1.0,
+    "bmi": 23.954792867863752,
+    "med_flags": 8
+   },
+   "twin": {
+    "rest_hr": 64.41798131833048,
+    "k_person": 0.12,
+    "core_offset": 0.0,
+    "c_bodyheat": 0.15,
+    "t1_night_base": [
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  }
+ },
+ "label": "SIMULATION (Virtual Elders v5; known too-tolerant at humid rest, bed rest, and HR) DEV persons (validation subset), never SEALED-SIM",
+ "note": "state starts fresh at 00:00 of the first S2 heat-wave day; person 3 runs with t2_c = NaN (no REF board); profile from persons.parquet via simio.profile_of; twin = build_sim.nominal_twin (seeded)"
+}

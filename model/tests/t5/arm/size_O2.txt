@@ -1,0 +1,11 @@
+   text	   data	    bss	    dec	    hex	filename
+   4792	      0	      0	   4792	   12b8	O2/hg2_step.o
+  27432	      0	      0	  27432	   6b28	O2/hg2_weights.o
+   1932	      0	      0	   1932	    78c	O2/hg_contact.o
+   1236	      0	      0	   1236	    4d4	O2/hg_frames.o
+   7231	      0	      0	   7231	   1c3f	O2/hg_guardian.o
+   1044	      0	      0	   1044	    414	O2/hg_homeout.o
+   2288	      0	      0	   2288	    8f0	O2/hg_kf.o
+   3622	      0	      0	   3622	    e26	O2/hg_routine.o
+    756	      0	      0	    756	    2f4	O2/hg_tables.o
+    756	      0	      0	    756	    2f4	O2/hg_util.o

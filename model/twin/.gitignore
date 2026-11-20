@@ -1,0 +1,8 @@
+c/host_test
+c/*.o
+__pycache__/
+c/host_test_hg2
+results/smoke_*
+c/host_test_keff
+c/host_test_koff
+c/host_test_sourced

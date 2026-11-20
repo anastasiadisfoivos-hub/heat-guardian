@@ -1,0 +1,42 @@
+M11 re-baseline vs M9 expectations: B2 final export 0xB32FA3CA (9 outputs, M6 sd rule); DRINK = A-relative on OOD-guarded NN f20 (20-min thermal blank) OR v1.2 f20 >= 37.85 - 0.018 C (gated at the 5-min valid point); COOL on max(NN, v1.2) when OOD
+
+trace_check_danger_family.csv: 43 of 300 minutes changed
+   old: OK@0 DRINK@60 COOL@61 DANGER@62 OK@273
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@273 DRINK@274 OK@281
+   why: tiers now read B2's NN core_20 (M5.1, no +sd) instead of the stub's v1.2 f20: NN - v1.2 f20 on thermal-valid minutes median -0.856 C (p10 -0.934, p90 -0.447); M5.2 uncalibrated lowering active 280 of 280 of them (sd scale 1.04, h_cal 0.27 PROVISIONAL)
+
+trace_check_press_imok_snooze.csv: 45 of 300 minutes changed
+   old: OK@0 DRINK@60 COOL@61 DANGER@62 IMOK@65 DANGER@66 OK@273
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 IMOK@63 DANGER@64 COOL@273 DRINK@274 OK@281
+   why: tiers now read B2's NN core_20 (M5.1, no +sd) instead of the stub's v1.2 f20: NN - v1.2 f20 on thermal-valid minutes median -0.856 C (p10 -0.934, p90 -0.447); M5.2 uncalibrated lowering active 280 of 280 of them (sd scale 1.04, h_cal 0.27 PROVISIONAL)
+
+trace_cool_f20_danger_logistic.csv: 43 of 300 minutes changed
+   old: OK@0 DRINK@60 COOL@61 DANGER@62 OK@233
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@233 DRINK@234 OK@241
+   why: tiers now read B2's NN core_20 (M5.1, no +sd) instead of the stub's v1.2 f20: NN - v1.2 f20 on thermal-valid minutes median -0.816 C (p10 -0.910, p90 -0.220); M5.2 uncalibrated lowering active 280 of 280 of them (sd scale 1.04, h_cal 0.27 PROVISIONAL)
+
+trace_donning_blank.csv: 114 of 120 minutes changed
+   old: OK@0
+   new: OK@0 DRINK@6
+   why: tiers now read B2's NN core_20 (M5.1, no +sd) instead of the stub's v1.2 f20: NN - v1.2 f20 on thermal-valid minutes median -0.654 C (p10 -0.668, p90 -0.642); M5.2 uncalibrated lowering active 100 of 100 of them (sd scale 1.04, h_cal 0.27 PROVISIONAL)
+
+trace_drink_f20.csv: 168 of 240 minutes changed
+   old: OK@0
+   new: OK@0 DRINK@29 OK@197
+   why: tiers now read B2's NN core_20 (M5.1, no +sd) instead of the stub's v1.2 f20: NN - v1.2 f20 on thermal-valid minutes median -0.669 C (p10 -0.737, p90 -0.245); M5.2 uncalibrated lowering active 220 of 220 of them (sd scale 1.04, h_cal 0.27 PROVISIONAL)
+
+trace_hr_gating.csv: 67 of 300 minutes changed
+   old: OK@0 DRINK@60 COOL@61 DANGER@62 OK@166 DRINK@188 COOL@189 DANGER@190 OK@253
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@166 DANGER@188 COOL@253 DRINK@254 OK@261
+   why: tiers now read B2's NN core_20 (M5.1, no +sd) instead of the stub's v1.2 f20: NN - v1.2 f20 on thermal-valid minutes median -0.836 C (p10 -0.924, p90 -0.220); M5.2 uncalibrated lowering active 280 of 280 of them (sd scale 1.04, h_cal 0.27 PROVISIONAL)
+
+trace_med_margins.csv: 20 of 240 minutes changed
+   old: OK@0 DRINK@36 COOL@37 DANGER@38 OK@197
+   new: OK@0 DRINK@24 COOL@27 DANGER@36 DRINK@197 OK@203
+   why: tiers now read B2's NN core_20 (M5.1, no +sd) instead of the stub's v1.2 f20: NN - v1.2 f20 on thermal-valid minutes median -1.521 C (p10 -1.616, p90 -0.631); M5.2 uncalibrated lowering active 220 of 220 of them (sd scale 1.04, h_cal 0.27 PROVISIONAL)
+
+trace_older_margin.csv: 49 of 240 minutes changed
+   old: OK@0 DRINK@70 COOL@71 DANGER@72 OK@192
+   new: OK@0 DRINK@28 COOL@35 DANGER@70 DRINK@192 OK@197
+   why: tiers now read B2's NN core_20 (M5.1, no +sd) instead of the stub's v1.2 f20: NN - v1.2 f20 on thermal-valid minutes median -1.143 C (p10 -1.209, p90 -0.402); M5.2 uncalibrated lowering active 220 of 220 of them (sd scale 1.04, h_cal 0.27 PROVISIONAL)
+

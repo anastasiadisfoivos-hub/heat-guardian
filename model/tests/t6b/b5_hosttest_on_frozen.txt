@@ -1,0 +1,40 @@
+Heat Guardian guardian/c host tests (weights hg2-20261112-f3f1c6d-simv4aug, stub=0)
+PASS sizeof(hg2_state_t) <= 512                     488 B
+PASS sizeof(hg_guardian_t) <= 4096                  3776 B
+     sizes: guardian 3776, hg2 488, kf 184, contact 1588, homeout 72, routine 1064, minute_in 264, minute_out 100
+PASS CRC-8 poly 0x07 check + vectors                11 vectors
+PASS B4 ble_vectors: 0x11 chunks + 24 h decode + 0x14 0 mismatches
+PASS hg2 weights CRC-32 (hg2-20261112-f3f1c6d-simv4aug) 0x00000000
+PASS sigmoid LUT max err <= 0.004                   2.98e-03
+PASS Magnus table (quadratic) max rel err <= 5e-5   1.01e-05
+PASS ln1p table max err <= 2e-4                     1.18e-04
+PASS sin/cos tod table max err <= 1e-3              5.33e-04
+PASS CMD parser: accept good / reject CRC, short, op, field 0
+PASS INFO frame CRC-8                               0
+PASS routine pack/unpack (<= 700 B) + corruption -> defaults 650 B
+PASS M9.5 calm-f20 get/set round-trip + NaN/out-of-bounds rejected 0
+     OOD HR 150: NN f20 37.677  v1.2 f20 38.587  tiers read 38.587  ood=1  DRINK=1  COOL=1  env_above_old=0
+     OOD HR 180: NN f20 37.906  v1.2 f20 39.016  tiers read 39.016  ood=1  DRINK=1  COOL=1  env_above_old=0
+     OOD HR 200: NN f20 38.091  v1.2 f20 39.305  tiers read 39.305  ood=1  DRINK=1  COOL=1  env_above_old=0
+     control HR 95: v1.2 f20 37.858 ood=0 DRINK=0 (gate closed: 24 C, below the older line)
+PASS OOD guard HR 150/180/200: tiers read max(NN, v1.2), M12 gate open, DRINK armed 0
+     guards: 0 differing, 0 unbounded
+PASS [B2-fix] input guards: inf / out-of-range == NaN, outputs bounded 0 differing minutes
+     property run: 10000 sequences, 2993675 minutes, 353446 CHECK-minutes, 15763 family flags, 13625 HELP, 33052 frozen hours
+PASS property: no level skip                        0 violations
+PASS property: 2-min debounce                       0 violations
+PASS property: 10-min hold exact                    0 violations
+PASS property: NOT_WORN freezes tiers               0 violations
+PASS property: CHECK asks at 0/2/5 min              0 violations
+PASS property: family only after 5/10-min CHECK window 0 violations
+PASS property: learning frozen under alarms/not worn 0 violations
+PASS property: HELP latched until 0x12 type 3       0 violations
+PASS property: time unknown: routine + circadian off 0 violations
+PASS property: state/level in range                 0 violations
+PASS property: STATUS CRC-8                         0 violations
+PASS property: battery < 3.5 V -> soft haptics      0 violations
+     M3.1 run: 10000 sequence pairs, 2987896 minutes, 2497279 minutes with a protected-path tier, 1816866 with protected DANGER
+PASS property M3.1: NN never removes a protected alarm 0 violations
+     M4.3 run: 2500 pairs, 755566 minutes, 643609 with a tier on, 755566 minutes where the display shows +1 C
+PASS M4.3: +1 C reading changes no tier decision (default) 0 differing minutes
+61 passed, 0 failed

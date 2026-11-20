@@ -1,0 +1,84 @@
+# XcodeGen fallback (iOS 26.0) — describes the same project as HeatGuardian.xcodeproj.
+# Only needed if Xcode refuses to open the committed project:
+#   brew install xcodegen
+#   cd ios && xcodegen
+name: HeatGuardian
+options:
+  bundleIdPrefix: gr.heatguardian
+  deploymentTarget:
+    iOS: "26.0"
+  developmentLanguage: el
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "26.0"
+targets:
+  HeatGuardian:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: HeatGuardian
+        excludes:
+          - Info.plist
+    info:
+      path: HeatGuardian/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: el
+        CFBundleLocalizations: [el, en]
+        CFBundleDisplayName: Heat Guardian
+        CFBundleURLTypes:          # heatguardian:// = the Shortcuts x-success / x-error callback ([SMS-SHORTCUT])
+          - CFBundleTypeRole: Editor
+            CFBundleURLName: gr.heatguardian.family
+            CFBundleURLSchemes: [heatguardian]
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        ITSAppUsesNonExemptEncryption: false
+        LSRequiresIPhoneOS: true
+        NSBluetoothAlwaysUsageDescription: "Η εφαρμογή συνδέεται με το βραχιόλι Heat Guardian για να δείχνει την κατάστασή του και να σας ειδοποιεί. / The app connects to the Heat Guardian band to show its state and alert you."
+        NSLocationWhenInUseUsageDescription: "Το Heat Guardian μαθαίνει τα μέρη που πηγαίνετε (π.χ. αγορά, εκκλησία) για να σας πει την καλύτερη ώρα να βγείτε όταν κάνει ζέστη. Οι θέσεις μένουν μόνο σε αυτό το iPhone. / Heat Guardian learns the places you go (e.g. the market, church) to tell you the best time to go out on hot days. Locations stay on this iPhone only."
+        NSLocationAlwaysAndWhenInUseUsageDescription: "Για να μαθαίνει τα μέρη σας και όταν η εφαρμογή είναι κλειστή, επιλέξτε «Πάντα». Οι θέσεις μένουν μόνο σε αυτό το iPhone· στο βραχιόλι και στην οικογένεια πηγαίνει μόνο το είδος του μέρους και η ώρα. / To learn your places while the app is closed, choose \"Always\". Locations stay on this iPhone; the band and your family get only the kind of place and the time."
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UIBackgroundModes: [bluetooth-central]
+        UILaunchScreen: {}
+        UIRequiredDeviceCapabilities: [arm64]
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: gr.heatguardian.family
+        PRODUCT_NAME: HeatGuardian
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: ""
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        SUPPORTS_MACCATALYST: NO
+        GENERATE_INFOPLIST_FILE: NO
+  HeatGuardianTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: HeatGuardianTests
+    dependencies:
+      - target: HeatGuardian
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: gr.heatguardian.family.tests
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: "1"
+schemes:
+  HeatGuardian:
+    build:
+      targets:
+        HeatGuardian: all
+        HeatGuardianTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets: [HeatGuardianTests]

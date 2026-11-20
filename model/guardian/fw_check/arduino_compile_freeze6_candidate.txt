@@ -1,0 +1,6 @@
+---- B2b-v5 freeze-6 candidate (working tree, 2026-11-13): v5 Core Sense weights hg2-20261113-ca75ce4-simv5aug + AR (hg2_step.c, HG_AR_*) ----
+fw/09_guardian, scratch copy with frozen/ replaced by this working tree's guardian/c + model/export + twin/c (+ hg_fp.h);
+  fw/09_guardian itself NOT modified (B6b re-syncs from the hg2-freeze-6 tag with fw/tools/sync_frozen.sh after the manager tags):
+  freeze-6 candidate: Sketch uses 302320 bytes (37%) of program storage space; Global variables use 68776 bytes (28%)
+  freeze-5 candidate (same procedure): 301104 bytes (37%); 68776 bytes  -> +1216 B flash, +0 B RAM
+  hg2_step.o alone (arm-none-eabi-gcc -Os, Cortex-M4F): AR block +620 B text, +16 B stack (720 -> 736 B), 0 B static state

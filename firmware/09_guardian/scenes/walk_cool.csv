@@ -1,0 +1,15 @@
+# Heat Guardian staged scene v1: brisk walk on a cool day
+# A 60-min brisk walk outdoors at 17 C: pulse 120-138, strong arm swing (pulse quality drops to "motion" near the end),
+# skin cools; then rest at home in a 22 C room.
+# expect=
+# start=10:00 warmup=1440
+# keyframes, linear between rows. columns: min,t1_skin_c,t2_ref_c,air_c,rh_pct,hr_bpm,hr_q,pi_pct,a_std_g,z_deg,button
+# ('-' = no value; hr_q 4 OK, 2 motion, 0 no skin; button 1 = a short press at that minute)
+0,33.6,32.0,22.0,50,70,4,0.5,0.030,10,0
+10,33.4,31.5,21.0,50,76,4,0.5,0.050,10,0
+15,32.5,29.0,17.0,60,120,4,0.4,0.200,0,0
+60,32.5,29.0,17.0,60,138,4,0.4,0.250,0,0
+70,32.5,29.0,17.0,60,138,2,0.4,0.250,0,0
+75,33.0,30.0,20.0,52,105,4,0.5,0.080,10,0
+95,33.6,31.8,22.0,50,74,4,0.5,0.030,10,0
+130,33.6,32.0,22.0,50,70,4,0.5,0.030,10,0

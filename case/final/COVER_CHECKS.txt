@@ -1,0 +1,35 @@
+v7-cover.  pod outer 32.10 x 57.63, rim z 12.95; cover inner 32.70 x 58.23; glass z 16.35, cover top z 17.55, skirt bottom z 7.45
+button stack z: cap top 19.35 / junction 16.00 / flange bottom 13.80 / nose = switch tip 13.30 / body top 9.80 / sleeve mouth 7.80 / body bottom 6.80; cone 46.8 deg
+--- fit check, button 'centre' at interior (14.55, 46.97)
+   cover x pod overlap: 0.000 mm3 (grip ribs keep 0.1 nominal gap: must be 0)
+   cover x XIAO nRF52840: 0.000 mm3
+   cover x LCD 1.69in: -0.000 mm3
+   cover x USB-C plug: 0.000 mm3
+   cover x switch: 0.000 mm3; plunger x cover: 0.000 mm3; plunger x switch: 0.000 mm3
+   WIRE CLASH (twin's nominal route): screen wire 2 -> GND (garage fold, flat ribbon): 5.6 mm3, z 9.7-11.6
+   WIRE CLASH (twin's nominal route): screen wire 3 -> 3V3 (garage fold, flat ribbon): 7.4 mm3, z 8.3-11.6
+   WIRE CLASH (twin's nominal route): screen wire 4 -> D10 (garage fold, flat ribbon): 7.4 mm3, z 8.3-11.6
+   WIRE CLASH (twin's nominal route): screen wire 5 -> D9 (garage fold, flat ribbon): 7.4 mm3, z 8.3-11.6
+   WIRE CLASH (twin's nominal route): screen wire 6 -> D8 (garage fold, flat ribbon): 7.4 mm3, z 8.3-11.6
+   WIRE CLASH (twin's nominal route): screen wire 7 -> D7 (garage fold, flat ribbon): 5.6 mm3, z 9.7-11.6
+   switch + joints x pod: 0.000 mm3; lowest point of the joint envelope z 4.30 (pod floor 1.2)
+--- fit check, button 'corner' at interior (22.25, 46.97)
+   cover x pod overlap: 0.000 mm3 (grip ribs keep 0.1 nominal gap: must be 0)
+   cover x XIAO nRF52840: 0.000 mm3
+   cover x LCD 1.69in: -0.000 mm3
+   cover x USB-C plug: 0.000 mm3
+   cover x switch: 0.000 mm3; plunger x cover: 0.000 mm3; plunger x switch: 0.000 mm3
+   WIRE CLASH (twin's nominal route): screen wire 6 -> D8 (garage fold, flat ribbon): 3.7 mm3, z 9.8-11.6
+   WIRE CLASH (twin's nominal route): screen wire 7 -> D7 (garage fold, flat ribbon): 7.1 mm3, z 8.3-11.6
+   switch + joints x pod: 0.000 mm3; lowest point of the joint envelope z 4.30 (pod floor 1.2)
+screen_cover.stl: 35.1 x 60.6 x 10.1 mm on the bed, 3.92 cm3, ~4.9 g PLA solid, one closed body
+screen_cover_corner.stl: 35.1 x 60.6 x 10.1 mm on the bed, 3.92 cm3, ~4.9 g PLA solid, one closed body
+cover_plunger.stl: 10.0 x 10.0 x 6.1 mm on the bed, 0.33 cm3, ~0.4 g PLA solid, one closed body
+power_lid_plug.stl: 8.6 x 8.6 x 1.7 mm on the bed, 0.06 cm3, ~0.1 g PLA solid, one closed body
+power_lid_nohole.stl: 40.6 x 55.9 x 3.7 mm on the bed, 4.25 cm3, ~5.3 g PLA solid, one closed body
+fragility screen_cover: thinnest wall/floor found 0.40 mm; 0 thin spot(s) under 1.2; 0 slender post(s)
+fragility screen_cover_corner: thinnest wall/floor found 0.40 mm; 0 thin spot(s) under 1.2; 0 slender post(s)
+fragility cover_plunger: thinnest wall/floor found 3.39 mm; 0 thin spot(s) under 1.2; 0 slender post(s)
+fragility power_lid_nohole: thinnest wall/floor found 1.20 mm; 0 thin spot(s) under 1.2; 0 slender post(s)
+fragility power_lid_plug: not checked - a 0.5 mm disc + 1.2 peg that only fills a hole (carries no load)
+RESULT: PASS

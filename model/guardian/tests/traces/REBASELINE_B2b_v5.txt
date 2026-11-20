@@ -1,0 +1,47 @@
+B2b-v5 re-baseline of crafted traces: hg2-freeze-5 (v4 NN f20) -> hg2-20261113-ca75ce4-simv5aug + AR (v1.2 anchor, NN residual clamped -0.30/+0.50, skin/envelope/HR gates)
+
+trace_check_danger_family.csv: 1 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@273 OK@274
+   new: OK@0 DRINK@27 COOL@36 DANGER@60 COOL@273 OK@274
+   why: B2b-v5: the tiers read the AR f20 = v1.2 f20 + w*clamp(NN5 - v1.2, -0.30, +0.50) (crafted traces: T1 often outside the SIM envelope or absent -> w = 0 -> v1.2): tiers' f20 - v1.2 f20 on thermal-valid minutes median +0.000 C (p10 +0.000, p90 +0.000); M5.2 uncalibrated lowering active 280 of 280 of them (sd scale 1.04, h_cal 0.34 PROVISIONAL)
+
+trace_check_press_imok_snooze.csv: 1 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 IMOK@63 DANGER@64 COOL@273 OK@274
+   new: OK@0 DRINK@27 COOL@36 DANGER@60 IMOK@63 DANGER@64 COOL@273 OK@274
+   why: B2b-v5: the tiers read the AR f20 = v1.2 f20 + w*clamp(NN5 - v1.2, -0.30, +0.50) (crafted traces: T1 often outside the SIM envelope or absent -> w = 0 -> v1.2): tiers' f20 - v1.2 f20 on thermal-valid minutes median +0.000 C (p10 +0.000, p90 +0.000); M5.2 uncalibrated lowering active 280 of 280 of them (sd scale 1.04, h_cal 0.34 PROVISIONAL)
+
+trace_cool_f20_danger_logistic.csv: 1 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@233 OK@234
+   new: OK@0 DRINK@27 COOL@36 DANGER@60 COOL@233 OK@234
+   why: B2b-v5: the tiers read the AR f20 = v1.2 f20 + w*clamp(NN5 - v1.2, -0.30, +0.50) (crafted traces: T1 often outside the SIM envelope or absent -> w = 0 -> v1.2): tiers' f20 - v1.2 f20 on thermal-valid minutes median +0.000 C (p10 -0.139, p90 +0.032); M5.2 uncalibrated lowering active 280 of 280 of them (sd scale 1.04, h_cal 0.34 PROVISIONAL)
+
+trace_drink_f20.csv: 1 of 240 minutes changed
+   old: OK@0 DRINK@29 OK@192
+   new: OK@0 DRINK@28 OK@192
+   why: B2b-v5: the tiers read the AR f20 = v1.2 f20 + w*clamp(NN5 - v1.2, -0.30, +0.50) (crafted traces: T1 often outside the SIM envelope or absent -> w = 0 -> v1.2): tiers' f20 - v1.2 f20 on thermal-valid minutes median +0.000 C (p10 -0.115, p90 +0.015); M5.2 uncalibrated lowering active 220 of 220 of them (sd scale 1.04, h_cal 0.34 PROVISIONAL)
+
+trace_hr_gating.csv: 1 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@166 DANGER@188 COOL@253 OK@254
+   new: OK@0 DRINK@27 COOL@36 DANGER@60 COOL@166 DANGER@188 COOL@253 OK@254
+   why: B2b-v5: the tiers read the AR f20 = v1.2 f20 + w*clamp(NN5 - v1.2, -0.30, +0.50) (crafted traces: T1 often outside the SIM envelope or absent -> w = 0 -> v1.2): tiers' f20 - v1.2 f20 on thermal-valid minutes median +0.000 C (p10 +0.000, p90 +0.044); M5.2 uncalibrated lowering active 280 of 280 of them (sd scale 1.04, h_cal 0.34 PROVISIONAL)
+
+trace_m19_marble_warm_chores.csv: 52 of 1680 minutes changed
+   old: OK@0 DRINK@1446 DANGER@1486 DRINK@1532 OK@1570
+   new: OK@0 DRINK@1446 DANGER@1471 DRINK@1569 OK@1570
+   why: B2b-v5: the tiers read the AR f20 = v1.2 f20 + w*clamp(NN5 - v1.2, -0.30, +0.50) (crafted traces: T1 often outside the SIM envelope or absent -> w = 0 -> v1.2): tiers' f20 - v1.2 f20 on thermal-valid minutes median -0.300 C (p10 -0.300, p90 -0.300); M5.2 uncalibrated lowering active 1660 of 1660 of them (sd scale 1.04, h_cal 0.34 PROVISIONAL)
+
+trace_m19b_cool_holds.csv: 1 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@233 OK@234
+   new: OK@0 DRINK@27 COOL@36 DANGER@60 COOL@233 OK@234
+   why: B2b-v5: the tiers read the AR f20 = v1.2 f20 + w*clamp(NN5 - v1.2, -0.30, +0.50) (crafted traces: T1 often outside the SIM envelope or absent -> w = 0 -> v1.2): tiers' f20 - v1.2 f20 on thermal-valid minutes median +0.000 C (p10 -0.139, p90 +0.032); M5.2 uncalibrated lowering active 280 of 280 of them (sd scale 1.04, h_cal 0.34 PROVISIONAL)
+
+trace_m19b_cool_stepping_stone.csv: 52 of 1680 minutes changed
+   old: OK@0 DRINK@1446 DANGER@1486 DRINK@1532 OK@1570
+   new: OK@0 DRINK@1446 DANGER@1471 DRINK@1569 OK@1570
+   why: B2b-v5: the tiers read the AR f20 = v1.2 f20 + w*clamp(NN5 - v1.2, -0.30, +0.50) (crafted traces: T1 often outside the SIM envelope or absent -> w = 0 -> v1.2): tiers' f20 - v1.2 f20 on thermal-valid minutes median -0.300 C (p10 -0.300, p90 -0.300); M5.2 uncalibrated lowering active 1660 of 1660 of them (sd scale 1.04, h_cal 0.34 PROVISIONAL)
+
+Summary (B2b-v5): 6 traces move ONE minute earlier (COOL@36 or DRINK@28 instead of 37/29): with no skin reading in range (w = 0) the
+tiers read the v1.2 f20, which crosses the line one minute before the freeze-5 NN f20 did. The two Marble traces (warm chores) have
+w = 1 and the NN5 residual pinned at the -0.30 C lowering bound: the AR f20 sits above the freeze-5 NN f20, so Marble's leaky heat
+mass fills faster -> DANGER at 1471 instead of 1486 and held to 1569 instead of 1532 (earlier and longer = the safe direction).
+No trace loses an alarm. Expectations still come from make_traces.py's independent spec_engine on the mirror's signals.

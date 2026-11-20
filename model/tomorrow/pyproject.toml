@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hg-tomorrow"
+version = "1.0.0"
+description = "Heat Guardian Tomorrow Engine (B4) - physics-based planning, SIMULATION"
+requires-python = ">=3.10"
+dependencies = ["numpy", "pandas", "jsonschema"]
+
+[tool.setuptools]
+packages = ["tomorrow"]
+package-dir = {"tomorrow" = "."}
+include-package-data = true
+
+[tool.setuptools.package-data]
+tomorrow = ["schema.json"]

@@ -1,0 +1,402 @@
+/* Heat Guardian - Guardian Loop constants. EVERY threshold used by guardian/c lives here, each with its source.
+ * "A7.2 <row>" = /home/claude/hg_ai/arch/ARCHITECTURE.md section 7.2 table row. "MC" = hgmodel/MEDICAL_CALIBRATION.md.
+ * "DESIGN" = no published number exists; chosen here, stated as a design choice, to be set on the Nov 16-18 wear test.
+ * Changing a value to make a measured rate pass is forbidden (B5 brief): rates are reported, the manager decides.
+ */
+#ifndef HG_GUARDIAN_CFG_H
+#define HG_GUARDIAN_CFG_H
+
+/* ---------------- tiers: thermal thresholds on the 20-min forecast (v1.2, kept) ---------------- */
+/* SOURCE: A7.2 "DRINK on"; v1.2 HG_T_DRINK_WATER, 52-dev nested-LOSO calibration <= 0.15 FA/h (hgmodel/REPORT.md s5) */
+#ifndef HG_T_DRINK   /* overridable ONLY by the M1.4 trade-off evaluation binary (tests/eval_sim_m1.py --shift); band = 37.85 */
+#define HG_T_DRINK            (37.85f)
+#endif
+/* SOURCE: A7.2 "COOL on"; v1.2 HG_T_GO_COOL, <= 0.10 FA/h (REPORT s5) */
+#define HG_T_COOL             (38.35f)
+/* SOURCE: A7.2 "DANGER on"; v1.2 HG_DG_LOGIT_CUT = logit(0.19), <= 0.10 FA/h nested LOSO (REPORT s5b) */
+#define HG_DG_LOGIT_CUT_V12   (-1.450010f)
+/* SOURCE: A7.2 "Hold / debounce"; v1.2 HG_DEBOUNCE_MIN = 2, HG_DANGER_HOLD_MIN = 2 (REPORT s5, s10) */
+#define HG_DEBOUNCE_MIN       2
+/* SOURCE: A7.2 "Hold / debounce"; heat_guardian_band.c HG_HOLD_MIN = 10 (REPORT s10: no flicker) */
+#define HG_HOLD_MIN           10
+
+/* ---------------- margins (degC, subtracted from the watch thresholds) ---------------- */
+/* SOURCE: A7.2 "Older margin"; MC s3 / Kenny 2017 Temperature 4:79 (end rectal 37.8 vs 37.6 C) */
+#define HG_OLDER_AGE          (65.0f)
+#define HG_M_OLDER            (0.20f)
+/* SOURCE: A7.2 "Medication margins"; MC s6 design choice, cost measured (s11b/s11c); diuretic/ACE/ARB = HYDRATION PROXY
+ * on DRINK only (R1 s5: Hospers 2024, no core-temperature effect) */
+#define HG_M_BETA_BLOCKER     (0.10f)
+#define HG_M_LOW_SWEAT        (0.10f)
+#define HG_M_DIURETIC_DRINK   (0.10f)
+/* T5 m4: UNUSED ON DRINK in the default build (HG_DRINK_DESIGN 1, design A, M9/M11.2): the DRINK lines carry no older or
+ * medication margin (only the M5.2 uncertainty lowering); HG_M_DIURETIC_DRINK and the DRINK side of HG_M_OLDER /
+ * HG_M_BETA_BLOCKER / HG_M_LOW_SWEAT act only in the designs 0/2/3 builds. COOL (and the M3.1 shadow tier) still use
+ * the older / beta-blocker / low-sweat margins. After M12 the 37.85 C v1.2 line fires only with heat context. */
+/* M5.1 (arch/DECISIONS.md): D7 is REPLACED - the watch tiers use f20 itself, no "+1 sd" (HTT dev: 87 % at 0.139 FA/h, inside
+ * the <= 0.15 budget); ensemble disagreement no longer moves a warning (sd does not track error: coverage 55 %).
+ * M5.2: while UNCALIBRATED (no same-day thermometer reading) the watch thresholds are lowered by
+ * min(0.10 C, half the excess width) = min(HG_UNC_MAX, max(0, h - h_cal)), h = 1.645 * scale * sd_20 (interval half-width from
+ * hg2's outputs), h_cal = the calibrated ("reading today") half-width. Constants come from B2's export (hg_unc.h); the lowering
+ * counts inside M1.3's 0.20 C total cap. */
+#define HG_UNC_MAX            (0.10f)
+/* M11.3 out-of-distribution guard: hr_reserve > 0.6 or HR > 108 bpm (p99 of hg2's training HR) -> the tiers read
+ * max(NN f20, v1.2 f20). SOURCE: DECISIONS M11 (B2 training-set p99). */
+#define HG_OOD_RESERVE        (0.60f)
+#define HG_OOD_HR             (108.0f)
+/* M12 heat-context gate (arch/DECISIONS.md M12): the HR-only v1.2 DRINK ceiling counts only with heat context =
+ * corrected room air >= HG_V12_CTX_C OR air above the PSU older-adult line (Wolf 2023 older ADL/rest, for every wearer) OR the
+ * M11.3 OOD guard active. Reason: 52 % of v4 DRINK onsets were v1.2-ceiling-only during chores/meals in ~28 C rooms.
+ * COOL / DANGER are never gated by context. Value SET IN SIMULATION (v4 SIM-DEV 150 persons + HTT dev, T_ctx sweep 28/29/30;
+ * rule: lowest T_ctx with DRINK <= 3/day, <= 90 min/day (raw HR) and S2 >= 85 %). -DHG_V12_CTX=0 removes the gate. */
+#ifndef HG_V12_CTX
+#define HG_V12_CTX            1
+#endif
+#ifndef HG_V12_CTX_C
+#define HG_V12_CTX_C          (30.0f)   /* M12, SET IN SIMULATION: v4 SIM-DEV 150 sweep, none of 28/29/30 met the budget; 30 = lowest DRINK at equal S2 */
+#endif
+/* M13 Danger by persistence (arch/DECISIONS.md M13): DANGER (-> CHECK -> family after HG_FAMILY_DANGER_MIN without a press)
+ * also when the COOL tier has been on for >= HG_PD_COOL_MIN min AND the tiers' f20 is not falling (f20 now - f20
+ * HG_PD_SLOPE_MIN min ago >= 0) AND (air above the wearer's PSU line OR NN P385 high OR v1.2 Danger z high).
+ * Reason: sealed v4 exam - COOL caught 94 % of core-38.5 events in S2 but DANGER ~0 %: older bodies at rest do not race. */
+#ifndef HG_PD
+#define HG_PD                 0   /* M19: OFF - replaced by Marble Danger; -DHG_PD=1 restores the M13 rule for comparison */
+#endif
+#ifndef HG_PD_COOL_MIN
+#define HG_PD_COOL_MIN        20        /* M13, SET IN SIMULATION: SIM-DEV v4 150 sweep 20/30/45, best ev385 sensitivity, S1 Danger median wearer 0/month */
+#endif
+#define HG_PD_SLOPE_MIN       10        /* DESIGN (M13 "f20 not falling"): 10-min difference, = the A7.2 trend window */
+#define HG_PD_NN_LOGIT        (0.0f)    /* DESIGN (M13 "NN P385 high"): P385 >= 0.5 */
+#define HG_PD_V12_Z           (-2.197225f)  /* DESIGN (M13 "v1.2 z high"): v1.2 Danger P >= 0.10 = logit(0.10) (Danger cut is P 0.19) */
+/* T5 D2 (NEW): "not falling" for the PROTECTED v1.2 f20 allows -HG_PD_SLOPE_EPS_V12 per HG_PD_SLOPE_MIN. Reason: at a constant
+ * HR the v1.2 Kalman f20 is flat to float noise (crafted 40 C rest trace: -2e-5 C / 10 min), which a strict >= 0 turns into
+ * a knife-edge veto of the env-path persistence (the M13 target: older bodies at rest). DESIGN: 0.01 C = half the 0.02 C
+ * calm-baseline bin, far below any physiological 10-min rise. The NN slope keeps the frozen strict >= 0. */
+#define HG_PD_SLOPE_EPS_V12   (0.01f)
+/* M19 job 3 (B5), movement term NOT bounded - why: on the REAL HeatIN DEV watches with proxy building air (the only real data
+ * that arms Marble; tests/out/heatin_dev_m19b.json) Marble raised 3 Danger episodes in 1072 wearer-days (0.08 / wearer-month); ONE was
+ * driven by the wind term (+6.8 of the score at 31 C proxy air): 0.03 / wearer-month. R6 s3.4 measured that the conservative clip
+ * (0.025 g) costs the low-kappa third 22 -> 13-14 of 37 events. One event does not justify that cost, and no threshold is moved to
+ * make a rate pass (B5 brief). (ea8f8a1 had 5 fires; the 2 raised by a FALLING forecast are removed by HG_MB_JUMP_RISE, M19b.) */
+/* M19b (manager review of ea8f8a1): the jump term counts RISING forecasts only, wJ max(0, E10 - E60). Why: on the REAL HeatIN DEV
+ * watches 2 of 5 Marble fires were raised by a FALLING forecast (E10 < E60, wJ < 0 -> positive term) plus leftover heat mass.
+ * R6's intent (s3.3: "a forecast that suddenly jumps above its own slow average usually falls back") is one-sided. Weights NOT
+ * refitted (the sealed sets must not be touched; the cost on SIM-DEV is reported in FROZEN.txt). -DHG_MB_JUMP_RISE=0 restores R6. */
+#ifndef HG_MB_JUMP_RISE
+#define HG_MB_JUMP_RISE       1
+#endif
+/* M19b: COOL stepping stone. A7.2's ladder climbs one level per minute; when it steps 1 -> 2 while the Danger tier is already on,
+ * the level-2 minute shows the Danger screen with no vibration (no COOL nudge); a COOL that holds is unchanged. DESIGN (manager). */
+#ifndef HG_COOL_TRANSIT
+#define HG_COOL_TRANSIT       1
+#endif
+/* ---------------- M19 (arch/DECISIONS.md M19; research/R6_invention.md s3.1 + s8.1, main variant) ---------------- */
+/* MARBLE DANGER replaces the M13 persistence rule: Danger = v1.2 logistic OR behaviour OR Marble (HG_PD now 0).
+ * State: E10, E60 = EWMA of the tiers' f20 (rate 1/10, 1/60 per min); A30, A120 = EWMA of min(a_std, 0.30 g) (1/30, 1/120);
+ * D = D (1 - 1/90) + max(0, f20 - 37.9) (leaky heat mass). Not worn / no forecast: f20 = 36.9 (the marble cools).
+ * s = w0 + wL (E60 - 37.5) + wJ (E10 - E60) + wB A30 + wS A120 + wD D, summed in this order (hg_fp.h keeps the order);
+ * Marble = s >= CUT for 5 consecutive ARMED minutes; armed = thermal_ok AND >= 24 h since boot AND corrected air >= 28 C at
+ * some minute of the last 60. Marble then follows the Danger path (CHECK, family after 5 min without a press).
+ * SOURCE / SET IN SIMULATION: time constants, knee, clip, gate, persistence and arming fixed in R6 s8.1 (never swept); weights =
+ * R6's all-DEV logistic fits (110 DEV persons, research/r6/out_final_danger_G3.json weights_all), mean of the raw and the
+ * HR-scaled fit (= R6 s3.1 "mean of raw and HR-scaled"); CUT = mean of R6's two CV cuts (raw 4.495, HR-scaled 4.681). */
+#ifndef HG_MARBLE
+#define HG_MARBLE             1
+#endif
+#define HG_MB_A10             (0.1f)            /* SOURCE R6 s8.1: 1/10 */
+#define HG_MB_A60             (0.016666668f)   /* 1/60 */
+#define HG_MB_A30             (0.033333335f)   /* 1/30 */
+#define HG_MB_A120            (0.008333334f)   /* 1/120 */
+#define HG_MB_DKEEP           (0.98888886f)   /* 1 - 1/90 */
+#define HG_MB_KNEE            (37.9f)           /* SOURCE R6 s8.1 */
+#define HG_MB_LREF            (37.5f)           /* SOURCE R6 s3.1 (score centring) */
+#define HG_MB_ACLIP           (0.30f)           /* SOURCE R6 s8.1: movement clip (g) */
+#define HG_MB_F20_OFF         (36.9f)           /* SOURCE R6 s3.1: f20 fed while not worn / no forecast */
+#define HG_MB_W0              (-2.432500f)    /* SET IN SIMULATION (R6 all-DEV fit, mean raw/HR-scaled) */
+#define HG_MB_WL              (3.425400f)
+#define HG_MB_WJ              (-3.176000f)
+#define HG_MB_WB              (195.178450f)
+#define HG_MB_WS              (-205.927800f)
+#define HG_MB_WD              (0.138900f)
+#define HG_MB_CUT             (4.587753f)    /* SET IN SIMULATION (mean of R6's raw / HR-scaled CV cuts at <= 6 strict FA / month) */
+#define HG_MB_RUN_MIN         5                 /* SOURCE R6 s8.1 */
+#define HG_MB_WARM_C          (28.0f)           /* SOURCE R6 s8.1: heat-context gate */
+#define HG_MB_WARM_WIN        60                /* SOURCE R6 s8.1: within the last 60 min */
+#define HG_MB_ARM_MIN         1440              /* SOURCE R6 s8.1: armed after the first 24 h */
+/* EXCEPTION DRINK (DECISIONS M19.2; R6 s7.1) replaces design A's trigger (HG_DRINK_DESIGN 4 = design A's calm learner +):
+ *  W30 = sum of min(a_std, 0.30 g) over the last 30 min (30-byte ring of 0.30/250-g steps, integer running sum: no drift);
+ *  her usual rise per unit of movement c = Sxy / Sxx (clip [0, 0.6], 0 while Sxx <= 1), Sxx = 0.85 Sxx + sum W30^2,
+ *  Sxy = 0.85 Sxy + sum W30 (f20 - calm), over daytime (08-22 h) worn thermal-ok minutes below COOL in rooms < 30 C (corrected
+ *  air), folded at midnight after the calm update; exception line: f20 - calm - c W30 >= HG_X_DELTA - lowering.
+ *  Settled: a DRINK episode may not START within 120 min of the last one unless f20 >= f20 at the last nudge + 0.15 C.
+ *  B5 deviation from R6 (M3.1): the settled rule never suppresses a start while a PROTECTED DRINK condition (v1.2 ceiling with
+ *  heat context, or PSU env) is true - only NN-only starts are held back, so the NN can never remove a protected DRINK. */
+#define HG_X_DELTA            (0.24f)           /* SET IN SIMULATION: R6 s7.1 / s8.1 (DEV sweep) */
+#define HG_X_W_STEP           (0.0012f)         /* DESIGN: 0.30 g / 250 per ring step */
+#define HG_X_W_N              30                /* SOURCE R6 s7.1: 30-min movement window */
+#define HG_X_DECAY            (0.85f)           /* SOURCE R6 s7.1: daily decay */
+#define HG_X_C_MAX            (0.60f)           /* SOURCE R6 s7.1: clip */
+#define HG_X_SXX_MIN          (1.0f)            /* SOURCE R6 eval_drink.py: slope used once Sxx > 1 */
+#define HG_X_CALM_TIN         (30.0f)           /* SOURCE R6 s7.1: learned in rooms < 30 C only */
+#define HG_X_SETTLE_MIN       120               /* SOURCE R6 s7.1 */
+#define HG_X_RISE_C           (0.15f)           /* SOURCE R6 s7.1 */
+#define HG_X_DREF0            (37.0f)           /* DESIGN: reference for the day sums before the first calm baseline */
+/* M4.3 (B3): oral readings are DISPLAY-ONLY by default (single-reading 95 % limits ~ +-0.75 C, no solid oral->core source):
+ * Twin.core_offset feeds the displayed core only, never a tier / Danger path, and a reading does not end the M5.2
+ * "uncalibrated" lowering. -DHG_TWIN_READING_MODE=1 restores readings into the alarms (old behaviour, behind the flag). */
+#ifndef HG_TWIN_READING_MODE
+#define HG_TWIN_READING_MODE 0
+#endif
+#define HG_UNC_Z              (1.645f)
+#define HG_READING_MIN_C      (34.0f)    /* DESIGN: plausible oral/tympanic reading range for "reading today" */
+#define HG_READING_MAX_C      (42.0f)
+/* SOURCE: ARCH 4.3: phone range = core_now +- 1.645 sd, floor 0.08 C (v1.2 range model, REPORT s5b) */
+#define HG_SD_FLOOR           (0.08f)
+
+/* ---------------- M1 decisions (arch/DECISIONS.md, Nov 12): alarm fatigue ---------------- */
+/* M1.3: older + medication + uncertainty lowering of the watch thresholds never exceeds 0.20 C in total.
+ * Reason: each margin was sourced alone (Kenny 2017 0.2 C; MC meds 0.1 C); their sum was never measured. */
+#define HG_M_TOTAL_CAP        (0.20f)
+/* M1.2: RH entering the v1.2 linear correction is clamped to the v1.2 training range (HTT dev sessions RH 37.9-60.1 %).
+ * Reason: extrapolation outside the fit range is not evidence (resting 75 F f20 37.84 C at 20 % RH, B5 finding 2). */
+#define HG_KF_RH_MIN          (38.0f)
+#define HG_KF_RH_MAX          (60.0f)
+
+/* ---------------- M7 (arch/DECISIONS.md): DRINK designs and routine changes, behind compile flags ----------------
+ * HG_DRINK_DESIGN 0 = absolute line (M1-M5 behaviour), 1 = A personal-relative line, 2 = B nudge-not-state, 3 = C = A + B.
+ * Every number below is SET IN SIMULATION (Virtual Elders v3) and must be frozen at wear-freeze with that label (M7.4). */
+/* M9.1: design A (Delta 0.30 C) is the DEFAULT build, "set in simulation" (SIM-DEV v3: S2 86.0 %, S1 2.5 DRINK/day, 86 min/day) */
+#ifndef HG_DRINK_DESIGN
+#define HG_DRINK_DESIGN 4   /* M19: Exception DRINK (design A's calm learner + movement exception + settled rule) */
+#endif
+/* A: DRINK when f20 - her own calm f20 >= HG_A_DELTA, the absolute 37.85 C line (v1.2, anchored on 38.0 C events, no
+ * margins) stays as a ceiling (after M12 it fires only with heat context, T5 m4). Calm f20 = daily median of f20 over resting daytime minutes (08-22 h, worn,
+ * not ACTIVE, no tier on), >= 60 such minutes, bounded EMA (alpha 0.3) within [36.8, 37.7] C. DESIGN (M7.2). */
+#ifndef HG_A_DELTA
+#define HG_A_DELTA            (0.30f)   /* M9.1, SET IN SIMULATION */
+#endif
+#define HG_A_DAY_START        (8 * 60)
+#define HG_A_DAY_END          (22 * 60)
+#define HG_A_MIN_CALM         60
+#define HG_A_EMA              (0.3f)
+#define HG_A_BASE_MIN         (36.8f)
+#define HG_A_BASE_MAX         (37.7f)
+#define HG_A_HIST_T0          (36.0f)
+#define HG_A_HIST_BIN         (0.02f)
+#define HG_A_HIST_N           100
+/* B: DRINK is a one-shot nudge (vibrate + screen for 10 min), 2 h refractory, unless f20 has risen >= 0.1 C since the last
+ * nudge (then at most every 10 min). COOL / DANGER stay states. DESIGN (M7.2). */
+#define HG_B_NUDGE_MIN        10
+#define HG_B_REFRACTORY_MIN   120
+#define HG_B_RISE_C           (0.10f)
+/* M7.3 (i), kept by M9.3 and DEFAULT: DRINK no longer freezes routine learning (only COOL / DANGER / CHECK do).
+ * M7.3 (ii) (sleep-window +-60 min suppression) was REMOVED by M9.3: it hid anomalies (S9 89.7 -> 76.9 %).
+ * Routine CHECK thresholds are NOT tuned on the simulator (M9.4): set on real wear-test nights before wear-freeze. */
+#ifndef HG_M7_ROUTINE
+#define HG_M7_ROUTINE 1
+#endif
+
+/* ---------------- environmental prior (PSU HEAT critical limit line, Pa_kPa >= A + B * Tdb) ---------------- */
+/* SOURCE: A7.2 "Env-prior line"; R1 s3.1 trial-level fits, older ADL (active >= 10 of last 30 min) */
+#define HG_LIM_OLD_ADL_A      (8.048f)
+#define HG_LIM_OLD_ADL_B      (-0.1399f)
+/* SOURCE: A7.2 "Env-prior line"; R1 s3.1 trial-level fit, older Rest condition */
+#define HG_LIM_OLD_REST_A     (8.308f)
+#define HG_LIM_OLD_REST_B     (-0.1370f)
+/* SOURCE: A7.2 "Env-prior line"; MC HG_LIM_YOUNG_* (Wolf 2023 young minimal-activity limit), unchanged v1.2 */
+#define HG_LIM_YOUNG_A        (10.521773f)
+#define HG_LIM_YOUNG_B        (-0.178122f)
+/* SOURCE: A7.2 "Env-prior line": ACTIVE >= 10 of the last 30 min selects the ADL line (ARCH wording) */
+#define HG_ENV_ACT_WIN        30
+#define HG_ENV_ACT_MIN        10
+/* SOURCE: A7.2 "DRINK on"; MC HG_ENV_DRINK_RUN_MIN = 10 (debounce, design choice in v1.2) */
+#define HG_ENV_DRINK_RUN_MIN  10
+/* SOURCE: A7.2 "COOL on"; MC HG_ENV_COOL_DOSE_MIN = (38.0-37.0)/0.62 C/h = 97 min (Wolf 2023, 0.62 C/h above the limit) */
+#define HG_ENV_COOL_DOSE_MIN  97
+/* SOURCE: MC HG_ENV_DOSE_CAP = 240 (counter unwinds within hours after cooling) */
+#define HG_ENV_DOSE_CAP       240
+
+/* ---------------- WHO absolute indoor rule ---------------- */
+/* SOURCE: A7.2 "DRINK on" WHO absolute: T_in >= 32 C by day / >= 24 C at night (23-07) for 30 of the last 45 min,
+ * no AC evidence (WHO heat-health sheet + hgmodel verification s7, as cited by ARCHITECTURE).
+ * M1.1: NO LONGER A TIER TRIGGER. At night it sets the night_heat flag (screen icon + one bedtime nudge per evening,
+ * fed to Tomorrow Engine); by day it only sets the WHO reason bit. Reason: DRINK on ~19 h/day in an ordinary week. */
+#define HG_WHO_DAY_C          (32.0f)
+#define HG_WHO_NIGHT_C        (24.0f)
+#define HG_WHO_NIGHT_START    (23 * 60)
+#define HG_WHO_NIGHT_END      (7 * 60)
+#define HG_WHO_WIN            45
+#define HG_WHO_NEED           30
+/* DESIGN (ARCH does not define "AC evidence"): a cooling step of >= 2.0 C in corrected air within 15 min while HOME,
+ * latched for 120 min, counts as AC evidence */
+#define HG_AC_STEP_C          (2.0f)
+#define HG_AC_STEP_WIN        15
+#define HG_AC_LATCH_MIN       120
+
+/* ---------------- strain path to COOL ---------------- */
+/* SOURCE: A7.2 "COOL on": Moran 1998 PSI "high strain" >= 7 for 10 min (Cool input only; REPORT s5c rejected PSI for Danger) */
+#define HG_STRAIN_COOL        (7.0f)
+#define HG_STRAIN_COOL_MIN    10
+/* SOURCE: ARCH 4.2 output 5: PSI = 5 (Tc - 36.9)/(39.5 - 36.9) + 5 (HR - rest)/(HRmax - rest), clip 0..10 (Moran 1998) */
+#define HG_PSI_T0             (36.9f)
+#define HG_PSI_TMAX           (39.5f)
+
+/* ---------------- behaviour path, stillness, activity ---------------- */
+/* SOURCE: A7.2 "Still / active"; MC s4e HG_STILL_G = 0.002 g (wrist acc std per minute, ~ sensor floor) */
+#define HG_STILL_G            (0.002f)
+/* SOURCE: A7.2 "Still / active"; R3 s3.4 step 1: ACTIVE if a_std > 0.02 g */
+#define HG_ACTIVE_G           (0.02f)
+/* SOURCE: A7.2 "DANGER on" behaviour path; MC HG_STILL_MIN = 10, HG_BEH_COOL_MIN = 10 (REPORT s5c) */
+#define HG_STILL_MIN          10
+#define HG_BEH_COOL_MIN       10
+/* SOURCE: A7.2 "HR gating": logistic path disabled when hr_valid == 0 for > 5 min (R2 s4: PPG outliers to -30 bpm) */
+#define HG_HR_GATE_MIN        5
+/* DESIGN: "walking" minute for home/out = a_std >= 0.05 g (no step counter on the band; set on the wear test) */
+#define HG_WALK_G             (0.05f)
+
+/* ---------------- CHECK / family ---------------- */
+/* SOURCE: A7.2 "CHECK": ask at t = 0, 2, 5 min (R3 s6.4) */
+#define HG_ASK_T0             0
+#define HG_ASK_T1             2
+#define HG_ASK_T2             5
+/* SOURCE: A7.2 "CHECK": family flag at 5 min no press for DANGER/behaviour, 10 min for routine-only (R3 s6.4; REPORT s5b) */
+#define HG_FAMILY_DANGER_MIN  5
+#define HG_FAMILY_ROUTINE_MIN 10
+/* DESIGN: impact+stillness CHECK uses the 5-min window (Apple hard-fall flow is faster still, R3 s3.5); ARCH silent */
+#define HG_FAMILY_IMPACT_MIN  5
+/* SOURCE: A7.2 "Short press during CHECK": IMOK screen, CHECK snoozed 15 min (REPORT s5b) */
+#define HG_SNOOZE_MIN         15
+/* SOURCE: A7.2 "Long press": >= 2 s = HELP (verification s7); the 2-s timing is measured by the 1 Hz layer -> button = 2 */
+
+/* ---------------- NOT_WORN / BATTERY ---------------- */
+/* SOURCE: A7.2 "NOT_WORN": worn == 0 for 10 min -> screen, phone told at 30 min (verification s7; R2 s5) */
+#define HG_NOTWORN_SCREEN_MIN 10
+#define HG_NOTWORN_PHONE_MIN  30
+/* SOURCE: A7.2 "BATTERY" (R4 A8): < 3.5 V soft haptics + backlight 50 %, < 3.35 V BATTERY state + PPG off,
+ * < 3.45 V at boot charge-me (boot rule is firmware B6's) */
+#define HG_VBAT_SOFT          (3.50f)
+#define HG_VBAT_LOW           (3.35f)
+#define HG_VBAT_BOOT          (3.45f)   /* firmware boot gate (B6 08/09 sketches); NOT used by the guardian loop (T5 m3) */
+/* DESIGN: battery % for the STATUS frame, linear 3.30 V = 0 % .. 4.15 V = 100 % (LiPo rough; display only) */
+#define HG_VBAT_EMPTY         (3.30f)
+#define HG_VBAT_FULL          (4.15f)
+
+/* ---------------- donning ---------------- */
+/* SOURCE: A7.2 "Donning blank": first 20 min after worn -> 2 no thermal alarms (R2 s2.3: discard 20-30 min) */
+#define HG_DON_BLANK_MIN      20
+/* SOURCE: ARCH 4.5 hg2_out_t comment: valid = 0 while worn != 2 or minutes_since_don < 5 */
+#define HG_DON_VALID_MIN      5
+
+/* ---------------- contact self-check (A7.2 "Contact thresholds"; R2 s5 table) ---------------- */
+/* SOURCE: R2 s5: loose = sudden T1 step -0.5..-2 C in < 2 min not matched by T_air */
+#define HG_CT_STEP_C          (-0.5f)
+#define HG_CT_STEP_WIN_S5     24          /* 2 min of 5-s samples */
+/* DESIGN: "not matched by T_air" = air fell by less than half the T1 drop */
+#define HG_CT_AIR_MATCH       (0.5f)
+/* DESIGN: loose latch released when T1 recovers to within 0.3 C of the pre-step value */
+#define HG_CT_RECOVER_C       (0.3f)
+/* SOURCE: R2 s5: ratio dT/(T1-T_air) drops > 30 % vs its 30-min median */
+#define HG_CT_RATIO_DROP      (0.70f)
+#define HG_CT_RATIO_WIN       30
+#define HG_CT_RATIO_MINN      10          /* DESIGN: need 10 valid minutes before the ratio rule may fire */
+#define HG_CT_RATIO_DEN_MIN   (1.0f)      /* DESIGN: ratio only defined when T1 - T_air > 1 C */
+/* SOURCE: R2 s5 + R4 A7: PI < 0.05 % (LOW_PI) with DC rising = loose */
+#define HG_CT_PI_LOOSE        (0.05f)
+#define HG_CT_DC_RISE         (1.02f)     /* DESIGN: "rising" = +2 % vs 2 min ago */
+/* SOURCE: R2 s5: off = T1 within 1 C of T2 and of T_air, dT < 0.1 C, T_air < 30 C */
+#define HG_CT_OFF_NEAR_C      (1.0f)
+#define HG_CT_OFF_DT_C        (0.1f)
+#define HG_CT_OFF_TAIR_MAX    (30.0f)
+/* SOURCE: R4 A7: PPG DC < 20 000 counts = NO_SKIN (test 06: 1,200 bare vs 110,000 on skin) */
+#define HG_CT_DC_NOSKIN       20000u
+/* SOURCE: R2 s5: flat orientation + no motion >= 30 min (+ T1 falling) = off (Ahmadi 2020 in Van Der Donckt 2024) */
+#define HG_CT_FLAT_MIN        30
+#define HG_CT_FALL_C          (0.2f)      /* DESIGN: "T1 falling" = 0.2 C below its value 10 min ago */
+/* SOURCE: R2 s5 caveat: in rooms >= 34 C the thermal rules are disabled, only PPG + IMU decide */
+#define HG_CT_HOT_C           (34.0f)
+/* SOURCE: ARCH 7.1 step 2: 2-min hysteresis */
+#define HG_CT_HYST_MIN        2
+
+/* ---------------- routine (A7.1 step 4; R3 s3.2, s3.4) ---------------- */
+/* SOURCE: R3 s3.2 HDCZA (van Hees 2018 Sci Rep 8:12975): threshold = 15 x 10th percentile of 5-min medians of |d z-angle| */
+#define HG_HDCZA_PCT          10
+#define HG_HDCZA_MULT         15
+/* SOURCE: GGIR HASPT.R (van Hees' reference implementation): threshold clamped to [0.13, 0.50] deg. Units 0.01 deg. */
+#define HG_HDCZA_THR_MIN      13
+#define HG_HDCZA_THR_MAX      50
+/* SOURCE: R3 s3.2 HDCZA: inactive blocks > 30 min kept (6 blocks of 5 min), gaps < 60 min merged (12 blocks) */
+#define HG_HDCZA_MINBLK       6
+#define HG_HDCZA_MAXGAP       12
+/* DESIGN: a noon-to-noon day is used for HDCZA only if >= 200 of its 288 blocks were worn */
+#define HG_HDCZA_MIN_WORN     200
+/* SOURCE: R3 s3.4 step 4 (GE US 7,091,865 example buffers 60/75/90/75/60 across neighbouring slots) */
+#define HG_RT_B0              90
+#define HG_RT_B1              75
+#define HG_RT_B2              60
+/* SOURCE: R3 s3.4 step 4: fallback before 3 learned days: awake quiet run > 180 min */
+#define HG_RT_FALLBACK_MIN    180
+#define HG_RT_LEARN_DAYS      3
+/* SOURCE: R3 s3.4 step 5: no wake by W + 2 h (W = median HDCZA wake, last 7 days, fallback 08:00), cap 10:00 (design
+ * choice stated in R3), heat day W + 1 h */
+#define HG_RT_W_DEFAULT       (8 * 60)
+#define HG_RT_NOWAKE_MIN      120
+#define HG_RT_NOWAKE_HEAT_MIN 60
+#define HG_RT_NOWAKE_CAP      (10 * 60)
+/* SOURCE: manager T5-fix decision D5 (70 %). Rule (b) needs the band WORN through >= HG_RT_NOWAKE_WORN_PCT % of the learned sleep window that just ended;
+ * a boot / donning / first time sync in the morning starts a fresh observation window instead (no "no wake" without a night) */
+#define HG_RT_NOWAKE_WORN_PCT 70
+/* T5 m1 (DESIGN): a clock step back is midnight only if it is >= 12 h (a forward run across 00:00); a phone re-sync that moves
+ * the clock back (14:40 -> 13:00) is not a new day */
+#define HG_MIDNIGHT_MIN_STEP  720
+#define HG_RT_WAKE_HIST       7
+/* DESIGN: "woke" = >= 3 ACTIVE minutes in a 10-min window, from W - 3 h on; reset at midnight */
+#define HG_RT_WAKE_ACT        3
+#define HG_RT_WAKE_LOOKBACK   180
+/* DESIGN: default sleep window before the first HDCZA night: 22:00-08:00 (else every night trips the 180-min fallback) */
+#define HG_RT_SLEEP_DEF_ON    (22 * 60)
+#define HG_RT_SLEEP_DEF_OFF   (8 * 60)
+/* SOURCE: R3 s3.4 step 7: heat coupling when T_in >= 31 C (Meade 2024) or Cool on: halve B and the fallback */
+#define HG_RT_HEAT_TIN        (31.0f)
+/* SOURCE: R3 s3.5 / A7.1 4(d): impact + post-impact stillness -> CHECK input only (no fall-detection claim).
+ * M19-impact (B5 job M19 s5.2, REAL HeatIN DEV watches only; sealed watches never read): the 2 g line fired 13.1 impact CHECKs per wearer-week on 18 real older-adult DEV watches
+ * (|a| peak >= 2 g in 2.8 % of ordinary off-charger minutes; Gjoreski 2016's 2.1-g wrist rule: 9-15 false alarms in 57 days).
+ * Now: peak >= HG_IMPACT_G (3.0 g = 99.83rd percentile of the DEV off-charger minutes; 99.9th = 3.17 g, max 4.96 g) AND a_std
+ * <= 0.002 g (still) for HG_IMPACT_STILL_MIN consecutive minutes right after AND no button press in between (a press = she is
+ * up and answering). DEV (pooled): 0.16 impact+stillness events per wearer-week (2.0 g / 1 min: 13.2). SET ON REAL DEV DATA.
+ * Pre-registered tests/real_exam_heatin.py DEV dry run (variant A, median watch): impact CHECK 13.07 -> 0.07 /wearer-week, all-cause
+ * CHECK 14.08 -> 0.45 /wearer-week (mean 14.77 -> 1.57). WHY 2 g failed: a wrist sees >= 2 g in ordinary arm swings (2.8 % of
+ * off-charger minutes), and 60 s of stillness follows many of them (sitting down). The trace keeps the impact -> stillness -> CHECK path. */
+#define HG_IMPACT_G           (3.0f)
+#define HG_IMPACT_STILL_MIN   2
+/* SOURCE: R3 s3.4 step 2: SD floors 5 min (AM) for the deviation score; routine_score = 255 - min(255, 64 max z) (A7.1) */
+#define HG_RT_SD_FLOOR_AM     (5.0f)
+#define HG_RT_ACTIVE_HOUR_MIN (10.0f)     /* R3 s3.4 step 3: "usually active" hour = mu_AM >= 10 min */
+#define HG_RT_WELFORD_NCAP    30          /* DESIGN: forgetting, same cap as the Twin night baseline (ARCH s5) */
+
+/* ---------------- home / out (A7.1 step 3; R3 s4). R3: "no published equivalent; label as design". ALL DESIGN. ---------------- */
+#define HG_HO_DT_C1           (2.0f)      /* |T_air - stable indoor| >= 2 C: +3 (R3 s4: day steps +1..+5 C, night -5..-10 C) */
+#define HG_HO_DT_C2           (4.0f)      /* >= 4 C: +5 */
+#define HG_HO_DAH             (2.0f)      /* |AH - stable indoor AH| >= 2 g/m3: +2 (Nguyen 2014: AH_in = 0.69 AH_out) */
+#define HG_HO_RSSI_STRONG     2           /* ble_bucket codes: 2 strong (> -75 dBm, R3 s4), 1 weak, 0 lost, -1 no phone */
+#define HG_HO_LOST_MIN        5           /* R3 s4: link lost > 5 min while walking = OUT evidence */
+#define HG_HO_WALK_BOUT       3           /* R3 s4: walking bout >= 3 min */
+#define HG_HO_TRANSIT_WALK    2           /* R3 s4 / A7.1: HOME -> OUT only via TRANSIT with >= 2 min walking */
+#define HG_HO_FC_NEAR_C       (2.0f)      /* A7.1: T_air within 2 C of the forecast T_in -> HOME evidence */
+#define HG_HO_ENTER_TRANSIT   4
+#define HG_HO_ENTER_OUT       12
+#define HG_HO_LEAVE_OUT       8
+#define HG_HO_SCORE_MIN       (-20)
+#define HG_HO_SCORE_MAX       40
+#define HG_HO_TRANSIT_MAX     15
+#define HG_HO_STABLE_DT       (0.3f)      /* stable indoor: |dT_air over 5 min| < 0.3 C */
+#define HG_HO_STABLE_A        (0.1f)
+
+/* ---------------- haptic pattern ids (R3 s6.3; A7.1 step 7) ---------------- */
+#define HG_HAP_NONE   0
+#define HG_HAP_WATCH  1   /* 2 long pulses (>= 300-500 ms, gaps >= 300 ms) */
+#define HG_HAP_COOL   2   /* 3 long pulses, repeated once after 10 s */
+#define HG_HAP_CHECK  3   /* 1 s on / 1 s off for 30 s */
+#define HG_HAP_TICK   4   /* one short tick (IMOK confirmation) */
+#define HG_HAP_SOFT   5   /* battery < 3.5 V: any pattern replaced by a soft tick (R4 A8) */
+
+#endif

@@ -1,0 +1,15 @@
+mark oral 36.85   -> atof=36.850 accepted=1 stored_x100=3685
+mark oral 36,85   -> atof=36.000 accepted=1 stored_x100=3600
+mark oral 3685    -> atof=3685.000 accepted=0 stored_x100=-1
+mark oral abc     -> atof=0.000 accepted=0 stored_x100=-1
+mark oral 36.855  -> atof=36.855 accepted=1 stored_x100=3686
+time 1763287200    -> 1763287200 accepted=1
+time 1763287200abc -> 1763287200 accepted=1
+time -1            -> 18446744073709551615 accepted=0
+time 17632872000   -> 17632872000 accepted=0
+time 0x69000000    -> 0 accepted=0
+time  1763287200   -> 1763287200 accepted=1
+mark 1x         -> m=1 accepted=1
+mark 07         -> m=7 accepted=1
+mark -1         -> m=-1 accepted=0
+mark 9999999999 -> m=1410065407 accepted=0

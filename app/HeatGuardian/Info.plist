@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>el</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>el</string>
+		<string>en</string>
+	</array>
+	<key>CFBundleDisplayName</key>
+	<string>Heat Guardian</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>gr.heatguardian.family</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>heatguardian</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Η εφαρμογή συνδέεται με το βραχιόλι Heat Guardian για να δείχνει την κατάστασή του και να σας ειδοποιεί. / The app connects to the Heat Guardian band to show its state and alert you.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Το Heat Guardian μαθαίνει τα μέρη που πηγαίνετε (π.χ. αγορά, εκκλησία) για να σας πει την καλύτερη ώρα να βγείτε όταν κάνει ζέστη. Οι θέσεις μένουν μόνο σε αυτό το iPhone. / Heat Guardian learns the places you go (e.g. the market, church) to tell you the best time to go out on hot days. Locations stay on this iPhone only.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Για να μαθαίνει τα μέρη σας και όταν η εφαρμογή είναι κλειστή, επιλέξτε «Πάντα». Οι θέσεις μένουν μόνο σε αυτό το iPhone· στο βραχιόλι και στην οικογένεια πηγαίνει μόνο το είδος του μέρους και η ώρα. / To learn your places while the app is closed, choose "Always". Locations stay on this iPhone; the band and your family get only the kind of place and the time.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+	</array>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,84 @@
+== 1. hg_ppg (copied from poc_05, md5 must match) ==
+3aa8908ffc84aad6e1f92e338e6ce600  /home/claude/hg_ai/fw/tools/../08_logger/hg_ppg.c
+3aa8908ffc84aad6e1f92e338e6ce600  /home/claude/hg_ai/fw/tools/../poc_05_hr/hg_ppg.c
+2105a4cef6b732567b894cf29174f643  /home/claude/hg_ai/fw/tools/../08_logger/hg_ppg.h
+2105a4cef6b732567b894cf29174f643  /home/claude/hg_ai/fw/tools/../poc_05_hr/hg_ppg.h
+4b866d6413fca4c2895770367860cbdd  /home/claude/hg_ai/fw/tools/../08_logger/hg_ppg_coeffs.h
+4b866d6413fca4c2895770367860cbdd  /home/claude/hg_ai/fw/tools/../poc_05_hr/hg_ppg_coeffs.h
+B wander+noise 72       HR   71.5 bpm (true  72.0)  Q_OK 100%  flagged   0%  PI 0.464%  cv 0.15  q=4
+   -> PASS
+C walking 110           HR  109.1 bpm (true 110.0)  Q_OK 100%  flagged   0%  PI 0.258%  cv 0.02  q=4
+   -> PASS
+D motion burst          HR    0.0 bpm (true  72.0)  Q_OK   0%  flagged 100%  PI 4.048%  cv 0.02  q=2
+   -> PASS
+E loose band PI .02     HR    0.0 bpm (true  72.0)  Q_OK   0%  flagged 100%  PI 0.018%  cv 0.13  q=1
+   -> PASS
+F no skin               HR    0.0 bpm (true  72.0)  Q_OK   0%  flagged 100%  PI 0.000%  cv 0.15  q=0
+   -> PASS
+ALL SEGMENTS PASS
+sizeof(hg_ppg_t) = 244 bytes of RAM
+== 2. record pack/unpack + CRC-8 (10,000 random records) ==
+crc8("123456789") = 0xF4 (expect 0xF4) OK
+round-trip 10000 random records: 0 failures OK
+single-bit flips: 192000 tested, 0 undetected OK
+hg_c100 rounding/sentinel OK
+wrote 32 vectors to /home/claude/hg_ai/fw/tools/record_vectors.json
+TEST_RECORD: PASS
+== 3. ring logic with a mock filesystem (7 days) ==
+7-day replay: 153 deletions, max s-files 19, min free blocks 40 of 512, min.bin 241920 B, final files 20
+TEST_RING: PASS
+== 4. real littlefs v1.6 on a RAM flash, sketch write pattern (3 days) ==
+littlefs v1.6 host run: 3 days, 4320 minutes, min.bin appended every 10 min
+  hottest blocks: #5 2642, #4 2641, #71 37 erases (littlefs v1 rewrites a directory pair on every file close)
+  files now: 20 (hour files 17), deleted 57, write errors 0, NOR violations 0
+  records read back: 65537 OK, 0 CRC bad, 0 gaps inside hour files
+  min free blocks seen (hourly): 49 of 512
+  erases: total 12109, per day 4036, blocks touched 512, max per block 2642, mean 23.7
+  max erases/block/day 880.7 -> 100,000-cycle NOR (P25Q16H class figure) lasts 114 days at this rate
+    /log/events.txt    10656 B
+    /log/min.bin      103680 B
+    /log/s0057.bin     86424 B
+    /log/s0058.bin     86424 B
+    /log/s0059.bin     86424 B
+    /log/s0060.bin     86424 B
+    /log/r0061.bin    184800 B
+    /log/s0062.bin     86424 B
+    /log/s0063.bin     86424 B
+    /log/s0064.bin     86424 B
+    /log/s0065.bin     86424 B
+    /log/s0066.bin     86424 B
+    /log/s0067.bin     86424 B
+    /log/s0068.bin     86424 B
+    /log/s0069.bin     86424 B
+    /log/s0070.bin     86424 B
+    /log/s0071.bin     86424 B
+    /log/s0072.bin     86424 B
+    /log/s0073.bin     86424 B
+    /log/s0074.bin     86424 B
+TEST_LFS_HOST: PASS
+== 5. parse_log.py on SIMULATED streams ==
+PASS  crc8 check value 0xF4 matches C
+PASS  Python pack/unpack == C hg_rec_pack on 32 vectors (0 mismatches)
+PASS  600 one-hertz rows (got 600)
+PASS  0 CRC errors (got 0)
+PASS  no gaps (got [0])
+PASS  boot decoded = 3 (got {3})
+PASS  unix time attached to every row (TIME sync, back-dated before the sync)
+PASS  unix of the first row back-computed (1763287180.4)
+PASS  markers decoded in order (['boot', 'time', 'donned', 'button', 'oral', 'boot', 'button', 'oral'])
+PASS  oral reading value 36.71 (got 36.71)
+PASS  T2 absent -> NaN, T1 present
+PASS  B1 sensor-model column names present
+PASS  dumpmin section -> minute rows (got 11)
+PASS  minute rows carry VBAT
+PASS  5 raw blocks of 100 samples (got 5)
+PASS  595 rows after deleting 5 lines (got 595)
+PASS  gap report: 5 gaps, 5 s missing (got 5, 5)
+PASS  1 corrupted line -> 1 CRC error, row dropped, 1 gap (got 1)
+PASS  timestamped capture parses identically
+PASS  binary hour file -> 600 rows (got 600)
+PASS  binary file: boot from its header record
+PASS  live + binary of the same seconds de-duplicate to 600 (got 600)
+PASS  one raw quarter missing -> that block dropped, 4 kept (got 4)
+TEST_PARSE_LOG: PASS
+ALL HOST TESTS PASSED

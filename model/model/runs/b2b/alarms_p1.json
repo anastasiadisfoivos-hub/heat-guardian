@@ -1,0 +1,38 @@
+{
+ "freeze5": {
+  "drink": {
+   "episodes": 3,
+   "unconfirmed": 3,
+   "per_h": 0.857
+  },
+  "cool": {
+   "episodes": 0,
+   "unconfirmed": 0,
+   "per_h": 0.0
+  },
+  "danger": {
+   "episodes": 0,
+   "unconfirmed": 0,
+   "per_h": 0.0
+  },
+  "hours": 3.5
+ },
+ "ar": {
+  "drink": {
+   "episodes": 3,
+   "unconfirmed": 3,
+   "per_h": 0.857
+  },
+  "cool": {
+   "episodes": 0,
+   "unconfirmed": 0,
+   "per_h": 0.0
+  },
+  "danger": {
+   "episodes": 0,
+   "unconfirmed": 0,
+   "per_h": 0.0
+  },
+  "hours": 3.5
+ }
+}

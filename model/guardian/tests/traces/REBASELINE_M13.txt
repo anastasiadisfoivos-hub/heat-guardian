@@ -1,0 +1,39 @@
+M13 Danger by persistence (X = 20 min): crafted-trace expectation diff vs hg2-freeze-2
+
+trace_behaviour_acknowledged.csv: 62 of 420 minutes changed
+   old: OK@0 DRINK@40 COOL@127 DRINK@282 OK@369
+   new: OK@0 DRINK@40 COOL@127 DANGER@147 COOL@209 DRINK@282 OK@369
+   why: M13: 40 C / 40 % room, COOL by heat dose from 127; COOL 20 min + debounce with the air above the PSU line and f20 not falling -> DANGER at 147 (CHECK -> family at 5 min), off 10 min after the heat. The earlier press acknowledged the BEHAVIOUR path only; persistence is not silenced by it (a press on the CHECK itself still snoozes 15 min).
+
+trace_check_danger_family.csv: 3 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@273 OK@274
+   new: OK@0 DRINK@27 COOL@37 DANGER@57 COOL@273 OK@274
+   why: M13 persistence (X = 20 min): COOL tier on for 20 min + 2-min debounce, f20 not falling, evidence = v1.2 Danger z >= logit(0.10) -> DANGER 3 min earlier than the v1.2 logistic cut (onset only; episode end unchanged).
+
+trace_check_press_imok_snooze.csv: 5 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 IMOK@63 DANGER@64 COOL@273 OK@274
+   new: OK@0 DRINK@27 COOL@37 DANGER@57 IMOK@60 DANGER@61 COOL@273 OK@274
+   why: M13 persistence (X = 20 min): COOL tier on for 20 min + 2-min debounce, f20 not falling, evidence = v1.2 Danger z >= logit(0.10) -> DANGER 3 min earlier than the v1.2 logistic cut (onset only; episode end unchanged). IMOK and the re-ask shift with it.
+
+trace_cool_dose.csv: 62 of 420 minutes changed
+   old: OK@0 DRINK@40 COOL@127 DRINK@282 OK@369
+   new: OK@0 DRINK@40 COOL@127 DANGER@147 COOL@209 DRINK@282 OK@369
+   why: M13: same room, no press: DANGER at 147 = COOL 127 + 20 min (X) + debounce; ends 10 min after the heat ends (hold).
+
+trace_cool_f20_danger_logistic.csv: 3 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@233 OK@234
+   new: OK@0 DRINK@27 COOL@37 DANGER@57 COOL@233 OK@234
+   why: M13 persistence (X = 20 min): COOL tier on for 20 min + 2-min debounce, f20 not falling, evidence = v1.2 Danger z >= logit(0.10) -> DANGER 3 min earlier than the v1.2 logistic cut (onset only; episode end unchanged).
+
+trace_hr_gating.csv: 25 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@166 DANGER@188 COOL@253 OK@254
+   new: OK@0 DRINK@27 COOL@37 DANGER@57 COOL@253 OK@254
+   why: M13: DANGER 3 min earlier (57) and the two DANGER episodes merge: persistence (COOL > 20 min, z >= logit(0.10), f20 not falling) holds DANGER through the HR-gap -> one episode 57..253.
+
+trace_older_margin.csv: 15 of 240 minutes changed
+   old: OK@0 DRINK@28 COOL@35 DANGER@70 OK@192
+   new: OK@0 DRINK@28 COOL@35 DANGER@55 OK@192
+   why: M13 persistence (X = 20 min): COOL tier on for 20 min + 2-min debounce, f20 not falling, evidence = v1.2 Danger z >= logit(0.10) -> DANGER 15 min earlier than the v1.2 logistic cut (onset only; episode end unchanged).
+
+
+Mutation check: -DHG_PD=0 fails the changed traces (the spec engine models the persistence slope + evidence independently of C/mirror).

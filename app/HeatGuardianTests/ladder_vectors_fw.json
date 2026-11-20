@@ -1,0 +1,20 @@
+[
+  {"scenario": "water_worked", "minute": 0, "type": 17, "seq": 1, "boot": 7, "unix": 1784293200, "arg": 1, "x": [196, 14, 0, 128, 0, 0, 0, 0], "hex": "030100070050275a6a1101c40e00800000000082"},
+  {"scenario": "water_worked", "minute": 3, "type": 18, "seq": 2, "boot": 7, "unix": 1784293380, "arg": 1, "x": [200, 14, 0, 128, 2, 0, 0, 0], "hex": "030200070004285a6a1201c80e008002000000ed"},
+  {"scenario": "water_worked", "minute": 22, "type": 19, "seq": 3, "boot": 7, "unix": 1784294520, "arg": 1, "x": [196, 14, 200, 14, 0, 0, 0, 0], "hex": "0303000700782c5a6a1301c40ec80e00000000d8"},
+  {"scenario": "water_failed_cool_failed", "minute": 0, "type": 17, "seq": 4, "boot": 7, "unix": 1784293200, "arg": 1, "x": [206, 14, 0, 128, 0, 0, 0, 0], "hex": "030400070050275a6a1101ce0e008000000000be"},
+  {"scenario": "water_failed_cool_failed", "minute": 2, "type": 18, "seq": 5, "boot": 7, "unix": 1784293320, "arg": 1, "x": [208, 14, 0, 128, 1, 0, 0, 0], "hex": "0305000700c8275a6a1201d00e00800100000061"},
+  {"scenario": "water_failed_cool_failed", "minute": 21, "type": 21, "seq": 6, "boot": 7, "unix": 1784294460, "arg": 1, "x": [228, 14, 208, 14, 1, 0, 0, 0], "hex": "03060007003c2c5a6a1501e40ed00e01000000f6"},
+  {"scenario": "water_failed_cool_failed", "minute": 21, "type": 17, "seq": 7, "boot": 7, "unix": 1784294460, "arg": 2, "x": [228, 14, 0, 128, 0, 0, 0, 0], "hex": "03070007003c2c5a6a1102e40e00800000000027"},
+  {"scenario": "water_failed_cool_failed", "minute": 23, "type": 18, "seq": 8, "boot": 7, "unix": 1784294580, "arg": 2, "x": [229, 14, 0, 128, 1, 0, 0, 0], "hex": "0308000700b42c5a6a1202e50e008001000000ff"},
+  {"scenario": "water_failed_cool_failed", "minute": 42, "type": 20, "seq": 9, "boot": 7, "unix": 1784295720, "arg": 2, "x": [239, 14, 229, 14, 0, 0, 0, 0], "hex": "030900070028315a6a1402ef0ee50e00000000e9"},
+  {"scenario": "water_failed_cool_failed", "minute": 43, "type": 21, "seq": 10, "boot": 7, "unix": 1784295780, "arg": 3, "x": [239, 14, 0, 128, 3, 0, 0, 0], "hex": "030a00070064315a6a1503ef0e0080030000001a"},
+  {"scenario": "water_failed_cool_failed", "minute": 62, "type": 19, "seq": 11, "boot": 7, "unix": 1784296920, "arg": 3, "x": [240, 14, 239, 14, 0, 0, 0, 0], "hex": "030b000700d8355a6a1303f00eef0e00000000f6"},
+  {"scenario": "no_response", "minute": 0, "type": 17, "seq": 12, "boot": 7, "unix": 1784293200, "arg": 2, "x": [216, 14, 0, 128, 0, 0, 0, 0], "hex": "030c00070050275a6a1102d80e0080000000003f"},
+  {"scenario": "no_response", "minute": 10, "type": 17, "seq": 13, "boot": 7, "unix": 1784293800, "arg": 2, "x": [216, 14, 0, 128, 1, 0, 0, 0], "hex": "030d000700a8295a6a1102d80e0080010000004b"},
+  {"scenario": "no_response", "minute": 20, "type": 21, "seq": 14, "boot": 7, "unix": 1784294400, "arg": 2, "x": [216, 14, 0, 128, 2, 0, 0, 0], "hex": "030e000700002c5a6a1502d80e00800200000072"},
+  {"scenario": "danger", "minute": 0, "type": 20, "seq": 15, "boot": 7, "unix": 1784293200, "arg": 1, "x": [10, 15, 0, 128, 0, 0, 0, 0], "hex": "030f00070050275a6a14010a0f008000000000a8"},
+  {"scenario": "danger", "minute": 2, "type": 19, "seq": 16, "boot": 7, "unix": 1784293320, "arg": 3, "x": [246, 14, 0, 128, 0, 0, 0, 0], "hex": "0310000700c8275a6a1303f60e008000000000c5"},
+  {"scenario": "other", "minute": 3, "type": 14, "seq": 17, "boot": 7, "unix": 1784293380, "arg": 1, "x": [0, 0, 0, 0, 0, 0, 0, 0], "hex": "031100070004285a6a0e01000000000000000027"},
+  {"scenario": "other", "minute": 3, "type": 16, "seq": 18, "boot": 7, "unix": 1784293380, "arg": 3, "x": [0, 0, 0, 0, 0, 0, 0, 0], "hex": "031200070004285a6a1003000000000000000007"}
+]

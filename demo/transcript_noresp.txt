@@ -1,0 +1,135 @@
+# REPLAY started (2 s per simulated minute, 220 s in all); `replay stop` = back to live now
+# DEMO REPLAY noresp: she does not respond (short presses ignored); the real ladder decides: reminder -> repeat at 10 min -> LD_NOTE no-response (family SMS) at 20 min; ladder EVENTS marked SIMULATION (byte 18 = 0xD5)
+# REPLAY noresp: no presses; first reminder ~50 s, repeat ~70 s, no-response note ~90 s after the warm-up
+# DEMO REPLAY start: SIMULATED heat episode (sim/velders person, 110 min from 13:00), 2 s per simulated minute; warm-up 1590 quiet minutes; frozen engine, real screen/buzz/alerts/BLE
+# DEMO REPLAY warm-up done: state OK; showing 13:00-14:49
+# DEMO STATE 0 screen 0 level 0 tiers 0 core 37.53 sd 0.30 f20 37.57 why 0x40 worn 2 check 0 family 0
+# DEMO GAUGE grey -> green f20 37.57 dot 3 lines 37.75/38.15/38.50
+# DEMO 13:00 t=0s | SIM input T1 37.09 T2 35.26 air 32.7 RH 39 HR 67 | SIM true core 37.54 | band core 37.53 f20 37.57 -> OK level 0
+# DEMO 13:01 t=2s | SIM input T1 37.09 T2 35.26 air 32.8 RH 39 HR 69 | SIM true core 37.53 | band core 37.52 f20 37.56 -> OK level 0
+# DEMO 13:02 t=4s | SIM input T1 37.09 T2 35.27 air 32.8 RH 39 HR 80 | SIM true core 37.52 | band core 37.55 f20 37.60 -> OK level 0
+# DEMO 13:03 t=6s | SIM input T1 37.09 T2 35.28 air 32.9 RH 39 HR 72 | SIM true core 37.51 | band core 37.53 f20 37.57 -> OK level 0
+# DEMO 13:04 t=8s | SIM input T1 37.09 T2 35.30 air 32.9 RH 39 HR 51 | SIM true core 37.51 | band core 37.50 f20 37.54 -> OK level 0
+# DEMO 13:05 t=10s | SIM input T1 37.08 T2 35.30 air 32.9 RH 39 HR 74 | SIM true core 37.50 | band core 37.52 f20 37.56 -> OK level 0
+# DEMO 13:06 t=12s | SIM input T1 37.08 T2 35.32 air 32.9 RH 39 HR 66 | SIM true core 37.50 | band core 37.52 f20 37.56 -> OK level 0
+# DEMO 13:07 t=14s | SIM input T1 37.09 T2 35.34 air 33.0 RH 39 HR 74 | SIM true core 37.49 | band core 37.52 f20 37.57 -> OK level 0
+# DEMO 13:08 t=16s | SIM input T1 37.08 T2 35.35 air 33.1 RH 39 HR 69 | SIM true core 37.49 | band core 37.52 f20 37.57 -> OK level 0
+# DEMO 13:09 t=18s | SIM input T1 37.08 T2 35.37 air 33.1 RH 39 HR 73 | SIM true core 37.49 | band core 37.52 f20 37.58 -> OK level 0
+# DEMO GAUGE green -> yellow-green f20 37.65 dot 3 lines 37.75/38.15/38.50 (screen woken)
+# DEMO 13:10 t=20s | SIM input T1 37.11 T2 35.45 air 33.7 RH 34 HR 87 | SIM true core 37.49 | band core 37.57 f20 37.65 -> OK level 0
+# DEMO 13:11 t=22s | SIM input T1 37.15 T2 35.53 air 34.2 RH 34 HR 92 | SIM true core 37.50 | band core 37.58 f20 37.67 -> OK level 0
+# DEMO 13:12 t=24s | SIM input T1 37.18 T2 35.62 air 34.4 RH 33 HR 90 | SIM true core 37.52 | band core 37.60 f20 37.70 -> OK level 0
+# DEMO GAUGE yellow-green -> yellow f20 37.78 dot 4 lines 37.75/38.15/38.50 (screen woken)
+# DEMO 13:13 t=26s | SIM input T1 37.22 T2 35.71 air 34.6 RH 33 HR nan | SIM true core 37.53 | band core 37.68 f20 37.78 -> OK level 0
+# DEMO 13:14 t=28s | SIM input T1 37.25 T2 35.79 air 34.8 RH 33 HR 90 | SIM true core 37.54 | band core 37.70 f20 37.81 -> OK level 0
+# DEMO 13:15 t=30s | SIM input T1 37.28 T2 35.88 air 34.9 RH 33 HR 100 | SIM true core 37.55 | band core 37.70 f20 37.82 -> OK level 0
+# DEMO 13:16 t=32s | SIM input T1 37.31 T2 35.95 air 35.0 RH 34 HR nan | SIM true core 37.57 | band core 37.71 f20 37.83 -> OK level 0
+# DEMO 13:17 t=34s | SIM input T1 37.34 T2 36.03 air 35.2 RH 34 HR nan | SIM true core 37.58 | band core 37.72 f20 37.84 -> OK level 0
+# DEMO STATE 1 screen 1 level 1 tiers 1 core 37.74 sd 0.31 f20 37.85 why 0x50 worn 2 check 0 family 0
+# DEMO ALERT DRINK held reason=PPG arg=1 valid=ppg
+# DEMO 13:18 t=36s | SIM input T1 37.37 T2 36.12 air 35.3 RH 34 HR 91 | SIM true core 37.59 | band core 37.74 f20 37.85 -> DRINK level 1
+# DEMO 13:19 t=38s | SIM input T1 37.40 T2 36.20 air 35.4 RH 33 HR 102 | SIM true core 37.60 | band core 37.74 f20 37.86 -> DRINK level 1
+# DEMO 13:20 t=40s | SIM input T1 37.42 T2 36.27 air 35.5 RH 33 HR 89 | SIM true core 37.61 | band core 37.74 f20 37.86 -> DRINK level 1
+# DEMO 13:21 t=42s | SIM input T1 37.45 T2 36.35 air 35.7 RH 34 HR 94 | SIM true core 37.62 | band core 37.70 f20 37.83 -> DRINK level 1
+# DEMO 13:22 t=44s | SIM input T1 37.48 T2 36.43 air 35.8 RH 34 HR 92 | SIM true core 37.63 | band core 37.70 f20 37.82 -> DRINK level 1
+# DEMO 13:23 t=46s | SIM input T1 37.51 T2 36.50 air 36.0 RH 34 HR 101 | SIM true core 37.63 | band core 37.73 f20 37.86 -> DRINK level 1
+# DEMO 13:24 t=48s | SIM input T1 37.52 T2 36.58 air 36.1 RH 34 HR nan | SIM true core 37.64 | band core 37.74 f20 37.87 -> DRINK level 1
+# DEMO ALERT DRINK shown (persisted; valid=ok f20 37.88)
+# DEMO EVT seq=101 type=8 WARN_SHOWN arg=1 unix=1795000050
+# DEMO LADDER LD_REMIND arg=1 state=remind
+# DEMO EVT seq=102 type=17 LD_REMIND arg=1 unix=1795000050
+# DEMO 13:25 t=50s | SIM input T1 37.55 T2 36.66 air 36.2 RH 34 HR 91 | SIM true core 37.65 | band core 37.75 f20 37.88 -> DRINK level 1
+# DEMO 13:26 t=52s | SIM input T1 37.57 T2 36.73 air 36.3 RH 34 HR 88 | SIM true core 37.66 | band core 37.71 f20 37.83 -> DRINK level 1
+# DEMO 13:27 t=54s | SIM input T1 37.59 T2 36.80 air 36.5 RH 34 HR 87 | SIM true core 37.67 | band core 37.71 f20 37.82 -> DRINK level 1
+# DEMO 13:28 t=56s | SIM input T1 37.62 T2 36.88 air 36.6 RH 34 HR 99 | SIM true core 37.68 | band core 37.76 f20 37.88 -> DRINK level 1
+# DEMO 13:29 t=58s | SIM input T1 37.65 T2 36.95 air 36.7 RH 34 HR 84 | SIM true core 37.68 | band core 37.69 f20 37.80 -> DRINK level 1
+# DEMO 13:30 t=60s | SIM input T1 37.66 T2 37.02 air 36.8 RH 34 HR nan | SIM true core 37.69 | band core 37.68 f20 37.80 -> DRINK level 1
+# DEMO 13:31 t=62s | SIM input T1 37.69 T2 37.09 air 37.0 RH 34 HR nan | SIM true core 37.70 | band core 37.74 f20 37.87 -> DRINK level 1
+# DEMO 13:32 t=64s | SIM input T1 37.70 T2 37.16 air 37.1 RH 34 HR nan | SIM true core 37.70 | band core 37.74 f20 37.86 -> DRINK level 1
+# DEMO 13:33 t=66s | SIM input T1 37.73 T2 37.23 air 37.2 RH 34 HR 98 | SIM true core 37.71 | band core 37.74 f20 37.87 -> DRINK level 1
+# DEMO 13:34 t=68s | SIM input T1 37.75 T2 37.30 air 37.3 RH 34 HR nan | SIM true core 37.72 | band core 37.77 f20 37.90 -> DRINK level 1
+# DEMO LADDER LD_REMIND arg=1 state=remind
+# DEMO EVT seq=103 type=17 LD_REMIND arg=1 unix=1795000070
+# DEMO 13:35 t=70s | SIM input T1 37.77 T2 37.38 air 37.4 RH 34 HR 91 | SIM true core 37.72 | band core 37.79 f20 37.92 -> DRINK level 1
+# DEMO 13:36 t=72s | SIM input T1 37.79 T2 37.45 air 37.6 RH 34 HR 94 | SIM true core 37.73 | band core 37.79 f20 37.92 -> DRINK level 1
+# DEMO 13:37 t=74s | SIM input T1 37.80 T2 37.52 air 37.7 RH 34 HR 92 | SIM true core 37.73 | band core 37.80 f20 37.93 -> DRINK level 1
+# DEMO 13:38 t=76s | SIM input T1 37.83 T2 37.59 air 37.8 RH 34 HR 94 | SIM true core 37.74 | band core 37.74 f20 37.86 -> DRINK level 1
+# DEMO 13:39 t=78s | SIM input T1 37.84 T2 37.66 air 38.0 RH 34 HR 90 | SIM true core 37.75 | band core 37.76 f20 37.88 -> DRINK level 1
+# DEMO 13:40 t=80s | SIM input T1 37.85 T2 37.73 air 38.1 RH 34 HR 94 | SIM true core 37.75 | band core 37.75 f20 37.88 -> DRINK level 1
+# DEMO 13:41 t=82s | SIM input T1 37.87 T2 37.79 air 38.2 RH 34 HR 63 | SIM true core 37.76 | band core 37.82 f20 37.95 -> DRINK level 1
+# DEMO 13:42 t=84s | SIM input T1 37.88 T2 37.86 air 38.3 RH 34 HR nan | SIM true core 37.76 | band core 37.82 f20 37.95 -> DRINK level 1
+# DEMO 13:43 t=86s | SIM input T1 37.90 T2 37.93 air 38.4 RH 34 HR 95 | SIM true core 37.77 | band core 37.82 f20 37.95 -> DRINK level 1
+# DEMO 13:44 t=88s | SIM input T1 37.91 T2 37.99 air 38.5 RH 34 HR 95 | SIM true core 37.77 | band core 37.83 f20 37.96 -> DRINK level 1
+# DEMO LADDER LD_NOTE arg=2 state=remind
+# DEMO EVT seq=104 type=21 LD_NOTE arg=2 unix=1795000090
+# DEMO 13:45 t=90s | SIM input T1 37.93 T2 38.06 air 38.7 RH 34 HR nan | SIM true core 37.78 | band core 37.83 f20 37.96 -> DRINK level 1
+# DEMO 13:46 t=92s | SIM input T1 37.95 T2 38.13 air 38.8 RH 34 HR 75 | SIM true core 37.78 | band core 37.84 f20 37.97 -> DRINK level 1
+# DEMO 13:47 t=94s | SIM input T1 37.96 T2 38.20 air 38.9 RH 34 HR nan | SIM true core 37.79 | band core 37.84 f20 37.97 -> DRINK level 1
+# DEMO 13:48 t=96s | SIM input T1 37.98 T2 38.27 air 39.0 RH 34 HR 92 | SIM true core 37.79 | band core 37.84 f20 37.97 -> DRINK level 1
+# DEMO 13:49 t=98s | SIM input T1 37.99 T2 38.33 air 39.2 RH 34 HR 96 | SIM true core 37.79 | band core 37.84 f20 37.97 -> DRINK level 1
+# DEMO 13:50 t=100s | SIM input T1 38.01 T2 38.40 air 39.3 RH 34 HR 105 | SIM true core 37.80 | band core 37.84 f20 37.97 -> DRINK level 1
+# DEMO 13:51 t=102s | SIM input T1 38.02 T2 38.46 air 39.4 RH 34 HR 95 | SIM true core 37.80 | band core 37.84 f20 37.97 -> DRINK level 1
+# DEMO 13:52 t=104s | SIM input T1 38.04 T2 38.53 air 39.6 RH 35 HR 92 | SIM true core 37.81 | band core 37.85 f20 37.98 -> DRINK level 1
+# DEMO 13:53 t=106s | SIM input T1 38.05 T2 38.59 air 39.6 RH 35 HR nan | SIM true core 37.81 | band core 37.84 f20 37.97 -> DRINK level 1
+# DEMO 13:54 t=108s | SIM input T1 38.06 T2 38.66 air 39.8 RH 35 HR 103 | SIM true core 37.82 | band core 37.87 f20 38.00 -> DRINK level 1
+# DEMO 13:55 t=110s | SIM input T1 38.06 T2 38.68 air 39.5 RH 35 HR 97 | SIM true core 37.82 | band core 37.86 f20 37.98 -> DRINK level 1
+# DEMO 13:56 t=112s | SIM input T1 38.06 T2 38.70 air 39.4 RH 35 HR 88 | SIM true core 37.82 | band core 37.77 f20 37.88 -> DRINK level 1
+# DEMO 13:57 t=114s | SIM input T1 38.06 T2 38.72 air 39.2 RH 35 HR 102 | SIM true core 37.82 | band core 37.82 f20 37.94 -> DRINK level 1
+# DEMO 13:58 t=116s | SIM input T1 38.05 T2 38.73 air 39.2 RH 35 HR 89 | SIM true core 37.82 | band core 37.75 f20 37.85 -> DRINK level 1
+# DEMO 13:59 t=118s | SIM input T1 38.05 T2 38.73 air 39.2 RH 35 HR 94 | SIM true core 37.82 | band core 37.78 f20 37.88 -> DRINK level 1
+# DEMO 14:00 t=120s | SIM input T1 38.05 T2 38.73 air 39.1 RH 35 HR 92 | SIM true core 37.82 | band core 37.77 f20 37.87 -> DRINK level 1
+# DEMO 14:01 t=122s | SIM input T1 38.05 T2 38.74 air 39.1 RH 35 HR 65 | SIM true core 37.82 | band core 37.76 f20 37.86 -> DRINK level 1
+# DEMO 14:02 t=124s | SIM input T1 38.05 T2 38.74 air 39.1 RH 35 HR 90 | SIM true core 37.82 | band core 37.75 f20 37.86 -> DRINK level 1
+# DEMO 14:03 t=126s | SIM input T1 38.05 T2 38.74 air 39.0 RH 35 HR 90 | SIM true core 37.82 | band core 37.74 f20 37.84 -> DRINK level 1
+# DEMO 14:04 t=128s | SIM input T1 38.04 T2 38.74 air 39.0 RH 35 HR 94 | SIM true core 37.82 | band core 37.81 f20 37.92 -> DRINK level 1
+# DEMO 14:05 t=130s | SIM input T1 38.04 T2 38.74 air 39.0 RH 35 HR 95 | SIM true core 37.82 | band core 37.84 f20 37.95 -> DRINK level 1
+# DEMO 14:06 t=132s | SIM input T1 38.04 T2 38.73 air 39.0 RH 35 HR 100 | SIM true core 37.82 | band core 37.79 f20 37.90 -> DRINK level 1
+# DEMO 14:07 t=134s | SIM input T1 38.03 T2 38.73 air 38.9 RH 35 HR 97 | SIM true core 37.82 | band core 37.79 f20 37.89 -> DRINK level 1
+# DEMO 14:08 t=136s | SIM input T1 38.03 T2 38.72 air 38.9 RH 35 HR 92 | SIM true core 37.83 | band core 37.78 f20 37.89 -> DRINK level 1
+# DEMO 14:09 t=138s | SIM input T1 38.03 T2 38.72 air 38.9 RH 35 HR 100 | SIM true core 37.83 | band core 37.77 f20 37.86 -> DRINK level 1
+# DEMO 14:10 t=140s | SIM input T1 37.77 T2 37.90 air 33.1 RH 31 HR 83 | SIM true core 37.83 | band core 37.75 f20 37.81 -> DRINK level 1
+# DEMO 14:11 t=142s | SIM input T1 37.56 T2 37.16 air 30.2 RH 37 HR 85 | SIM true core 37.81 | band core 37.78 f20 37.85 -> DRINK level 1
+# DEMO 14:12 t=144s | SIM input T1 37.40 T2 36.50 air 28.6 RH 40 HR 85 | SIM true core 37.79 | band core 37.81 f20 37.85 -> DRINK level 1
+# DEMO 14:13 t=146s | SIM input T1 37.25 T2 35.91 air 27.8 RH 42 HR 79 | SIM true core 37.77 | band core 37.79 f20 37.81 -> DRINK level 1
+# DEMO 14:14 t=148s | SIM input T1 37.09 T2 35.36 air 27.4 RH 43 HR 82 | SIM true core 37.74 | band core 37.79 f20 37.81 -> DRINK level 1
+# DEMO 14:15 t=150s | SIM input T1 36.95 T2 34.87 air 27.1 RH 44 HR 97 | SIM true core 37.72 | band core 37.80 f20 37.84 -> DRINK level 1
+# DEMO 14:16 t=152s | SIM input T1 36.83 T2 34.41 air 26.9 RH 44 HR 57 | SIM true core 37.70 | band core 37.81 f20 37.87 -> DRINK level 1
+# DEMO 14:17 t=154s | SIM input T1 36.73 T2 34.02 air 26.8 RH 44 HR 78 | SIM true core 37.68 | band core 37.81 f20 37.89 -> DRINK level 1
+# DEMO 14:18 t=156s | SIM input T1 36.63 T2 33.64 air 26.7 RH 44 HR 86 | SIM true core 37.66 | band core 37.81 f20 37.89 -> DRINK level 1
+# DEMO 14:19 t=158s | SIM input T1 36.55 T2 33.31 air 26.7 RH 44 HR 83 | SIM true core 37.64 | band core 37.81 f20 37.89 -> DRINK level 1
+# DEMO 14:20 t=160s | SIM input T1 36.48 T2 33.00 air 26.6 RH 44 HR 81 | SIM true core 37.63 | band core 37.80 f20 37.89 -> DRINK level 1
+# DEMO 14:21 t=162s | SIM input T1 36.41 T2 32.73 air 26.5 RH 44 HR 88 | SIM true core 37.61 | band core 37.79 f20 37.88 -> DRINK level 1
+# DEMO 14:22 t=164s | SIM input T1 36.36 T2 32.47 air 26.5 RH 44 HR 80 | SIM true core 37.60 | band core 37.77 f20 37.87 -> DRINK level 1
+# DEMO 14:23 t=166s | SIM input T1 36.30 T2 32.24 air 26.5 RH 44 HR 68 | SIM true core 37.59 | band core 37.75 f20 37.85 -> DRINK level 1
+# DEMO 14:24 t=168s | SIM input T1 36.24 T2 32.02 air 26.4 RH 44 HR 96 | SIM true core 37.58 | band core 37.70 f20 37.78 -> DRINK level 1
+# DEMO 14:25 t=170s | SIM input T1 36.20 T2 31.83 air 26.4 RH 44 HR 80 | SIM true core 37.57 | band core 37.64 f20 37.71 -> DRINK level 1
+# DEMO 14:26 t=172s | SIM input T1 36.12 T2 31.65 air 26.3 RH 44 HR 82 | SIM true core 37.56 | band core 37.63 f20 37.68 -> DRINK level 1
+# DEMO 14:27 t=174s | SIM input T1 36.05 T2 31.48 air 26.3 RH 44 HR 80 | SIM true core 37.56 | band core 37.60 f20 37.65 -> DRINK level 1
+# DEMO 14:28 t=176s | SIM input T1 36.01 T2 31.32 air 26.2 RH 44 HR 81 | SIM true core 37.55 | band core 37.57 f20 37.61 -> DRINK level 1
+# DEMO 14:29 t=178s | SIM input T1 35.95 T2 31.18 air 26.1 RH 44 HR 83 | SIM true core 37.54 | band core 37.57 f20 37.62 -> DRINK level 1
+# DEMO 14:30 t=180s | SIM input T1 35.91 T2 31.05 air 26.1 RH 44 HR 76 | SIM true core 37.53 | band core 37.55 f20 37.59 -> DRINK level 1
+# DEMO 14:31 t=182s | SIM input T1 35.88 T2 30.92 air 26.1 RH 44 HR 76 | SIM true core 37.53 | band core 37.52 f20 37.56 -> DRINK level 1
+# DEMO 14:32 t=184s | SIM input T1 35.85 T2 30.81 air 26.0 RH 44 HR 76 | SIM true core 37.52 | band core 37.52 f20 37.56 -> DRINK level 1
+# DEMO 14:33 t=186s | SIM input T1 35.83 T2 30.70 air 25.9 RH 44 HR 78 | SIM true core 37.51 | band core 37.52 f20 37.56 -> DRINK level 1
+# DEMO 14:34 t=188s | SIM input T1 35.80 T2 30.61 air 25.9 RH 44 HR 60 | SIM true core 37.50 | band core 37.51 f20 37.56 -> DRINK level 1
+# DEMO 14:35 t=190s | SIM input T1 35.77 T2 30.52 air 25.8 RH 44 HR 73 | SIM true core 37.49 | band core 37.48 f20 37.53 -> DRINK level 1
+# DEMO 14:36 t=192s | SIM input T1 35.75 T2 30.43 air 25.8 RH 44 HR 78 | SIM true core 37.49 | band core 37.50 f20 37.55 -> DRINK level 1
+# DEMO STATE 0 screen 0 level 0 tiers 0 core 37.52 sd 0.18 f20 37.57 why 0x40 worn 2 check 0 family 0
+# DEMO GAUGE yellow -> yellow-green f20 37.57 dot 3 lines 37.75/38.15/38.50 (screen woken)
+# DEMO 14:37 t=194s | SIM input T1 35.73 T2 30.35 air 25.7 RH 44 HR 83 | SIM true core 37.48 | band core 37.52 f20 37.57 -> OK level 0
+# DEMO GAUGE yellow-green -> green f20 37.54 dot 2 lines 37.75/38.15/38.50 (screen woken)
+# DEMO 14:38 t=196s | SIM input T1 35.70 T2 30.27 air 25.7 RH 44 HR 76 | SIM true core 37.47 | band core 37.49 f20 37.54 -> OK level 0
+# DEMO 14:39 t=198s | SIM input T1 35.69 T2 30.20 air 25.7 RH 44 HR 77 | SIM true core 37.46 | band core 37.49 f20 37.54 -> OK level 0
+# DEMO 14:40 t=200s | SIM input T1 35.66 T2 30.12 air 25.6 RH 44 HR 75 | SIM true core 37.45 | band core 37.46 f20 37.51 -> OK level 0
+# DEMO 14:41 t=202s | SIM input T1 35.65 T2 30.06 air 25.6 RH 44 HR 83 | SIM true core 37.44 | band core 37.50 f20 37.56 -> OK level 0
+# DEMO 14:42 t=204s | SIM input T1 35.62 T2 30.00 air 25.5 RH 44 HR 79 | SIM true core 37.43 | band core 37.46 f20 37.52 -> OK level 0
+# DEMO 14:43 t=206s | SIM input T1 35.61 T2 29.95 air 25.4 RH 44 HR 84 | SIM true core 37.43 | band core 37.46 f20 37.53 -> OK level 0
+# DEMO 14:44 t=208s | SIM input T1 35.59 T2 29.88 air 25.4 RH 44 HR 82 | SIM true core 37.42 | band core 37.45 f20 37.52 -> OK level 0
+# DEMO 14:45 t=210s | SIM input T1 35.58 T2 29.84 air 25.4 RH 44 HR 81 | SIM true core 37.41 | band core 37.45 f20 37.52 -> OK level 0
+# DEMO ALERT all-clear peak=1 minutes=82 family=0 tick=0
+# DEMO EVT seq=105 type=12 ALL_CLEAR arg=1 unix=1795000212
+# DEMO 14:46 t=212s | SIM input T1 35.55 T2 29.77 air 25.3 RH 44 HR 75 | SIM true core 37.40 | band core 37.44 f20 37.50 -> OK level 0
+# DEMO 14:47 t=214s | SIM input T1 35.54 T2 29.72 air 25.3 RH 44 HR nan | SIM true core 37.39 | band core 37.40 f20 37.47 -> OK level 0
+# DEMO 14:48 t=216s | SIM input T1 35.52 T2 29.67 air 25.2 RH 44 HR 77 | SIM true core 37.38 | band core 37.42 f20 37.49 -> OK level 0
+# DEMO 14:49 t=218s | SIM input T1 35.50 T2 29.62 air 25.2 RH 44 HR 75 | SIM true core 37.37 | band core 37.40 f20 37.47 -> OK level 0
+# DEMO REPLAY end of the episode: this screen stays 2 min, then live (or `replay stop`)

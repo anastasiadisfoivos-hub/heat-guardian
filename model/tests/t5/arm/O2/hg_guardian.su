@@ -1,0 +1,8 @@
+hg_guardian.c:45:16:tier.constprop	0	static
+hg_guardian.c:32:6:hg_guardian_init	24	static
+hg_guardian.c:42:6:hg_guardian_set_twin	16	static
+hg_guardian.c:59:6:hg_guardian_get_calm	0	static
+hg_guardian.c:60:5:hg_guardian_set_calm	16	static
+hg_guardian.c:66:5:hg_guardian_cmd	8	static
+hg_guardian.c:100:13:hg_screen_text	0	static
+hg_guardian.c:102:6:hg_guardian_step	792	static

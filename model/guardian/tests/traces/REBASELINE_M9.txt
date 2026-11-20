@@ -1,0 +1,2 @@
+M9 re-baseline: design A default (DRINK = absolute 37.85 C ceiling without older/medication margins + personal-relative line; COOL keeps margins); expectations before -> after
+

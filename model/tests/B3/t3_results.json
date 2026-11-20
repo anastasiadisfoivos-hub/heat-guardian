@@ -1,0 +1,190 @@
+{
+ "T1 golden C==Python, 40 random streams x 10 nights (400 updates), 3 builds": [
+  "FAIL",
+  "max|C-Py| {'O0': 4.999999703159119e-08, 'O2': 4.999999703159119e-08, 'O3fma': 7.660253899643976e-06}; updates 400; K strictly interior after 77 updates; frozen codes seen [0, 1, 3]; mismatches 20 [['seed 0: 19: packed file differs', 'seed 5: 15: packed file differs']]"
+ ],
+ "T1b builder golden covers interior K values?": [
+  "DEFECT",
+  "builder golden k_person values = [np.float64(0.12), np.float64(0.4)] (default and the upper clamp only: the K formula's interior is never checked C-vs-Python by host_test)"
+ ],
+ "T2 rest_hr p10 vs numpy percentile (|d| <= 1 bpm, histogram)": [
+  "PASS",
+  "hist 52.043 np 52.029"
+ ],
+ "T2 rest_hr rule value": [
+  "PASS",
+  "66.11304 vs 66.11304"
+ ],
+ "T2 rest_hr with 59 valid sleep minutes moves=False": [
+  "PASS",
+  "rest=70.000"
+ ],
+ "T2 rest_hr with 60 valid sleep minutes moves=True": [
+  "PASS",
+  "rest=65.530"
+ ],
+ "T2 K moves at dT=0.49: False": [
+  "PASS",
+  "K=0.120000"
+ ],
+ "T2 K moves at dT=0.5: True": [
+  "PASS",
+  "K=0.159998"
+ ],
+ "T2 K interior formula": [
+  "PASS",
+  "0.160000 vs 0.160000"
+ ],
+ "T2 offset formula": [
+  "PASS",
+  "0.070000 vs 0.070000"
+ ],
+ "T2 flux_valid=0: K frozen, offset learns": [
+  "PASS",
+  ""
+ ],
+ "T2 offset decay 4 updates -> 1/4": [
+  "PASS",
+  "0.2500000"
+ ],
+ "T2 one alarm minute at night freezes": [
+  "PASS",
+  "frozen=1"
+ ],
+ "T2 worn!=2 for 60/200 night minutes -> frozen code 0": [
+  "PASS",
+  "got 0"
+ ],
+ "T2 worn!=2 for 62/200 night minutes -> frozen code 3": [
+  "PASS",
+  "got 3"
+ ],
+ "T2 baseline hour 12 with 19 minutes/night x3 learned=False": [
+  "PASS",
+  "base12=nan"
+ ],
+ "T2 baseline hour 12 with 20 minutes/night x3 learned=True": [
+  "PASS",
+  "base12=33.099998474121094"
+ ],
+ "T2 baseline mean of 3 nights (33.0, 33.1, 33.2) = 33.1 +- 0.01": [
+  "PASS",
+  "33.1000"
+ ],
+ "T2 baseline NAN after 2 nights": [
+  "PASS",
+  ""
+ ],
+ "T2 baseline not learned at T_air = 28.0": [
+  "PASS",
+  ""
+ ],
+ "T2 Welford n capped at 30 (step = 3/30)": [
+  "PASS",
+  "33.1000, n=30"
+ ],
+ "T2 c_bodyheat with 29 OUT-walking minutes": [
+  "PASS",
+  "c=0.15000 exp 0.15000"
+ ],
+ "T2 c_bodyheat with 30 OUT-walking minutes": [
+  "PASS",
+  "c=0.18000 exp 0.18000"
+ ],
+ "T2 no parameter changes per minute (1440 minutes, no update)": [
+  "PASS",
+  ""
+ ],
+ "T3a stuck minute_of_day (1000 still minutes in hour 3 per night, 3 nights)": [
+  "DEFECT",
+  "t1_night_base[3] Python=129.41 C=129.41 degC (bounds 25..42; true T1 = 33.0). cur_cnt saturates at 255 (hg_twin.c ingest_minute 'if (a->cur_cnt < 255u) a->cur_cnt++' while cur_sum keeps adding; flush_hour_ divides by 255)"
+ ],
+ "T3a2 heat wave, only hour 3 qualifies, nightly update missed 5 days": [
+  "INFO",
+  "today mean for hour 3 -> t1_n[3]=1, pre_cd=4000 (true 3400): one night only, but the cd is INFLATED"
+ ],
+ "T3b centi-degree int16 overflow (3000 stuck minutes)": [
+  "DEFECT",
+  "t1_pre_cd[3] Python=38824 C=-26712 (C (int16_t)floorf(x) out of range = undefined behaviour; C != Python)"
+ ],
+ "T3c CRC-valid file, t1_n[5]=1 with t1_pre_cd[5]=CD_NONE": [
+  "DEFECT",
+  "unpack C rc=0, Python ok=True; after 2 nights t1_night_base[5] = -87.23 degC (bounds 25..42) -- hg_twin_unpack range-checks t1_n and t1_night_base but not t1_pre_cd; sanitize_ only runs at the START of the next update"
+ ],
+ "T3d n==1 integer mean, negative odd sum: Python floor // vs C truncation": [
+  "DEFECT",
+  "Python -1 vs C 0 (minor: only from a semantically corrupt file)"
+ ],
+ "T3e extreme finite inputs (air_ref 3e38, dT 14.99, T_air -19.9, HR 250)": [
+  "PASS",
+  "params ['70.0000', '0.4000', '0.5657', '0.1500']"
+ ],
+ "T3f C fuzz: 200 nights, sequential clock, 30 % NaN/inf/out-of-range fields": [
+  "PASS",
+  "updates out of bounds: 0; final rest 70.00 K 0.400 off 0.061 c 0.150 days 158"
+ ],
+ "T4a C crc32 == zlib.crc32 on 140 random buffers (0..4096 B) + chaining": [
+  "PASS",
+  "mismatches 0, chain True"
+ ],
+ "T4b file size with B5 routine 650 B / 699 / 700 (ARCH allows routine <= 700)": [
+  "PASS",
+  "650 -> 851 B (<= 900, 7 x 128-B blocks = 7), 699 -> 900, 700 -> -1 (refused: the 72-B learning state not in ARCH 5 makes routine <= 699, ARCH says <= 700 -> 1-B spec mismatch, minor)"
+ ],
+ "T4c 6000 random multi-byte mutations: C unpack == Python from_bytes verdict; corrupt -> defaults": [
+  "PASS",
+  "verdict disagreements 0; mutated files accepted without a CRC fix 0; CRC-fixed semantic mutations accepted 1972/3000 (all in bounds: True)"
+ ],
+ "T4d bad magic / version / length with a valid CRC rejected": [
+  "PASS",
+  "rc [-2, -3, -4]"
+ ],
+ "T4e routine_cap too small -> error, defaults": [
+  "PASS",
+  "rc -6, rest 70.0"
+ ],
+ "T5 rest_hr bias from MAX30102 outliers (SIMULATION of ARCH 3.3 noise, hr_valid assumed not to catch them)": [
+  "RISK",
+  "rest_hr - clean target after 7 nights: median -0.40 bpm, p90 +1.19, p10 -2.66"
+ ],
+ "T5b K rule absorbs the axial gap (SIMULATION from R2 6.3 constants, 3 readings, offset not yet learned)": [
+  "RISK",
+  "learned K median 0.400 (at upper bound 0.40 in 85 %), K_true median 0.135: k_obs = K_true + D_axial/dT; spec rule (ARCH 5), not a builder deviation"
+ ],
+ "T6a sim_io.sealed_sim_ids() reads the REAL model/sealed_hg2.json": [
+  "DEFECT",
+  "SealMissing: cannot find the sealed SIM id list in /home/claude/hg_ai/model/sealed_hg2.json (keys: ['seed', 'sealed_sim_person_ids', 'sealed_office_subject_ids', 'canonical_string_sha256', 'persons_parquet_sha256', 'strata_allocation', 'sealed_at_utc', 'sealed -> eval_sim.py and make_golden.py --source sim cannot run (fail-closed: safe, but blocks acceptance 1 and the SIM golden)"
+ ],
+ "T6b seal SHA-256 of persons.parquet matches": [
+  "PASS",
+  "eb9ad75e3b52caeb"
+ ],
+ "T6c DevMinutes on a synthetic file with sealed row groups (seal key patched to one sim_io accepts)": [
+  "PASS",
+  "sealed ids returned []; person(sealed) refused True; dev person in a mixed group dropped True (safe); phantom ids listed []"
+ ],
+ "T6d sealed-id assertion present in eval_sim / sim_io / make_golden": [
+  "PASS",
+  ""
+ ],
+ "T6e ARCH 5 test 1 (SIM leave-first-days-in, acceptance 1)": [
+  "PENDING",
+  "sim/data/minutes_dev.parquet absent or still being written (no parquet footer); eval_sim.py cannot run anyway until T6a is fixed"
+ ],
+ "T7a host timing of ingest_minute (+ nightly every 1440)": [
+  "PASS",
+  "7.0 ns/call host; x50 = 0.3 us (budget 1000 us)"
+ ],
+ "T7b determinism: Python replay twice, sha256 equal": [
+  "PASS",
+  "e090edfd14947b4e"
+ ],
+ "T7c sizes": [
+  "PASS",
+  "ctypes mirror: hg_twin_acc_t 240 B (<= 256), hg2_twin_t 116 B"
+ ],
+ "T7d grep expf|logf|powf|double|malloc in hg_twin.c": [
+  "PASS",
+  "hits []"
+ ]
+}

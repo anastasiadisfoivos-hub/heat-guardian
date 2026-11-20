@@ -1,0 +1,515 @@
+{
+ "label": "young adults 18-33, chamber walk, DEV",
+ "provenance": {
+  "minutes_dev_file": "minutes_dev_v4.parquet",
+  "minutes_dev_sha256": "2bce61d1b08e6d2d978c06bc25a09350ebda6f977288dfdf863559b5ce7911b9",
+  "persons_sha256": "eb9ad75e3b52caebffa3c7f61a90caffd41d950e64e41ccc0276b0f09e4b5aca",
+  "run_tag": "v4aug",
+  "sim_version": "v4 (FINAL training sim, M8)",
+  "hr_rise_augmentation": true,
+  "htt_db": "/home/claude/hgdata/heat_guardian_train.sqlite dataset 1 (all 65 = DEV for hg2)"
+ },
+ "n_people": 65,
+ "n_sessions": 130,
+ "definitions": "ARCH 4.4 step 4: nested LOSO calibration on HTT-DEV (young adults 18-33, chamber walk, DEV) of\n  DANGER = (v1.2 logistic z >= -1.450 for 2 min) OR (hg2 logit_p385 >= cut_385 for 2 min), event 38.5, combined <= 0.10 FA/h\n  DRINK  = (hg2 f20_eff >= 37.85 for 2 min) OR (hg2 logit_p38 >= cut_38 for 2 min),          event 38.0, combined <= 0.15 FA/h\nFor every left-out person: the cut is chosen on the other 64 people's out-of-fold predictions (models fine-tuned without\nthose people, REPORT 5b practice), then that person is scored. hg2 predictions come from train.py --loso (each member\nfine-tuned without the left-out subject; pretraining never saw HTT). Exported cuts = the same choice on all 65.\nWrites model/results_danger_hg2.json.",
+ "danger": {
+  "v1.2 logistic alone (z >= -1.450, 2 min)": {
+   "events": 42,
+   "detected": 33,
+   "sensitivity": 78.57142857142857,
+   "false_alarms": 22,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.09567990721948393,
+   "lead_median": 6.0,
+   "lead_middle_half": [
+    2.0,
+    27.0
+   ],
+   "sensitivity_95": [
+    68.07940729483282,
+    89.47822141560798
+   ],
+   "fa_per_h_95": [
+    0.06422871360611102,
+    0.12893667089099198
+   ]
+  },
+  "OR-rule v1.2 OR hg2 logit_p385 (nested cut, <= 0.10/h)": {
+   "events": 42,
+   "detected": 33,
+   "sensitivity": 78.57142857142857,
+   "false_alarms": 22,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.09567990721948393,
+   "lead_median": 6.0,
+   "lead_middle_half": [
+    2.0,
+    27.0
+   ],
+   "sensitivity_95": [
+    68.07940729483282,
+    89.47822141560798
+   ],
+   "fa_per_h_95": [
+    0.06422871360611102,
+    0.12893667089099198
+   ]
+  },
+  "hg2 logit_p385 alone (nested cut, <= 0.10/h)": {
+   "events": 42,
+   "detected": 31,
+   "sensitivity": 73.80952380952381,
+   "false_alarms": 18,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.07828356045230503,
+   "lead_median": 10.0,
+   "lead_middle_half": [
+    2.5,
+    23.5
+   ],
+   "sensitivity_95": [
+    62.22222222222222,
+    85.00265957446808
+   ],
+   "fa_per_h_95": [
+    0.048596857931853414,
+    0.1106123317980769
+   ]
+  },
+  "paired_OR_minus_v12_points": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  },
+  "cut_385_nested_per_fold": {
+   "median": 1000000000.0,
+   "range": [
+    1000000000.0,
+    1000000000.0
+   ],
+   "share_off": 1.0
+  },
+  "cut_385_pooled_all_65": 1000000000.0
+ },
+ "k_sd_sweep_drink": [
+  {
+   "k": 0.0,
+   "sensitivity": 86.0,
+   "fa_per_h": 0.17396346767178897,
+   "lead_median": 19.0
+  },
+  {
+   "k": 0.1,
+   "sensitivity": 89.0,
+   "fa_per_h": 0.1609162075964048,
+   "lead_median": 20.0
+  },
+  {
+   "k": 0.2,
+   "sensitivity": 90.0,
+   "fa_per_h": 0.16961438097999423,
+   "lead_median": 21.5
+  },
+  {
+   "k": 0.3,
+   "sensitivity": 91.0,
+   "fa_per_h": 0.16961438097999423,
+   "lead_median": 22.0
+  },
+  {
+   "k": 0.4,
+   "sensitivity": 95.0,
+   "fa_per_h": 0.17831255436358368,
+   "lead_median": 22.0
+  },
+  {
+   "k": 0.5,
+   "sensitivity": 96.0,
+   "fa_per_h": 0.16961438097999423,
+   "lead_median": 22.5
+  },
+  {
+   "k": 0.6,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.17396346767178897,
+   "lead_median": 22.0
+  },
+  {
+   "k": 0.7,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.16526529428819953,
+   "lead_median": 23.0
+  },
+  {
+   "k": 0.8,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.17396346767178897,
+   "lead_median": 23.0
+  },
+  {
+   "k": 0.9,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.17396346767178897,
+   "lead_median": 24.0
+  },
+  {
+   "k": 1.0,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.18701072774717314,
+   "lead_median": 24.0
+  },
+  {
+   "k": 1.1,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.18701072774717314,
+   "lead_median": 25.5
+  },
+  {
+   "k": 1.2,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19135981443896785,
+   "lead_median": 27.0
+  },
+  {
+   "k": 1.3,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.20005798782255732,
+   "lead_median": 27.0
+  },
+  {
+   "k": 1.4,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 1.5,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 1.6,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 1.7,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 1.8,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 1.9,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 2.0,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 2.1,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 2.2,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 2.3,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 2.4,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 2.5,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 2.6,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 2.7,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 2.8,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 2.9,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  },
+  {
+   "k": 3.0,
+   "sensitivity": 100.0,
+   "fa_per_h": 0.19570890113076259,
+   "lead_median": 27.5
+  }
+ ],
+ "k_sd_chosen": 0.0,
+ "k_sd_rule": "largest k in 0..3 (step 0.1) with Drink FA/h <= 0.15 and sensitivity >= 85 % (M6.3); 1.0 restores D7",
+ "drink": {
+  "v1.2 f20 >= 37.85": {
+   "events": 100,
+   "detected": 85,
+   "sensitivity": 85.0,
+   "false_alarms": 22,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.09567990721948393,
+   "lead_median": 23.0,
+   "lead_middle_half": [
+    13.0,
+    34.0
+   ],
+   "sensitivity_95": [
+    76.92105263157895,
+    91.83879612451041
+   ],
+   "fa_per_h_95": [
+    0.058904165583957044,
+    0.13761493345823703
+   ]
+  },
+  "hg2 f20_eff = core_20 + k sd (k = 0.0) >= 37.85": {
+   "events": 100,
+   "detected": 86,
+   "sensitivity": 86.0,
+   "false_alarms": 40,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.17396346767178897,
+   "lead_median": 19.0,
+   "lead_middle_half": [
+    9.25,
+    33.5
+   ],
+   "sensitivity_95": [
+    78.34719812187404,
+    92.78350515463917
+   ],
+   "fa_per_h_95": [
+    0.11512999607230895,
+    0.23390335317734692
+   ]
+  },
+  "hg2 core_20 alone (k = 0) >= 37.85": {
+   "events": 100,
+   "detected": 86,
+   "sensitivity": 86.0,
+   "false_alarms": 40,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.17396346767178897,
+   "lead_median": 19.0,
+   "lead_middle_half": [
+    9.25,
+    33.5
+   ],
+   "sensitivity_95": [
+    79.08241758241759,
+    92.1542904290429
+   ],
+   "fa_per_h_95": [
+    0.11351807524872884,
+    0.2320809016154967
+   ]
+  },
+  "hg2 f20 OR logit_p38 (nested cut, <= 0.15/h)": {
+   "events": 100,
+   "detected": 86,
+   "sensitivity": 86.0,
+   "false_alarms": 40,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.17396346767178897,
+   "lead_median": 19.0,
+   "lead_middle_half": [
+    9.25,
+    33.5
+   ],
+   "sensitivity_95": [
+    78.34719812187404,
+    92.78350515463917
+   ],
+   "fa_per_h_95": [
+    0.11512999607230895,
+    0.23390335317734692
+   ]
+  },
+  "paired_hg2_f20eff_minus_v12_points": {
+   "mean": 1.0,
+   "ci95": [
+    -2.1052631578947367,
+    4.211646136618135
+   ]
+  },
+  "cut_38_nested_per_fold": {
+   "median": 1000000000.0,
+   "range": [
+    1000000000.0,
+    1000000000.0
+   ],
+   "share_off": 1.0
+  },
+  "cut_38_pooled_all_65": 1000000000.0,
+  "tradeoff_curve_f20_threshold (information only; thresholds stay v1.2)": [
+   {
+    "threshold": 37.75,
+    "sensitivity": 98.0,
+    "fa_per_h": 0.16526529428819953,
+    "lead_median": 22.0
+   },
+   {
+    "threshold": 37.8,
+    "sensitivity": 91.0,
+    "fa_per_h": 0.16526529428819953,
+    "lead_median": 21.0
+   },
+   {
+    "threshold": 37.85,
+    "sensitivity": 86.0,
+    "fa_per_h": 0.17396346767178897,
+    "lead_median": 19.0
+   },
+   {
+    "threshold": 37.9,
+    "sensitivity": 82.0,
+    "fa_per_h": 0.10002899391127866,
+    "lead_median": 15.5
+   },
+   {
+    "threshold": 37.95,
+    "sensitivity": 79.0,
+    "fa_per_h": 0.07828356045230503,
+    "lead_median": 15.0
+   },
+   {
+    "threshold": 38.0,
+    "sensitivity": 72.0,
+    "fa_per_h": 0.06523630037692087,
+    "lead_median": 14.0
+   },
+   {
+    "threshold": 38.05,
+    "sensitivity": 63.0,
+    "fa_per_h": 0.05653812699333141,
+    "lead_median": 13.0
+   },
+   {
+    "threshold": 38.1,
+    "sensitivity": 55.0,
+    "fa_per_h": 0.04783995360974196,
+    "lead_median": 12.0
+   },
+   {
+    "threshold": 38.15,
+    "sensitivity": 50.0,
+    "fa_per_h": 0.034792693534357794,
+    "lead_median": 10.0
+   }
+  ]
+ },
+ "cool": {
+  "v1.2 f20 >= 38.35": {
+   "events": 42,
+   "detected": 24,
+   "sensitivity": 57.142857142857146,
+   "false_alarms": 17,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.07393447376051031,
+   "lead_median": 15.5,
+   "lead_middle_half": [
+    10.25,
+    28.0
+   ],
+   "sensitivity_95": [
+    42.09914320685435,
+    73.17073170731707
+   ],
+   "fa_per_h_95": [
+    0.04160887686653752,
+    0.113294119853433
+   ]
+  },
+  "hg2 f20_eff (k sd) >= 38.35": {
+   "events": 42,
+   "detected": 30,
+   "sensitivity": 71.42857142857143,
+   "false_alarms": 20,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.08698173383589448,
+   "lead_median": 11.0,
+   "lead_middle_half": [
+    1.5,
+    19.75
+   ],
+   "sensitivity_95": [
+    58.53658536585366,
+    83.87646627565982
+   ],
+   "fa_per_h_95": [
+    0.052641931532940237,
+    0.12742690133730852
+   ]
+  },
+  "hg2 core_20 alone >= 38.35": {
+   "events": 42,
+   "detected": 30,
+   "sensitivity": 71.42857142857143,
+   "false_alarms": 20,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.08698173383589448,
+   "lead_median": 11.0,
+   "lead_middle_half": [
+    1.5,
+    19.75
+   ],
+   "sensitivity_95": [
+    57.944736842105264,
+    83.97796817625459
+   ],
+   "fa_per_h_95": [
+    0.052981522504990046,
+    0.12738989309414822
+   ]
+  }
+ },
+ "export_cuts": {
+  "HG2_LOGIT_CUT_38": 1000000000.0,
+  "HG2_LOGIT_CUT_385": 1000000000.0,
+  "HG2_SD_K": 0.0,
+  "note": "1e9 = NN path never fires (the pooled choice found no cut that adds sensitivity within the FA budget)"
+ }
+}

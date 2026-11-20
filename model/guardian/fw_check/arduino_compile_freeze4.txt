@@ -1,0 +1,4 @@
+Library Adafruit nRFCrypto has been declared precompiled:
+Using precompiled library in /root/.arduino15/packages/Seeeduino/hardware/nrf52/1.1.13/libraries/Adafruit_nRFCrypto/src/cortex-m4/fpv4-sp-d16-hard
+Sketch uses 269784 bytes (33%) of program storage space. Maximum is 811008 bytes.
+Global variables use 19724 bytes (8%) of dynamic memory, leaving 217844 bytes for local variables. Maximum is 237568 bytes.

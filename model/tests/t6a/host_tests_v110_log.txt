@@ -1,0 +1,127 @@
+== 1. hg_ppg (copied from poc_05, md5 must match) ==
+3aa8908ffc84aad6e1f92e338e6ce600  /home/claude/hg_ai/fw/tools/../08_logger/hg_ppg.c
+3aa8908ffc84aad6e1f92e338e6ce600  /home/claude/hg_ai/fw/tools/../poc_05_hr/hg_ppg.c
+2105a4cef6b732567b894cf29174f643  /home/claude/hg_ai/fw/tools/../08_logger/hg_ppg.h
+2105a4cef6b732567b894cf29174f643  /home/claude/hg_ai/fw/tools/../poc_05_hr/hg_ppg.h
+4b866d6413fca4c2895770367860cbdd  /home/claude/hg_ai/fw/tools/../08_logger/hg_ppg_coeffs.h
+4b866d6413fca4c2895770367860cbdd  /home/claude/hg_ai/fw/tools/../poc_05_hr/hg_ppg_coeffs.h
+B wander+noise 72       HR   71.5 bpm (true  72.0)  Q_OK 100%  flagged   0%  PI 0.464%  cv 0.15  q=4
+   -> PASS
+C walking 110           HR  109.1 bpm (true 110.0)  Q_OK 100%  flagged   0%  PI 0.258%  cv 0.02  q=4
+   -> PASS
+D motion burst          HR    0.0 bpm (true  72.0)  Q_OK   0%  flagged 100%  PI 4.048%  cv 0.02  q=2
+   -> PASS
+E loose band PI .02     HR    0.0 bpm (true  72.0)  Q_OK   0%  flagged 100%  PI 0.018%  cv 0.13  q=1
+   -> PASS
+F no skin               HR    0.0 bpm (true  72.0)  Q_OK   0%  flagged 100%  PI 0.000%  cv 0.15  q=0
+   -> PASS
+ALL SEGMENTS PASS
+sizeof(hg_ppg_t) = 244 bytes of RAM
+== 2. record pack/unpack + CRC-8 (10,000 random records) ==
+crc8("123456789") = 0xF4 (expect 0xF4) OK
+round-trip 10000 random records: 0 failures OK
+single-bit flips: 192000 tested, 0 undetected OK
+hg_c100 rounding/sentinel OK
+wrote 32 vectors to /home/claude/hg_ai/fw/tools/record_vectors.json
+TEST_RECORD: PASS
+== 3. ring logic with a mock filesystem (7 days) ==
+7-day replay: 153 deletions, max s-files 19, min free blocks 40 of 512, min.bin 241920 B, final files 20
+TEST_RING: PASS
+== 3b. resets never delete undumped hours (T6a B1, model B = the sketch's boot path) ==
+INFO model A   5 resets x   10 s: full hour files lost 0, 1 Hz seconds kept 61200 -> 61250
+INFO model A  20 resets x   10 s: full hour files lost 1, 1 Hz seconds kept 61200 -> 57800
+INFO model A  30 resets x   60 s: full hour files lost 2, 1 Hz seconds kept 61200 -> 55800
+INFO model A  60 resets x    8 s: full hour files lost 5, 1 Hz seconds kept 61200 -> 43680
+PASS model B   5 resets x   10 s: full hour files lost 0, 1 Hz seconds kept 61200 -> 61254
+PASS model B  20 resets x   10 s: full hour files lost 0, 1 Hz seconds kept 61200 -> 61419
+PASS model B  30 resets x   60 s: full hour files lost 0, 1 Hz seconds kept 61200 -> 63029
+PASS model B  60 resets x    8 s: full hour files lost 0, 1 Hz seconds kept 61200 -> 61739
+TEST_REBOOT: PASS
+== 3c. bounded I2C on a hung bus (T6a M2, mock TWIM) ==
+pre-fix (Wire_nRF52.cpp wait loop), hung bus: STILL WAITING after 10000001 polls (100.0 s of fake time, would never return)
+normal transfer: rc=0 (expect 0)
+NACK: rc=1 (expect 1), STOP triggered=1
+hung bus: rc=2 (expect 2) after 16410 us (budget 15400 + 1000 stop wait), bus clears=1
+next transfer after the clear: rc=0 (expect 0)
+stats ok=2 nack=1 timeouts=1
+TEST_I2C: PASS
+== 3d. command-line number parsing (T6a m1/m4) ==
+PASS mark oral 36.85   -> stored 3685 (want 3685; pre-fix atof gave 3685)
+PASS mark oral 36,85   -> stored 3685 (want 3685; pre-fix atof gave 3600)
+PASS mark oral 37      -> stored 3700 (want 3700; pre-fix atof gave 3700)
+PASS mark oral 36.855  -> stored 3686 (want 3686; pre-fix atof gave 3686)
+PASS mark oral 3685    -> stored -1 (want -1; pre-fix atof gave -1)
+PASS mark oral abc     -> stored -1 (want -1; pre-fix atof gave -1)
+PASS mark oral 36.8x   -> stored -1 (want -1; pre-fix atof gave 3680)
+PASS mark oral         -> stored -1 (want -1; pre-fix atof gave -1)
+PASS mark oral 29.9    -> stored -1 (want -1; pre-fix atof gave -1)
+TEST_CMDPARSE: PASS
+== 4. real littlefs v1.6 on a RAM flash, sketch write pattern (3 days) ==
+littlefs v1.6 host run: 3 days, 4320 minutes, min.bin appended every 10 min
+  hottest blocks: #4 2644, #5 2644, #174 38 erases (littlefs v1 rewrites a directory pair on every file close)
+  files now: 21 (hour files 17), deleted 57, write errors 0, NOR violations 0
+  reboots that appended to the open hour file: 2
+  records read back: 65537 OK, 0 CRC bad, 0 gaps inside hour files
+  min free blocks seen (hourly): 60 of 512
+  erases: total 12118, per day 4039, blocks touched 512, max per block 2644, mean 23.7
+  max erases/block/day 881.3 -> 100,000-cycle NOR (P25Q16H class figure) lasts 113 days at this rate
+    /log/events.txt    10656 B
+    /log/min.bin      103680 B
+    /log/boot.bin         24 B
+    /log/s0057.bin     86424 B
+    /log/s0058.bin     86424 B
+    /log/s0059.bin     86424 B
+    /log/s0060.bin     86424 B
+    /log/r0061.bin    184800 B
+    /log/s0062.bin     86424 B
+    /log/s0063.bin     86424 B
+    /log/s0064.bin     86424 B
+    /log/s0065.bin     86424 B
+    /log/s0066.bin     86424 B
+    /log/s0067.bin     86424 B
+    /log/s0068.bin     86424 B
+    /log/s0069.bin     86424 B
+    /log/s0070.bin     86424 B
+    /log/s0071.bin     86424 B
+    /log/s0072.bin     86424 B
+    /log/s0073.bin     86424 B
+    /log/s0074.bin     86424 B
+TEST_LFS_HOST: PASS
+== 5. parse_log.py on SIMULATED streams ==
+PASS  crc8 check value 0xF4 matches C
+PASS  Python pack/unpack == C hg_rec_pack on 32 vectors (0 mismatches)
+PASS  600 one-hertz rows (got 600)
+PASS  0 CRC errors (got 0)
+PASS  no gaps (got [0])
+PASS  boot decoded = 3 (got {3})
+PASS  unix time attached to every row (TIME sync, back-dated before the sync)
+PASS  unix of the first row back-computed (1763287180.4)
+PASS  markers decoded in order (['boot', 'time', 'donned', 'button', 'oral', 'boot', 'button', 'oral'])
+PASS  oral reading value 36.71 (got 36.71)
+PASS  T2 absent -> NaN, T1 present
+PASS  B1 sensor-model column names present
+PASS  dumpmin section -> minute rows (got 11)
+PASS  minute rows carry VBAT
+PASS  5 raw blocks of 100 samples (got 5)
+PASS  595 rows after deleting 5 lines (got 595)
+PASS  gap report: 5 gaps, 5 s missing (got 5, 5)
+PASS  1 corrupted line -> 1 CRC error, row dropped, 1 gap (got 1)
+PASS  timestamped capture parses identically
+PASS  binary hour file -> 600 rows (got 600)
+PASS  binary file: boot from its header record
+PASS  live + binary of the same seconds de-duplicate to 600 (got 600)
+PASS  appended file: rows split by boot 7 (10) / 8 (5) (got {7: np.int64(10), 8: np.int64(5)})
+PASS  appended file: no false gaps across the reset
+PASS  one raw quarter missing -> that block dropped, 4 kept (got 4)
+TEST_PARSE_LOG: PASS
+== 6. source checks for board-only fixes (T6a M1/M2/M3/B1/m5/m9) ==
+PASS  M1 reset reason from the core's saved copy (readResetReason)
+PASS  M1 RESETREAS is not read directly (init() cleared it)
+PASS  M2 no Wire / sensor libraries (unbounded waits)
+PASS  M2 storage + BLE start before the first I2C transfer
+PASS  M3 QSPI peripheral switched off after deep power-down
+PASS  B1 boot appends to the open hour file
+PASS  m9 PPG drained during flash erase
+PASS  m5 erase/format refused over BLE
+TEST_STATIC: PASS
+ALL HOST TESTS PASSED

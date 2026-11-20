@@ -1,0 +1,3 @@
+# compiler outputs too large / not needed for flashing (kept: .uf2, .hex, .zip)
+build/**/*.elf
+build/**/*.map

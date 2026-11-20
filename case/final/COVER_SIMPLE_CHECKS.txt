@@ -1,0 +1,14 @@
+v7-cover SIMPLE: hole at interior (22.25, 46.97); plate 1.20 (glass z 16.35 -> top z 17.55)
+   hole 4.2 round through + 0.6 x 45 deg outer chamfer (5.4 at the face)
+   inside recess SKIPPED: plate 1.20 - 1.0 deep = 0.20 < 0.8 min
+   hole centre from the cover's OUTER edges: 25.25 from the hand-side (USB-C) edge, 9.85 from the elbow-side edge, 10.67 from the +Y edge below the screen, 49.97 from the -Y edge; window edge to hole centre 13.25
+   switch glued flat under the plate: actuator top z 19.85 = 2.30 proud of the face (+/-0.2); body bottom z 13.35
+   cover x pod: 0.000 mm3
+   cover x XIAO nRF52840: 0.000 mm3
+   cover x LCD 1.69in: -0.000 mm3
+   cover x USB-C plug: 0.000 mm3
+   switch (+ legs/joint envelope) x cover: 0.000 mm3; x pod: 0.000 mm3
+screen_cover_simple.stl: 35.1 x 60.6 x 10.1 mm on the bed, 3.52 cm3, ~4.4 g PLA solid, one closed body
+   estimate (no slicer in this env): ~3.7 g PLA, ~14 min at 0.2 layers - check in the slicer
+fragility screen_cover_simple: thinnest wall/floor found 1.20 mm; 0 thin spot(s) under 1.2; 0 slender post(s)
+RESULT: PASS

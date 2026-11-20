@@ -1,0 +1,2 @@
+  after OK mounts: 86809498 records read back, 0 CRC-bad records / unopenable files
+T6A_POWERCUT: PASS

@@ -1,0 +1,11 @@
+/root/Arduino/libraries/GFX_Library_for_Arduino/src/Arduino_GFX.cpp: In member function 'void Arduino_GFX::printCenterText(const String&, int16_t, int16_t)':
+/root/Arduino/libraries/GFX_Library_for_Arduino/src/Arduino_GFX.cpp:3072:15: warning: 'h' may be used uninitialized in this function [-Wmaybe-uninitialized]
+ 3072 |   uint16_t w, h;
+      |               ^
+/root/Arduino/libraries/GFX_Library_for_Arduino/src/Arduino_GFX.cpp:3072:12: warning: 'w' may be used uninitialized in this function [-Wmaybe-uninitialized]
+ 3072 |   uint16_t w, h;
+      |            ^
+Library Adafruit nRFCrypto has been declared precompiled:
+Using precompiled library in /root/.arduino15/packages/Seeeduino/hardware/nrf52/1.1.13/libraries/Adafruit_nRFCrypto/src/cortex-m4/fpv4-sp-d16-hard
+Sketch uses 211024 bytes (26%) of program storage space. Maximum is 811008 bytes.
+Global variables use 32216 bytes (13%) of dynamic memory, leaving 205352 bytes for local variables. Maximum is 237568 bytes.

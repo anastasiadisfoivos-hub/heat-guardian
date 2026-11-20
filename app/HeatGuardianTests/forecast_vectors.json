@@ -1,0 +1,335 @@
+{
+ "layout": "BLE frames phone -> band for the Tomorrow plan (R4 A5 opcodes 0x11, 0x14; ARCHITECTURE \u00a76).\n\nEvery CMD frame is EXACTLY 20 bytes: byte 0 = opcode, byte 19 = CRC-8 over bytes 0..18.\n\nCRC-8: polynomial 0x07, init 0x00, no reflection, no final XOR (CRC-8/SMBUS); check(\"123456789\") = 0xF4.\n\n0x11 FORECAST chunk (4 chunks, hours 6k..6k+5 in chunk k):\n    off 0      u8  0x11\n    off 1..18  6 x { i8 T_in degC (rounded, clamped -128..127), u8 RH_in % (0..100), u8 flags }\n    off 19     u8  CRC-8\n    flags: bit0 heat-day, bit1 night-heat, bit2 safe-hour, bits3-4 chunk index k (0..3, the same in\n           all six flag bytes of a chunk), bits5-7 = 0.\n    RESOLVED CONFLICT: R4 A5 lists \"u8 chunk, u8 total, 18 B\" as a 20-B body *plus* opcode and CRC\n    = 22 B, which breaks the 20-B rule of the same section. The chunk index therefore lives in flag\n    bits 3-4 and the total is fixed at 4 (24 h). Reported in REPORT_TOMORROW.md.\n\n0x14 SAFE_HOURS:\n    off 0      u8  0x14\n    off 1..3   24-bit bitmap, little-endian: bit h (h = 0..23) of the u24 = hours[h].safe\n    off 4      u8  plan id (day-of-year of the plan date, mod 256)\n    off 5..18  14 B ASCII tag, NUL-padded (e.g. \"2026-07-14 B\")\n    off 19     u8  CRC-8\n",
+ "plan": {
+  "date": "2026-07-14",
+  "home_class": "B",
+  "heat_day": true,
+  "night_heat": false,
+  "hours": [
+   {
+    "h": 0,
+    "t_in": 30.4,
+    "rh_in": 48,
+    "safe": false
+   },
+   {
+    "h": 1,
+    "t_in": 30.1,
+    "rh_in": 49,
+    "safe": false
+   },
+   {
+    "h": 2,
+    "t_in": 29.6,
+    "rh_in": 50,
+    "safe": false
+   },
+   {
+    "h": 3,
+    "t_in": 29.2,
+    "rh_in": 51,
+    "safe": false
+   },
+   {
+    "h": 4,
+    "t_in": 28.9,
+    "rh_in": 52,
+    "safe": false
+   },
+   {
+    "h": 5,
+    "t_in": 28.6,
+    "rh_in": 53,
+    "safe": true
+   },
+   {
+    "h": 6,
+    "t_in": 28.5,
+    "rh_in": 53,
+    "safe": true
+   },
+   {
+    "h": 7,
+    "t_in": 28.7,
+    "rh_in": 52,
+    "safe": true
+   },
+   {
+    "h": 8,
+    "t_in": 29.4,
+    "rh_in": 49,
+    "safe": false
+   },
+   {
+    "h": 9,
+    "t_in": 30.2,
+    "rh_in": 45,
+    "safe": false
+   },
+   {
+    "h": 10,
+    "t_in": 31.0,
+    "rh_in": 41,
+    "safe": false
+   },
+   {
+    "h": 11,
+    "t_in": 31.8,
+    "rh_in": 37,
+    "safe": false
+   },
+   {
+    "h": 12,
+    "t_in": 32.5,
+    "rh_in": 33,
+    "safe": false
+   },
+   {
+    "h": 13,
+    "t_in": 33.1,
+    "rh_in": 30,
+    "safe": false
+   },
+   {
+    "h": 14,
+    "t_in": 33.6,
+    "rh_in": 28,
+    "safe": false
+   },
+   {
+    "h": 15,
+    "t_in": 33.9,
+    "rh_in": 27,
+    "safe": false
+   },
+   {
+    "h": 16,
+    "t_in": 34.0,
+    "rh_in": 27,
+    "safe": false
+   },
+   {
+    "h": 17,
+    "t_in": 33.8,
+    "rh_in": 28,
+    "safe": false
+   },
+   {
+    "h": 18,
+    "t_in": 33.4,
+    "rh_in": 30,
+    "safe": false
+   },
+   {
+    "h": 19,
+    "t_in": 32.9,
+    "rh_in": 33,
+    "safe": false
+   },
+   {
+    "h": 20,
+    "t_in": 32.3,
+    "rh_in": 36,
+    "safe": false
+   },
+   {
+    "h": 21,
+    "t_in": 31.7,
+    "rh_in": 39,
+    "safe": true
+   },
+   {
+    "h": 22,
+    "t_in": 31.1,
+    "rh_in": 42,
+    "safe": true
+   },
+   {
+    "h": 23,
+    "t_in": -3.6,
+    "rh_in": 100,
+    "safe": false
+   }
+  ]
+ },
+ "forecast_chunks_hex": [
+  "111e30011e31011e32011d33011d34011d3505ed",
+  "111c350d1d340d1d31091e2d091f2909202509d9",
+  "11202111211e11221c11221b11221b11221c11b9",
+  "11211e1921211920241920271d1f2a1dfc64193b"
+ ],
+ "decoded_hours": [
+  {
+   "t_in": 30,
+   "rh_in": 48,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 30,
+   "rh_in": 49,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 30,
+   "rh_in": 50,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 29,
+   "rh_in": 51,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 29,
+   "rh_in": 52,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 29,
+   "rh_in": 53,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": true
+  },
+  {
+   "t_in": 28,
+   "rh_in": 53,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": true
+  },
+  {
+   "t_in": 29,
+   "rh_in": 52,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": true
+  },
+  {
+   "t_in": 29,
+   "rh_in": 49,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 30,
+   "rh_in": 45,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 31,
+   "rh_in": 41,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 32,
+   "rh_in": 37,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 32,
+   "rh_in": 33,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 33,
+   "rh_in": 30,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 34,
+   "rh_in": 28,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 34,
+   "rh_in": 27,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 34,
+   "rh_in": 27,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 34,
+   "rh_in": 28,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 33,
+   "rh_in": 30,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 33,
+   "rh_in": 33,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 32,
+   "rh_in": 36,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  },
+  {
+   "t_in": 32,
+   "rh_in": 39,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": true
+  },
+  {
+   "t_in": 31,
+   "rh_in": 42,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": true
+  },
+  {
+   "t_in": -4,
+   "rh_in": 100,
+   "heat_day": true,
+   "night_heat": false,
+   "safe": false
+  }
+ ],
+ "safe_hours_hex": "14e00060c3323032362d30372d31342042000057",
+ "safe_hours_bitmap": 6291680,
+ "plan_id": 195,
+ "tag": "2026-07-14 B"
+}

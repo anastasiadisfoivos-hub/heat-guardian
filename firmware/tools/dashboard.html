@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heat Guardian Dashboard</title>
+<style>
+  :root { --bg: #f6f5f2; --card: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #e2e0da; --ok: #1a8f4e; --drink: #2a73d9; --cool: #d97a1a; --danger: #c62828; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #141413; --card: #1f1f1d; --ink: #f1f0ec; --muted: #a3a29c; --line: #34332f; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 20px; margin: 4px 0 12px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+  button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; margin: 2px 6px 2px 0; }
+  button.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  #state { font-size: 34px; font-weight: 700; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px 16px; margin-top: 8px; }
+  .k { color: var(--muted); font-size: 12px; } .v { font-size: 18px; font-variant-numeric: tabular-nums; }
+  pre { font: 12px/1.4 ui-monospace, Menlo, monospace; white-space: pre-wrap; max-height: 220px; overflow: auto; margin: 0; color: var(--muted); }
+  .note { color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Heat Guardian — band dashboard</h1>
+  <div class="card">
+    <button class="primary" id="connect">Connect to the band</button>
+    <button id="ack" disabled>Family notified (ack)</button>
+    <button id="cancelHelp" disabled>Cancel HELP (pressed by mistake)</button>
+    <button id="debug" disabled>Last 60 minutes → console</button>
+    <label><button id="planBtn" disabled>Send plan.json</button><input type="file" id="plan" accept=".json" hidden></label>
+    <p class="note">Chrome on macOS/Windows/Android, page served from <code>http://localhost</code> (run <code>python3 -m http.server</code> in this folder). Not Safari / iOS. The time is sent automatically on connect.</p>
+  </div>
+  <div class="card">
+    <div id="state">—</div>
+    <div class="grid" id="fields"></div>
+  </div>
+  <div class="card"><div class="k">Band info</div><div id="info" class="v">—</div></div>
+  <div class="card"><div class="k">Console (BLE UART)</div><pre id="log"></pre></div>
+</main>
+<script src="hg_ble.js"></script>
+<script>
+const { HG, decodeStatus, decodeInfo, cmdTime, cmdFamilyAck, cmdDebug, fromHex } = HGBLE;
+const NUS = { SVC: '6e400001-b5a3-f393-e0a9-e50e24dcca9e', TX: '6e400003-b5a3-f393-e0a9-e50e24dcca9e' };
+const COLORS = { OK: 'var(--ok)', DRINK: 'var(--drink)', COOL: 'var(--cool)', DANGER: 'var(--danger)', CHECK: 'var(--danger)', HELP: 'var(--danger)' };
+let cmd = null, last = null, helpId = null;   // helpId: the HELP alarm id (STATUS carries it only while the family flag is up)
+const $ = (id) => document.getElementById(id);
+const log = (t) => { const p = $('log'); p.textContent = (p.textContent + t).slice(-8000); p.scrollTop = p.scrollHeight; };
+function show(d) {
+  last = d; if (d.state === 'HELP' && d.alarm_id16 !== undefined) helpId = d.alarm_id16;
+  $('state').textContent = d.state + (d.not_worn ? ' · not worn' : '') + (d.family_pending ? ' · FAMILY ALERT' : '');
+  $('state').style.color = COLORS[d.state] || 'var(--ink)';
+  const f = [['Core estimate', d.core_c ? `${d.core_c.toFixed(2)} ± ${d.half_range_c.toFixed(2)} °C` : '—'], ['Heart rate', d.hr_bpm ? `${d.hr_bpm} bpm (q ${d.hr_q})` : '—'],
+    ['Skin T1', d.t1_c ?? '—'], ['Reference T2', d.t2_c ?? '—'], ['Air', d.tair_c ?? '—'], ['RH', d.rh_pct ?? '—'], ['Battery', `${d.battery_pct} %${d.charging ? ' (charging)' : ''}`],
+    ['Contact', d.contact_ok ? 'OK' : 'check'], ['Home', d.home ? 'home' : 'out'], ['Routine', d.routine_score ?? '—'], ['Minute', d.minute_counter]];
+  $('fields').innerHTML = f.map(([k, v]) => `<div><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+}
+$('connect').onclick = async () => {
+  const dev = await navigator.bluetooth.requestDevice({ filters: [{ namePrefix: 'HeatGuardian' }], optionalServices: [HG.SVC, NUS.SVC, 'battery_service'] });
+  const gatt = await dev.gatt.connect();
+  const svc = await gatt.getPrimaryService(HG.SVC);
+  const st = await svc.getCharacteristic(HG.STATUS);
+  st.addEventListener('characteristicvaluechanged', (e) => { try { show(decodeStatus(new Uint8Array(e.target.value.buffer))); } catch (x) { log('# ' + x.message + '\n'); } });
+  await st.startNotifications();
+  try { show(decodeStatus(new Uint8Array((await st.readValue()).buffer))); } catch (x) {}
+  cmd = await svc.getCharacteristic(HG.CMD);
+  await cmd.writeValue(cmdTime(Math.floor(Date.now() / 1000), Math.round(-new Date().getTimezoneOffset() / 15)));
+  const inf = decodeInfo(new Uint8Array((await (await svc.getCharacteristic(HG.INFO)).readValue()).buffer));
+  $('info').textContent = `fw 0x${inf.fw_version.toString(16)} · model CRC 0x${inf.nn_crc.toString(16).toUpperCase()} · boots ${inf.boot_count} · reset ${inf.reset_reason} · twin saves ${inf.twin_saves} · ${inf.hg2_tag}`;
+  try { const tx = await (await gatt.getPrimaryService(NUS.SVC)).getCharacteristic(NUS.TX);
+        tx.addEventListener('characteristicvaluechanged', (e) => log(new TextDecoder().decode(e.target.value))); await tx.startNotifications(); } catch (x) {}
+  ['ack', 'cancelHelp', 'debug', 'planBtn'].forEach((id) => $(id).disabled = false);
+  log('# connected, time sent\n');
+};
+$('ack').onclick = async () => { if (last && last.family_pending) await cmd.writeValue(cmdFamilyAck(1, last.alarm_id16)); };
+$('cancelHelp').onclick = async () => {   // 0x12 ack type 3 = the frozen "HELP latched until ack type 3" rule (A7.2)
+  if (!last || last.state !== 'HELP' || helpId === null) { log('# no HELP to cancel\n'); return; }
+  await cmd.writeValue(cmdFamilyAck(3, helpId)); log('# HELP cancel sent\n');
+};
+$('debug').onclick = async () => cmd.writeValue(cmdDebug(60));
+$('planBtn').onclick = () => $('plan').click();
+$('plan').onchange = async (e) => {   // plan.json from tomorrow/ (B4): ble.forecast_chunks_hex[4] + ble.safe_hours_hex
+  const plan = JSON.parse(await e.target.files[0].text());
+  for (const h of plan.ble.forecast_chunks_hex) await cmd.writeValue(fromHex(h));
+  await cmd.writeValue(fromHex(plan.ble.safe_hours_hex));
+  log(`# plan ${plan.date} sent (4 forecast chunks + safe hours)\n`);
+};
+</script>
+</body>
+</html>

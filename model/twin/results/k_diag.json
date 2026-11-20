@@ -1,0 +1,41 @@
+{
+ "label": "SIMULATION, SIM-DEV persons only",
+ "n_persons_with_reading": 313,
+ "n_readings": 581,
+ "dT_5_median_degC": 2.1186004638671876,
+ "k_obs": {
+  "median": 0.6975815621662216,
+  "p10": 0.5448368399221923,
+  "p90": 0.99940652256095,
+  "share_above_0_40": 1.0
+ },
+ "decomposition_median": {
+  "k_tissue": 0.18889792374035305,
+  "axial_term": 0.5089516488452767,
+  "axial_degC": 1.0100021362304688
+ },
+ "K_true_median": 0.13173201139901156,
+ "K_tissue_plus_mount_median": 0.195818105736438,
+ "corr": {
+  "k_obs_vs_K_true": 0.16606321212225642,
+  "k_tissue_vs_K_true": 0.5071552232592322,
+  "k_tissue_vs_K_tm": 0.5663395267448446,
+  "k_spec_final_vs_K_true": 0.1108958387175206,
+  "k_wide_final_vs_k_obs": 0.8022337711217947,
+  "two_reading_slope_vs_K_true": 0.12221994532367716
+ },
+ "spec_rule_final": {
+  "median": 0.4,
+  "share_at_upper_bound": 0.8434504792332268
+ },
+ "wide_rule_final_bound_1_5": {
+  "median": 0.5267761174614066,
+  "share_at_upper_bound": 0.0
+ },
+ "two_reading_slope": {
+  "n": 72,
+  "median": 0.44929499635521963,
+  "median_abs_err_vs_K_true": 0.3263803406298651,
+  "dT_sd_median": 0.14262412614137404
+ }
+}

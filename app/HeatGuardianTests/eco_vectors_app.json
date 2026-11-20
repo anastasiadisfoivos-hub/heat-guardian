@@ -1,0 +1,340 @@
+{
+ "note": "App-side vectors produced by ios/tools/mirror_frames.py from ECOSYSTEM_SPEC.md §5/§5b (20-byte CMDs, CRC-8/SMBUS at [19]). Not the firmware's: compare with fw/09_guardian/eco_vectors.json when BAND-ECO publishes it.",
+ "events": [
+  {
+   "seq": 1,
+   "boot": 7,
+   "unix": 1789400000,
+   "kind": 1,
+   "arg": 4,
+   "hex": "0301000700c013a86a01040000000000000000e7"
+  },
+  {
+   "seq": 2,
+   "boot": 7,
+   "unix": 1789400300,
+   "kind": 2,
+   "arg": 4,
+   "hex": "0302000700ec14a86a0204000000000000000090"
+  },
+  {
+   "seq": 65535,
+   "boot": 7,
+   "unix": 0,
+   "kind": 3,
+   "arg": 3,
+   "hex": "03ffff0700000000000303000000000000000008"
+  },
+  {
+   "seq": 300,
+   "boot": 65535,
+   "unix": 1789450000,
+   "kind": 8,
+   "arg": 3,
+   "hex": "032c01ffff10d7a86a0803000000000000000051"
+  },
+  {
+   "seq": 12,
+   "boot": 1,
+   "unix": 1789400600,
+   "kind": 7,
+   "arg": 1,
+   "hex": "030c0001001816a86a0701000000000000000068"
+  },
+  {
+   "seq": 13,
+   "boot": 1,
+   "unix": 1789400601,
+   "kind": 4,
+   "arg": 0,
+   "hex": "030d0001001916a86a0400000000000000000066"
+  },
+  {
+   "seq": 14,
+   "boot": 1,
+   "unix": 1789400602,
+   "kind": 5,
+   "arg": 0,
+   "hex": "030e0001001a16a86a0500000000000000000058"
+  },
+  {
+   "seq": 15,
+   "boot": 1,
+   "unix": 1789400603,
+   "kind": 6,
+   "arg": 0,
+   "hex": "030f0001001b16a86a060000000000000000002f"
+  }
+ ],
+ "events_bad": [
+  "0301000700c013a86a01040000000000000000e6",
+  "0201000700c013a86a0104000000000000000031",
+  "0301000700c013a86a01040000000000000000"
+ ],
+ "sync_events": [
+  {
+   "since_seq": 0,
+   "boot": 0,
+   "hex": "16000000000000000000000000000000000000b9"
+  },
+  {
+   "since_seq": 41,
+   "boot": 7,
+   "hex": "1629000700000000000000000000000000000091"
+  },
+  {
+   "since_seq": 65535,
+   "boot": 65535,
+   "hex": "16ffffffff000000000000000000000000000098"
+  },
+  {
+   "since_seq": 4660,
+   "boot": 43981,
+   "hex": "163412cdab00000000000000000000000000002d"
+  }
+ ],
+ "family_msg": [
+  {
+   "msg": 1,
+   "hex": "1701000000000000000000000000000000000045"
+  },
+  {
+   "msg": 2,
+   "hex": "170200000000000000000000000000000000003b"
+  },
+  {
+   "msg": 3,
+   "hex": "1703000000000000000000000000000000000011"
+  }
+ ],
+ "family_name": [
+  {
+   "name": "Ελένη",
+   "bytes": 10,
+   "hex": "18ce95cebbceadcebdceb700000000000000006c"
+  },
+  {
+   "name": "Anna",
+   "bytes": 4,
+   "hex": "18416e6e6100000000000000000000000000004f"
+  },
+  {
+   "name": "Κωνσταντίνα",
+   "bytes": 14,
+   "hex": "18ce9acf89cebdcf83cf84ceb1cebd00000000b7"
+  },
+  {
+   "name": "  Νίκος  ",
+   "bytes": 10,
+   "hex": "18ce9dceafcebacebfcf82000000000000000079"
+  },
+  {
+   "name": "",
+   "bytes": 0,
+   "hex": "18000000000000000000000000000000000000e1"
+  },
+  {
+   "name": "Μαρία-Ελένη",
+   "bytes": 13,
+   "hex": "18ce9cceb1cf81ceafceb12dce95000000000052"
+  },
+  {
+   "name": "Ma\u0007ria",
+   "bytes": 5,
+   "hex": "184d61726961000000000000000000000000009f",
+   "note": "control character dropped (fw rejects them)"
+  }
+ ],
+ "routine_seed": [
+  {
+   "args": {
+    "wake": 450,
+    "bed": 1380,
+    "nap_from": 840,
+    "nap_to": 960,
+    "out1_from": 600,
+    "out1_to": 660,
+    "out2_from": 1080,
+    "out2_to": 1140,
+    "ac": true
+   },
+   "hex": "19071e17000e0010000a000b001200130001006d"
+  },
+  {
+   "args": {
+    "wake": null,
+    "bed": null,
+    "nap_from": null,
+    "nap_to": null,
+    "out1_from": null,
+    "out1_to": null,
+    "out2_from": null,
+    "out2_to": null,
+    "ac": false
+   },
+   "hex": "19ffffffffffffffffffffffffffffffff0000a1"
+  },
+  {
+   "args": {
+    "wake": 375,
+    "bed": 1350,
+    "nap_from": null,
+    "nap_to": null,
+    "out1_from": 540,
+    "out1_to": 600,
+    "out2_from": null,
+    "out2_to": null,
+    "ac": false
+   },
+   "hex": "19060f161effffffff09000a00ffffffff00004d"
+  },
+  {
+   "args": {
+    "wake": 405,
+    "bed": 1380,
+    "nap_from": null,
+    "nap_to": null,
+    "out1_from": null,
+    "out1_to": null,
+    "out2_from": null,
+    "out2_to": null,
+    "ac": null
+   },
+   "hex": "19062d1700ffffffffffffffffffffffffff0004",
+   "note": "ac not stated -> flags 0xFF (= fw vector)"
+  }
+ ],
+ "indoor_adjust": [
+  {
+   "cls": "A",
+   "t_in": [
+    38.8,
+    38.3,
+    37.7,
+    37.1,
+    36.6,
+    36.2,
+    35.8,
+    35.6,
+    35.5,
+    35.5,
+    35.7,
+    36.0,
+    36.5,
+    36.9,
+    37.4,
+    37.9,
+    38.2,
+    38.5,
+    38.7,
+    38.7,
+    38.7,
+    38.5,
+    38.3,
+    38.1
+   ]
+  },
+  {
+   "cls": "C",
+   "t_in": [
+    31.9,
+    31.7,
+    31.4,
+    31.1,
+    30.9,
+    30.7,
+    30.5,
+    30.5,
+    30.7,
+    30.9,
+    31.3,
+    31.9,
+    32.5,
+    33.1,
+    33.8,
+    34.2,
+    34.5,
+    34.7,
+    34.8,
+    34.6,
+    34.4,
+    34.0,
+    33.5,
+    33.1
+   ]
+  },
+  {
+   "cls": "D",
+   "t_in": [
+    29.4,
+    29.1,
+    28.8,
+    28.5,
+    28.3,
+    28.1,
+    27.9,
+    27.8,
+    27.9,
+    28.0,
+    28.1,
+    28.3,
+    28.6,
+    28.8,
+    29.1,
+    29.2,
+    29.4,
+    29.4,
+    29.5,
+    29.4,
+    29.4,
+    29.2,
+    29.1,
+    29.0
+   ]
+  }
+ ],
+ "elder_action": [
+  {
+   "action": 1,
+   "name": "HELP",
+   "nudge": 0,
+   "hex": "1a01000000000000000000000000000000000060"
+  },
+  {
+   "action": 2,
+   "name": "NUDGE_DONE",
+   "nudge": 4,
+   "hex": "1a02040000000000000000000000000000000026"
+  },
+  {
+   "action": 2,
+   "name": "NUDGE_DONE",
+   "nudge": 1,
+   "hex": "1a02010000000000000000000000000000000010"
+  },
+  {
+   "action": 2,
+   "name": "NUDGE_DONE",
+   "nudge": 6,
+   "hex": "1a0206000000000000000000000000000000003a"
+  },
+  {
+   "action": 3,
+   "name": "HELP_CANCEL",
+   "nudge": 0,
+   "hex": "1a03000000000000000000000000000000000034"
+  },
+  {
+   "action": 4,
+   "name": "IM_OK",
+   "nudge": 0,
+   "hex": "1a040000000000000000000000000000000000e2"
+  },
+  {
+   "action": 1,
+   "name": "HELP",
+   "nudge": 5,
+   "hex": "1a01000000000000000000000000000000000060"
+  }
+ ]
+}

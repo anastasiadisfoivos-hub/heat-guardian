@@ -1,0 +1,396 @@
+B6a 08_logger TEST REPORT (T6a) - 2026-11-12
+Verdict: PASS WITH FINDINGS - 1 BLOCKER, 3 MAJOR, 9 MINOR. Every finding has a diagnosed cause.
+No board here: this is a code/board-risk review. Every number below comes from a command I ran
+(listed), or it is marked UNVERIFIED.
+Scripts and outputs: /home/claude/hg_ai/tests/t6a/  (run_t6a.sh runs all of it again)
+
+=====================================================================================
+1. REPRODUCED ACCEPTANCE CRITERIA (brief B6 Part A)
+=====================================================================================
+#1 Compile. Command: arduino-cli compile --fqbn Seeeduino:nrf52:xiaonRF52840 --export-binaries
+   --warnings all on a COPY of the sketch (t6a/compile_log.txt).
+   Result: "Sketch uses 216280 bytes (26%) ... Global variables use 29352 bytes (12%)".
+   Limits 240 KB / 60 KB: PASS. No warnings from the sketch files (all 4 warnings are in libraries).
+   My rebuilt .hex has md5 45184edaf7ca7189db3d9535c9f0d89b. That is identical to the builder's.
+   My UF2, rebuilt with the core's uf2conv.py -f 0xADA52840 -c, has md5
+   09db908b657167afbbff440361467ebb. That is identical to the builder's 08_logger.uf2.
+   UF2 decoded: 845 blocks, flags 0x2000 (family ID present), family 0xADA52840, first address 0x27000.
+   0x27000 is the FLASH ORIGIN in the core's nrf52840_s140_v7.ld (the app start under S140 v7). The
+   payload matches the .hex byte for byte (0 mismatches; 32 bytes of tail padding). PASS.
+#2 Record round-trip: 10,000 random records, 192,000 single-bit flips, all detected. PASS.
+#3 parse_log: 600 rows, 0 CRC errors, 5 deleted lines -> 5 gaps (23/23 checks). PASS (SIMULATED stream).
+#4 Ring logic on a mock FS, plus littlefs v1.6 on a RAM flash (3 days): PASS. The builder's lfs test
+   leaves out the boot.bin rewrite. My power-cut test includes it.
+#5 README Monday steps exist: PASS, with wording defects (section 4).
+Command for #2-#4: sh fw/tools/run_host_tests.sh -> "ALL HOST TESTS PASSED" (t6a/host_tests_log.txt).
+
+=====================================================================================
+2. THE SIX RISKS I WAS ASKED TO VERIFY
+=====================================================================================
+R1 DC/DC (sd_power_dcdc_mode_set after Bluefruit.begin, 08_logger.ino:1194) -> PASS, low residual risk.
+   Evidence that the XIAO nRF52840 (non-Sense) has the REG1 DC/DC inductor fitted:
+   (a) Upstream Zephyr board file boards/seeed/xiao_ble/xiao_ble_common.dtsi sets
+       "&reg1 { regulator-initial-mode = <NRF5X_REG_MODE_DCDC>; }" (saved copy:
+       t6a/evidence_zephyr_xiao_ble_common.dtsi). Zephyr boots every xiao_ble image in DC/DC mode.
+   (b) Seeed forum, "Getting lower power consumption on Seeed XIAO nRF52840" (page 2): users run
+       NRF_POWER->DCDCEN=1 and the board keeps running (2.5-4 uA sleep).
+   (c) The Seeed core variant files do not mention DC/DC, either way.
+   The builder's source, verification_hardware.md "L3 10 uH", cites no evidence. (a) and (b) are the
+   real evidence. Residual risk: an unknown board revision. Recommendation: also ship a
+   08_logger_nodcdc.uf2 (HG_DCDC 0) as a backup. If 08 stays dark after flashing, flash the backup.
+
+R2 QSPI / LittleFS -> PASS, with one MAJOR (power).
+   - Pins: the default Adafruit_FlashTransport_QSPI constructor uses the variant's PIN_QSPI_*
+     (24..29 -> P0.21 SCK, P0.25 CS, P0.20/P0.24/P0.22/P0.23 IO0-3, variant.cpp). Correct.
+   - Descriptor: JEDEC 85 60 15. 55 MHz in the descriptor gives a 16 MHz clock (setClockSpeed).
+     QE uses mask 0x02 written with 0x31. The Puya PY25Q-family datasheet: "31H ... written to Status
+     Register-1" (S15-S8, QE = S9). So this works. Upstream Adafruit uses split=false (01H + 2 bytes),
+     which also works.
+   - Deep power-down: B9 / AB. tRES1 = 20 us in the datasheet; the code waits 50-100 us. At boot it
+     sends AB first, before JEDEC. OK.
+   - Never-wipe proof: t6a/test_powercut.c (real littlefs v1.6, sketch config). I cloned the flash at
+     every 13th program/erase, tore that operation (half applied), and "rebooted" each clone through
+     the sketch's exact decision (mount -> else "littlefs" magic in block 0/1 -> else format).
+     Result: 2,005 torn reboots: 2,005 mounts OK, 0 FS_CORRUPT, 0 would-format, 86.8 M records read
+     back, 0 CRC-bad. The automatic format can only happen when blocks 0 and 1 carry no littlefs magic.
+     That is true only for blank or foreign (e.g. CircuitPython FAT) flash. PASS.
+   - Flash missing: qflash.begin fails -> FS_NO_FLASH. Every logFS/qflash call is behind a
+     fsState check (newHourFile, flushAll, flushSleep, dump, stat, raw, erase, format), and BLE/USB
+     streaming continues. PASS.
+   - MAJOR M3 below: the QSPI peripheral is never deactivated.
+
+R3 MAX30102 / I2C -> PASS.
+   - ppg.setup(0x1F, 4, 2, 400, 411, 4096): ledMode 2 = SpO2 (red + IR), 400/4 = 100 sps.
+     IR (LED2_PA) = 0x1F, which is on. Red is set to 0 and switched on 1 s in every 4 s.
+     06_max30102 used the same mode on the real board.
+   - The own FIFO reader takes red then IR (datasheet order) and reads at most 60 B per burst, under
+     the 64 B Wire buffer (RingBuffer.h).
+   - I2C runs at 100 kHz with high drive re-applied after every library begin().
+   - grep analogRead = 0 hits. VBAT is read on AIN7 (P0.31), and the pin and SAADC are released
+     afterwards.
+   - But see M2 (no I2C timeouts) and m9 (FIFO overflow during flash erases).
+
+R4 Boot safety
+   - Motor at boot: no buzz in setup(). The backlight is 60 % for 15 s. VBAT is read before the
+     radio. OK.
+   - Watchdog: 8 s, started before the slow init steps (setup takes ~4.5 s on battery with the 3 s
+     Serial wait), fed only in loop(). Dump runs in steps.
+     Worst case: "erase YES" deletes ~25 files, each a directory commit with an erase (tSE max
+     300 ms), which is close to 8 s (m8).
+     The Adafruit bootloader feeds a running watchdog (upstream commit "feed wdt in bootloader if
+     enabled"), and a pin reset clears the watchdog, so re-flashing is not blocked.
+   - Parser: malformed input is bounded (96-B line, strtok, range checks).
+     Defects m1 and m4 are reproduced in t6a/parse_edge_result.txt.
+   - millis rollover: every comparison is (int32_t)(now - next). There is no rollover in 3 days.
+   - Time not set: flag bit5 = 0 and unix = 0. The parser back-dates rows within a boot. See m6.
+   - Reset reason: BROKEN, see M1.
+
+R5 Data integrity: host tests, compile, md5 and UF2 all PASS (section 1).
+
+R6 README / 16 h dump: see section 4 and section 5.
+
+=====================================================================================
+3. DEFECTS (ranked)
+=====================================================================================
+BLOCKER
+B1 A run of resets deletes the undumped 1 Hz history.
+   Why: setup() calls newHourFile() on EVERY boot (08_logger.ino:1269), which calls
+   ringMakeRoom(.., HG_RING_MAX_S_FILES = 20). The ring limits s-files BY COUNT (log_ring.c
+   hg_ring_plan, need_count). So every reset adds a new short file, and each file past 20 deletes
+   the oldest FULL hour file.
+   Repro: t6a/test_reboot_ring.c, driving the real log_ring.c from the builder's own 3-day steady
+   state (17 full hour files):
+     5 resets  -> 2 h lost
+     20 resets -> all 17 h lost; 200 s of 1 Hz data left on flash
+   (t6a/reboot_ring_result.txt).
+   Triggers that are realistic on Nov 16-18:
+   - a brown-out cycle when the 250 mAh cell runs flat overnight;
+   - a watchdog loop from an intermittent hang (M2, or the builder's own "littlefs assert reboot
+     loop" risk).
+   Also, each ordinary reset (button, re-plug) costs ~1 h of retention.
+   min.bin survives (minute means only).
+   Fix direction (builder): on boot, keep appending to the newest s-file while it holds < 3600
+   records (the boot marker is enough); limit the ring by free space only, not by count. Add a
+   reset-loop guard: if 3 or more boots happen within 10 min, make no new file and do no deletions.
+
+MAJOR
+M1 The reset reason is always 0, so the watchdog counter is blind.
+   Why: the core's init() (cores/nRF5/wiring.c:37-40) saves and CLEARS NRF_POWER->RESETREAS before
+   setup(). The sketch's read at 08_logger.ino:1219 therefore always sees 0.
+   Effects: every boot is named "POWER-ON/BROWN-OUT", bootf.wdt_resets never increments, and
+   other_resets counts every boot.
+   The README's Monday check "resets: watchdog=0 = no crashes" can never fail.
+   Fix: resetReason = readResetReason(); (wiring.c:72).
+
+M2 I2C has no timeout, so a loose Qwiic plug can stop all logging.
+   Why: Wire_nRF52.cpp lines 171-252 are unbounded while(!EVENTS_...) loops. TWIM waits forever
+   while SCL is held low (clock stretching). SETUP.md documents exactly this fault: a half-in plug
+   "drags SDA/SCL LOW".
+   The comment at 08_logger.ino:245 ("bounded: no library loops that can spin forever") is false.
+   Result: a hang -> watchdog reset -> setup() hangs again in the sensor probes (lines 1235-1244),
+   which run BEFORE storageInit() and bleSetup(). The band then records nothing and advertises
+   nothing until the plug is fixed. Only a 1-line USB banner shows it.
+   Fix direction: check that SDA and SCL read HIGH and do a 9-clock bus clear before Wire.begin();
+   init storage and BLE and write the BOOT event before the sensors; after 2 watchdog resets in a
+   row, skip the I2C device that was being probed (stored in retained RAM).
+
+M3 The QSPI peripheral stays active between flushes, which costs battery that is not in the
+   ESTIMATE.
+   Why: nrfx_qspi.c:156 activates QSPI in begin(), and it is deactivated only in uninit (line 335),
+   which the sketch never calls. flashSleep() only puts the CHIP in deep power-down.
+   Nordic DevZone thread 64145 (customer measurement): +0.7 mA in run mode after nrfx_qspi_init,
+   ~1.6 mA vs <0.4 mA in sleep. Nordic erratum 122 applies.
+   This is roughly +20-30 % on the 2.5-3.5 mA ESTIMATE (UNVERIFIED without a board).
+   Fix: after the 0xB9, call qspiTr.end() with the erratum-122 writes; call begin() again in
+   flashWake().
+
+MINOR
+m1 "mark oral 36,85" (decimal comma, Greek habit) -> atof = 36.00 and it is ACCEPTED and stored
+   as 3600. This silently corrupts the exam's oral label. Fix: accept ',' and echo the stored
+   value in degC.
+m2 README "storage=CORRUPT ... If not [dumped], try dump first": dump refuses when the storage is
+   CORRUPT (dumpStart:993), so this step cannot be done, and the next step in the README is
+   format = data loss. Write "do NOT format, tell me". Consider a raw-flash hex dump command.
+m3 The JEDEC ID is not printed when the flash is not detected. Another chip revision would show
+   only "QSPI flash not detected". Print the 3 bytes in the boot banner and in stat.
+m4 "time" with no argument -> "unknown command: time" (argc check falls through). It should say
+   "time needs <unix>".
+m5 "format YES" works while the storage is OK (only the help text says "only if CORRUPT").
+   BLE UART is unauthenticated, so any phone in range can send "erase YES" or "format YES".
+m6 After any reset, the clock is gone until the next "time" command. Records for that boot have no
+   wall time if no sync follows. Fix: keep epoch-minus-millis in a .noinit RAM word that survives
+   soft and watchdog resets, and mark the time as "approx".
+m7 One failed TMP117 read sets hasSkin=false, so T1 is absent for up to 60 s until the re-probe
+   (loop lines 1312, 1371).
+m8 "erase YES" worst case is ~25 removes x tSE max 300 ms, close to the 8 s watchdog. A reset
+   there is harmless (littlefs is power-safe), but it is confusing.
+m9 PPG samples are lost at every flush. A directory commit erases a 4 KB block (tSE 40-50 ms typ,
+   240-300 ms max, Puya datasheet), about 3 times a minute. The MAX30102 FIFO holds 320 ms, and
+   lfsErase() blocks in waitUntilReady(), so the FIFO overflows near flushes. Raw-PPG captures get
+   a gap about once a minute. Check on Monday: stat "overflows=" growing by about 1 per minute.
+   Fix: call ppgService() while polling the erase busy bit.
+
+=====================================================================================
+4. README FLASH GUIDE, WALKED AS FOIVOS (Mac, Arduino IDE 2)
+=====================================================================================
+Correct: double-tap, drag the UF2, Serial Monitor 115200 / Newline, time from date +%s, stat
+table, mark 1, the unplug step.
+Wrong, missing or ambiguous:
+ 1. Step 1 does not say how the .uf2 gets from this workspace to the Mac, or where to save it.
+ 2. Step 3: macOS 14.x Finder can show "Error -36" on UF2 drives. Give the Terminal command as
+    the fallback:  cp -X 08_logger.uf2 /Volumes/XIAO-SENSE/  (the volume name may be XIAO...).
+    Check INFO_UF2.TXT on the drive says S140 7.x (the UF2 starts at 0x27000).
+ 3. Step 4: say the port NAME changes after the reboot (SETUP lesson), so pick it again.
+ 4. Step 6: say that the first boot prints "formatted (first use)", which is expected, and that
+    "formatted" on any LATER boot means the data was wiped: stop and report it.
+    The "watchdog=0" row is meaningless until M1 is fixed.
+ 5. Step 5: "python3 capture.py time" sets the clock with no typing. It is not mentioned.
+ 6. Data off: "from the fw/tools folder" with no cd command, and the tools are not on the Mac yet.
+    parse_log.py needs numpy, pandas and pyarrow, which are not mentioned (or say "send the .txt,
+    it is parsed here"). pip --user can fail with Homebrew Python (externally-managed);
+    give the fallback.
+ 7. Fallback upload: "open it from Terminal" with no command:
+      open -a "Arduino IDE" 08_logger/08_logger.ino
+ 8. Battery: the XIAO charges at 50 mA by default (initVariant: P0.13 input), so 2 h is about
+    100 mAh against about 60-110 mAh/day of use (ESTIMATE + M3). Say 3 h, or check vbat >= 4.1 V.
+ 9. "The last ~17-20 hours" is only true with no resets and no raw captures (B1; a raw 600 is
+    46 blocks, about 2 h of hour files).
+
+=====================================================================================
+5. "DUMP EVERY 16 h": A SAFER DESIGN (recommendation only, not implemented)
+=====================================================================================
+The 24-B 1 Hz record repeats the slow channels:
+ - T1/T2 change every 5 s and Tair/RH every 10 s: 9 of the 24 B are copies.
+ - dc8/aux are needed only for the contact check.
+Proposal:
+ - A 1 Hz "fast" record of 10 B: t delta u16, HR, hr_q, PI u16, a_std u16, z, flags|marker, crc8.
+ - Plus a 24-B "slow" record every 5 s (temps, RH, red DC, battery).
+Retention scales as 24 B/s divided by the new rate (today's 24 B/s holds ~17-20 h):
+ - 10-B fast + 24 B every 5 s = 14.8 B/s -> x1.6 -> ~28-32 h.
+ - 8-B fast record (PI as u8) + 24 B every 10 s = 10.4 B/s -> x2.3 -> ~40-46 h.
+   One dump per day is then safe, with margin.
+Add "dump new": stream only files not yet dumped (a sequence watermark in boot.bin). That cuts
+the nightly dump from minutes to seconds.
+With B1 fixed, the deletion order stays oldest-first by space only.
+
+=====================================================================================
+6. UNVERIFIABLE CLAIMS IN THE BUILDER'S REPORT
+=====================================================================================
+ - "2.5-3.5 mA, 2.5-3.5 days": ESTIMATE, needs a board; M3 is not included.
+ - "dump about 3-5 min": not measured.
+ - "ICM low-power self-check", "QSPI detection", "flush time": need a board.
+ - "DC/DC from verification_hardware.md L3": that line has no source; R1 above supplies one.
+ - Wear: 881 erases/day on the hot pair -> ~114 days. Reproduced by their test (host-only); not
+   contradicted.
+
+=====================================================================================
+7. OPEN RISKS FOR THE MANAGER
+=====================================================================================
+ - B1 + M1 + M2 together: an unattended reset loop is likely to go undiagnosed and destroy data.
+   Fix all three before Monday; each is small.
+ - M3: battery life ESTIMATE optimistic by ~20-30 %.
+ - Ship a no-DC/DC UF2 as the backup.
+
+
+#####################################################################################
+v1.1.0 RE-TEST (T6a-r2) - 2026-11-12, builder commit 26393fc
+#####################################################################################
+Verdict: GO for flashing on Monday.
+ - 0 BLOCKER, 0 MAJOR, 4 MINOR.
+ - B1, M1, M2 and M3 from the v1.0 test are fixed. I checked each fix against the source or a test of
+   my own, not against the builder's report.
+ - The new I2C and register code matches the libraries' values register by register (table below).
+   It has still never run on a board, so Monday's stat check is the real test.
+Outputs are in tests/t6a/ (run_t6a.sh reruns everything; it is updated for the new paths).
+
+-------------------------------------------------------------------------------------
+R2.1 REPRODUCED
+-------------------------------------------------------------------------------------
+ - Compile, on a copy, --warnings all (t6a/compile_log_v110.txt):
+   "Sketch uses 211024 bytes (26%)", "Global variables use 32216 bytes (13%)".
+   0 warnings from sketch files.
+ - My rebuilt .hex has md5 1c2a5a83... and my UF2 (rebuilt with uf2conv) has md5 c3048570... Both are
+   identical to the shipped files (t6a/rebuild_md5_v110.txt).
+ - Both UF2s (normal and nodcdc): 825 blocks, family 0xADA52840, 0x27000..0x5a900.
+   Only the nodcdc image contains the "nodcdc" version string.
+ - Builder host tests (sh fw/tools/run_host_tests.sh): all PASS, including test_static.sh 8/8
+   (t6a/host_tests_v110_log.txt).
+ - My power-cut / never-format test, rerun against the v1.1.0 log_ring.c: 2,005 torn reboots,
+   0 would-format, 0 CRC-bad. PASS.
+
+-------------------------------------------------------------------------------------
+R2.2 REGISTER-LEVEL CODE vs THE LIBRARIES USED BY 07 AND 06 ON THE REAL BOARD
+     (library sources read under ~/Arduino/libraries)
+-------------------------------------------------------------------------------------
+MAX30102 - matches SparkFun setup(0x1F,4,2,400,411,4096) register for register:
+ - PART_ID 0xFF = 0x15.
+ - RESET 0x09 = 0x40, then polled.
+ - FIFO_CONFIG 0x08 = 0x50 (SAMPLEAVG_4 0x40 | ROLLOVER 0x10).
+ - MODE 0x09 = 0x03 (MODE_REDIRONLY = SpO2).
+ - SPO2 0x0A = 0x2F (ADCRANGE_4096 0x20 | SR_400 0x0C | PW_411 0x03).
+ - LED1 (red) 0x0C = 0 except 1 s in 4; LED2 (IR) 0x0D = 0x1F, so IR is on.
+ - FIFO pointers 0x04/0x05/0x06 = 0. The data read is red then IR (datasheet order).
+ - The library's slot registers 0x11/0x12 apply only in multi-LED mode, so skipping them is correct.
+ICM-20649 - matches Adafruit ICM20X _init/reset plus the v1.0 low-power registers:
+ - WHO_AM_I = 0xE1 (ICM20649_CHIP_ID).
+ - Reset: PWR_MGMT_1 = 0x80, polled; then 0x01 (the library clears SLEEP).
+ - Bank select 0x7F = 0x20 / 0x00 (the library's bank<<4).
+ - Bank 2: SMPLRT_DIV_1/2 0x10/0x11 = 0/44 -> 25 Hz; ACCEL_CONFIG 0x14 = 0x29 (FS 0 = +-4 g at
+   8192 LSB/g, DLPF 5, FCHOICE); ACCEL_CONFIG_2 0x15 = 0x02.
+ - Bank 0: PWR_MGMT_2 = 0x07 (gyro off); LP_CONFIG = 0x20; PWR_MGMT_1 = 0x29.
+DRV2605L - the same write list as Adafruit_DRV2605::init(), plus selectLibrary(2) and setMode(INTTRIG):
+ - MODE 0x01 = 0; RTPIN = 0; WAVESEQ1/2 = 1/0; OVERDRIVE, SUSTAIN+/-, BREAK = 0; AUDIOMAX = 0x64;
+   LIBRARY = 2; MODE = 0.
+ - FEEDBACK &= 0x7F; CONTROL3 |= 0x20.
+ - Playback: WAVESEQ1+i, GO 0x0C = 1 / 0 (setWaveform/go/stop).
+ - The STATUS device-ID check accepts 3/4/6/7.
+TMP117 (unchanged from v1.0):
+ - CONFIG = 0x0C20 (MOD 11 one-shot, AVG 01 = 8 conversions, 125 ms); read at 200 ms.
+ - DEVICE_ID 0x0F & 0x0FFF = 0x117; 0x8000 is rejected.
+SHTC3 (unchanged from v1.0):
+ - Wake 0x3517 (300 us > tSU 240 us), measure 0x7866 (normal, T first, no stretching, read at 20 ms
+   > 12.1 ms), sleep 0xB098, ID 0xEFC8 with mask 0x083F = 0x0807.
+ - CRC-8 poly 0x31, init 0xFF.
+ - The Adafruit library uses the same command codes.
+
+-------------------------------------------------------------------------------------
+R2.3 TWIM DRIVER (fw/08_logger/hg_i2c.c) AND BUS CLEAR -> PASS
+-------------------------------------------------------------------------------------
+ - No peripheral conflict:
+   - TWIM0 is shared by ID with SPIM0, but the core's SPI uses SPIM3 or SPIM2 (SPI.cpp:272-277).
+   - Wire is still linked: the map shows its TWIM0 IRQ handler. But Wire.begin() is never called and
+     hg_i2c clears INTEN, so no IRQ fires.
+ - Transfers:
+   - PSEL is set while the peripheral is disabled; 100 kHz.
+   - Pins: input connected, pull-up, H0D1 (open drain), the same as 07.
+   - Write+read uses the LASTTX_STARTRX shortcut (repeated start) and LASTRX_STOP; RXD.AMOUNT is
+     checked.
+   - On a NACK it sends STOP without RESUME. Wire_nRF52.cpp does the same, and 01_i2c_scan and 07
+     ran that path on the board.
+ - Timeout:
+   - STOPPED is checked before the deadline in every pass, so a preempted loop does not cause a false
+     timeout.
+   - micros() here is tick2us(xTaskGetTickCount()) (delay.h:60): 976 us resolution, and it wraps
+     consistently in 64-bit (rtos.h:66), because dwt_enable() is never called. The minimum budget
+     of 3.6 ms covers 3 or more ticks.
+ - Bus clear:
+   - SCL is pre-set high, then 9 pulses at 5 us/5 us with open drain, then SDA low and high while SCL
+     is high. That is a START+STOP, which is an accepted recovery sequence.
+   - The pins are restored by i2cPins(). In the timeout path TWIM is re-enabled only after ENABLE=0
+     and the clear. OK.
+ - Ordering: storage, BLE, the BOOT event and the first flush all happen before the first I2C transfer
+   (setup lines 1435-1456). A stuck bus now still gives a log and BLE.
+
+-------------------------------------------------------------------------------------
+R2.4 B1 APPEND PATH -> FIXED (my own test on the real littlefs, t6a/test_reboot_v110.c)
+-------------------------------------------------------------------------------------
+This test replaces my v1.0 test_reboot_ring.c, which modelled the old one-file-per-boot path.
+It mirrors the sketch: bootHourFile -> hg_ring_boot_file -> append a header, flushAll every 60 s,
+newHourFile at 3600 records, ringMakeRoom by space, and the boot-loop hold.
+Each record carries a global sequence number, so I count exactly which seconds survive
+(t6a/reboot_v110_result.txt):
+  A  no resets, 3 days                   -> 18.0 h kept, 0 holes
+  B  +60 watchdog resets x 8 s           -> 19.0 h kept; holes 480 s = only the unflushed RAM of each boot
+  C  +200 brown-out resets x 30 s        -> 19.0 h kept; holes 6000 s (RAM only); 0 full hours lost
+  D  a reset every 47 min, 3 days        -> 19.1 h kept, 0 holes
+  E  a reset every 5 min for 2 h         -> 22.0 h kept; 60 s lost to a full flash while deletions were held
+  In every case CRC-bad = 0.
+At v1.0, 20 resets lost all 17 h. FIXED.
+Parser, my own test of the appended layout (t6a/test_parse_v110.py), 4/4 PASS:
+ - two boots with IDENTICAL t_ms in one file are not de-duplicated across boots (key boot+t_ms);
+ - a 40-boot reset loop gives 320 rows over 40 boots;
+ - binary + dump text of the same file de-duplicate correctly.
+
+-------------------------------------------------------------------------------------
+R2.5 QSPI OFF/ON + ANOMALY 122 -> PASS
+-------------------------------------------------------------------------------------
+ - flashSleep: B9, then qspiOff = nrfx_qspi_uninit (DEACTIVATE + disable) and P0.25 CS held high.
+ - qspiOn: init + setClockSpeed(55 MHz) gives 16 MHz again, the same as after qflash.begin.
+ - Every flash access path wakes it (lfs callbacks -> flashWake) and every path ends in flashSleep;
+   a dump keeps it awake.
+ - The anomaly-122 write that matters (0x40029054 BEFORE ENABLE=0) is already inside the core's HAL
+   nrf_qspi_disable() (nrfx/hal/nrf_qspi.h:668-671).
+ - The builder's own two writes come AFTER the disable: 0x40029010 is TASKS_DEACTIVATE, and
+   0x40029054 is written again. Nordic DevZone 104164 puts the writes before uninit.
+   They are redundant but harmless.
+ - In the NO-FLASH state the QSPI peripheral stays on (flashSleep returns early). That costs current
+   only on a board with no flash.
+
+-------------------------------------------------------------------------------------
+R2.6 NEW DEFECTS (all MINOR; none blocks Monday)
+-------------------------------------------------------------------------------------
+n1 The "no deletions for 30 min after 3 quick resets" rule never fires for watchdog, pin or brown-out
+   resets.
+   Why: GPREGRET/GPREGRET2 are RESET by watchdog, pin, brown-out and power-on resets. Only CPU lockup
+   and soft reset keep them. Sources: the nRF52 PS reset-behaviour table (nRF52810 PS "Retained
+   registers" column; same family) and Nordic DevZone 54465 for the nRF52840 ("The GPREGRET registers
+   are not preserved across a watchdog reset").
+   The comment at 08_logger.ino:1408 ("survives soft and watchdog resets") and README line 178
+   ("after 3 quick resets ... deletes nothing for 30 minutes") are wrong.
+   Impact: none on data, because the append path alone keeps every hour (R2.4 B and C ran with no
+   effective hold). Uploads (soft resets) do count, so 3 IDE uploads within 10 min print "BOOT-LOOP".
+   Fix: keep the counter in boot.bin, or drop the rule and fix the text.
+n2 A boot that lives less than 60 s puts none of its 1 Hz records on flash (secBuf is flushed once a
+   minute; R2.4 C: 30 s boots -> 0 records). The BOOT event is still written.
+   Optional fix: flush at 10 s and 30 s of uptime.
+n3 Events logged from inside a flash erase can be lost.
+   Why: ppgService() runs inside lfsErase(), and on 3 PPG failures devResult() calls evLog(). evLog()
+   appends to evBuf while flushAll() is writing evBuf, and flushAll() then sets evLen=0, dropping the
+   new line. It is still echoed live. Rare.
+n4 hg_i2c_bus_clear() in the loop re-probe (line 1572) runs while TWIM0 is ENABLED, so the GPIO
+   toggling does not reach the pins and does nothing. The timeout path, which matters, disables first.
+   Also, the condition "|| hg_i2c_stats.ok" is cumulative, so after the first good transfer this
+   branch never runs.
+
+-------------------------------------------------------------------------------------
+R2.7 STILL UNVERIFIABLE WITHOUT A BOARD
+-------------------------------------------------------------------------------------
+ - Whether the new TWIM driver really talks to the 6 devices.
+   Monday's stat must show:
+   - every sensor = 1 (0x49 = 0 is normal);
+   - "i2c ... timeouts=0 bus_at_boot=ok";
+   - "imu ... accel-LP-25Hz";
+   - HR q=4 while sitting.
+   If any device is 0, flash 07 back to check the wiring before blaming 08.
+ - The current draw and battery life (ESTIMATE).
+ - The erase timing, and ppgService being drained during erases (stat "overflows=" should stay near 0).

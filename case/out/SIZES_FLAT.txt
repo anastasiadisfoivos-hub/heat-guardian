@@ -1,0 +1,9 @@
+FLAT-BOTTOM VARIANT (out/stl_flat/): no supports, smooth underside
+brain_pod: 35.1 x 67.6 x 12.9 mm, volume 5.53 cm3, watertight=True {'interior': '29.1 x 54.6', 'screen': 'PCB back at 12.95 (6.0 free over the XIAO top 6.95), top 17.55', 'cable': 'wire garage: ONE fold R 4.7-5.7 (flat ribbon; 45-50 mm wires), fold 10.0 past the 5V edge, pod 12.4 longer across'}
+brain_frame: 35.1 x 60.6 x 10.1 mm, volume 3.54 cm3, watertight=True {'note': 'print plate-down (top face on the bed), no supports'}
+power_pod: 43.6 x 62.9 x 8.8 mm, volume 4.94 cm3, watertight=True {'interior': '34.6 x 49.9', 'lid_top': 10.5, 'lane': '5.0 mm wide, 7.6 mm free height'}
+power_lid: 40.6 x 55.9 x 3.7 mm, volume 4.18 cm3, watertight=True {'note': 'print plate-down (top face on the bed), no supports'}
+island_skin: 89.8 x 48.9 x 12.1 mm, volume 7.72 cm3, watertight=True {'interior': '86.8 x 35.9', 'hop3_C': 'R 12.3, apex 13.5 into the bay', 'hop4_C': 'R 15.8, apex 11.0', 'hop5_C': 'straight up round the pad edges, 17.5 mm', 'strap_tongue_max_width': 26.8, 'hop6_loop': 'R 14.9', 'tmp2': 'chip down 10.10-11.70, chip on its rest at 9.30'}
+island_shelf: 26.4 x 19.5 x 4.2 mm, volume 0.62 cm3, watertight=True {'shelf_top': 6.8, 'underside': 5.6, 'shtc3_bottom': 7.8, 'lip_top': 8.5, 'seat': '26.8 x 18.48 (+0.7 fit)', 'pin_d': 1.8}
+island_air: 34.7 x 19.9 x 13.9 mm, volume 0.84 cm3, watertight=True {'mount': "keyed feet on TMP117 #2's plate (glue)", 'shtc3_bottom': 15.3, 'still_air_over_tmp2': 3.0, 'top': 20.26, 'vents': 'open on 4 sides and on top (drop-in)', 'pocket': '25.4 x 17.8 + 0.5 per side, + 3.5 at the pad edge'}
+interferences: 0

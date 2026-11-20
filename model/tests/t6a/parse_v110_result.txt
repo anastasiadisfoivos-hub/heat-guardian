@@ -1,0 +1,5 @@
+PASS  identical t_ms across a reset: 120 rows split 60/60 (got 120, {21: 60, 22: 60})
+PASS  rows keep their own boot's values (no cross-boot dedupe)
+PASS  reset loop: 320 rows over 40 boots (got 320, 40)
+PASS  binary + dump text of the same appended file de-duplicate to 120 (got 120)
+T6A_PARSE_V110: PASS

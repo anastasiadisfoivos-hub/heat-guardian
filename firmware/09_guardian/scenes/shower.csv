@@ -1,0 +1,14 @@
+# Heat Guardian staged scene v1: shower
+# A 20-min warm shower with the band on, in a 27.5 C flat: the skin sensor jumps with the hot water, humidity at the band
+# reaches 95-98 %, then 20 min of drying off. Nobody is in danger.
+# expect=
+# start=09:00 warmup=1440
+# keyframes, linear between rows. columns: min,t1_skin_c,t2_ref_c,air_c,rh_pct,hr_bpm,hr_q,pi_pct,a_std_g,z_deg,button
+# ('-' = no value; hr_q 4 OK, 2 motion, 0 no skin; button 1 = a short press at that minute)
+0,33.8,32.2,27.5,45,72,4,0.5,0.030,10,0
+10,33.8,32.2,27.5,45,72,4,0.5,0.050,10,0
+12,38.0,37.5,34.0,95,90,2,0.3,0.120,30,0
+30,38.5,38.0,35.0,98,95,2,0.3,0.120,40,0
+33,34.5,33.0,30.0,85,85,2,0.4,0.100,20,0
+50,33.9,32.4,27.8,55,74,4,0.5,0.050,10,0
+90,33.8,32.2,27.5,45,72,4,0.5,0.030,10,0

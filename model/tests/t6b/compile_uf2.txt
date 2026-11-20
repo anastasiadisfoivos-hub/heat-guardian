@@ -1,0 +1,11 @@
+arduino-cli compile --fqbn Seeeduino:nrf52:xiaonRF52840 --jobs 1 --export-binaries (nice 19, copy of fw/09_guardian):
+Sketch uses 296432 bytes (36%) of program storage space. Maximum is 811008 bytes.
+Global variables use 68616 bytes (28%) of dynamic memory, leaving 168952 bytes for local variables. Maximum is 237568 bytes.
+rebuilt hex == committed hex (cmp): yes
+uf2conv.py -f 0xADA52840 -c on the rebuilt hex -> md5:
+bfe66af6d61a5f8273596d2eca79662f
+committed fw/09_guardian/build/.../09_guardian.uf2 md5:
+bfe66af6d61a5f8273596d2eca79662f
+blocks 1158  family {'0xada52840'}  flags {'0x2000'}  start 0x00027000  end 0x0006f600  bytes 296448
+hex bytes 296440  hex range 0x00027000-0x0006f5f8  mismatches vs uf2 0  uf2-only bytes 8
+control build (no-fast-math pragma, scratch only): Sketch uses 297008 bytes (36%), Global variables 68616 bytes (28%)

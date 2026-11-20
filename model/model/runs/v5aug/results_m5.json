@@ -1,0 +1,884 @@
+{
+ "provenance": {
+  "minutes_dev_file": "minutes_dev_v5.parquet",
+  "minutes_dev_sha256": "cff1dcf09535532465ff2bc8da0d593d29308a40d5eea8003a374ffa9a983ee6",
+  "persons_sha256": "eb9ad75e3b52caebffa3c7f61a90caffd41d950e64e41ccc0276b0f09e4b5aca",
+  "run_tag": "v5aug",
+  "sim_version": "v5 (B1-v5 @ f055fcb: v4 + per-person skin-core coupling fitted on Brighton, DECISIONS M20)",
+  "hr_rise_augmentation": true,
+  "htt_db": "/home/claude/hgdata/heat_guardian_train.sqlite dataset 1 (all 65 = DEV for hg2)"
+ },
+ "decision": "M5.1-M5.3",
+ "level": 0.9,
+ "sim_conformal": {
+  "label": "SIMULATION (Virtual Elders v5; known too-tolerant at humid rest, bed rest, and HR) - 100 calibration persons, view val",
+  "horizon_now": {
+   "no_reading": {
+    "half_width_90": 0.3957061767578125,
+    "fold_half_widths": [
+     0.4078178405761719,
+     0.3947410583496094,
+     0.4027290344238281,
+     0.3851051330566406,
+     0.38753509521484375
+    ],
+    "crossfit_coverage_pct": 89.90279677429524,
+    "per_person_coverage_median": 98.1059562042023,
+    "per_person_coverage_p10": 68.74403288998866,
+    "share_persons_below_80pct": 18.0,
+    "n_rows": 1300677
+   },
+   "reading_today": {
+    "half_width_90": 0.3401052688399844,
+    "fold_half_widths": [
+     0.3498749712279903,
+     0.33896690646542993,
+     0.345181661034637,
+     0.3362328408097568,
+     0.329924707174186
+    ],
+    "crossfit_coverage_pct": 89.82960582646461,
+    "per_person_coverage_median": 95.53176537492891,
+    "per_person_coverage_p10": 66.7233256382158,
+    "share_persons_below_80pct": 12.0,
+    "n_rows": 775496
+   },
+   "watch_lower_uncalibrated_C": 0.027800453958914062,
+   "mae_no_reading": 0.19459223747253418,
+   "mae_reading_today": 0.16979975055763033
+  },
+  "horizon_20": {
+   "no_reading": {
+    "half_width_90": 0.4114875793457031,
+    "fold_half_widths": [
+     0.4208946228027344,
+     0.40375518798828125,
+     0.417694091796875,
+     0.4012413024902344,
+     0.4135322570800781
+    ],
+    "crossfit_coverage_pct": 89.93916245155408,
+    "per_person_coverage_median": 97.95125636109339,
+    "per_person_coverage_p10": 65.5161471066365,
+    "share_persons_below_80pct": 18.0,
+    "n_rows": 1300677
+   },
+   "reading_today": {
+    "half_width_90": 0.3549817819817491,
+    "fold_half_widths": [
+     0.36253818163987006,
+     0.34726561694424163,
+     0.36107475733355443,
+     0.352068662031499,
+     0.35203482019125687
+    ],
+    "crossfit_coverage_pct": 89.95700815993894,
+    "per_person_coverage_median": 95.53345515554162,
+    "per_person_coverage_p10": 72.819047023815,
+    "share_persons_below_80pct": 16.0,
+    "n_rows": 775496
+   },
+   "watch_lower_uncalibrated_C": 0.028252898681977,
+   "mae_no_reading": 0.19798995554447174,
+   "mae_reading_today": 0.1698944594707625
+  },
+  "horizon_30": {
+   "no_reading": {
+    "half_width_90": 0.429229736328125,
+    "fold_half_widths": [
+     0.43648529052734375,
+     0.418975830078125,
+     0.43495941162109375,
+     0.4217338562011719,
+     0.4338874816894531
+    ],
+    "crossfit_coverage_pct": 89.95546165573775,
+    "per_person_coverage_median": 97.28230014222756,
+    "per_person_coverage_p10": 65.82533670128286,
+    "share_persons_below_80pct": 19.0,
+    "n_rows": 1300677
+   },
+   "reading_today": {
+    "half_width_90": 0.37912511022819473,
+    "fold_half_widths": [
+     0.38384489231470553,
+     0.36867372789203046,
+     0.38557964418185975,
+     0.3788819208536438,
+     0.3795396219180347
+    ],
+    "crossfit_coverage_pct": 89.9909219389913,
+    "per_person_coverage_median": 95.09019888303705,
+    "per_person_coverage_p10": 77.85366678469785,
+    "share_persons_below_80pct": 14.000000000000002,
+    "n_rows": 775496
+   },
+   "watch_lower_uncalibrated_C": 0.025052313049965136,
+   "mae_no_reading": 0.20629896223545074,
+   "mae_reading_today": 0.180197851463646
+  },
+  "coverage_now_no_reading_per_kappa_tercile_final_q": {
+   "T1": 90.40834010402273,
+   "T2": 89.01304509877004,
+   "T3": 90.48217446149272
+  }
+ },
+ "sim_conformal_hr_scaled_M3.2": {
+  "label": "SIMULATION (Virtual Elders v5; known too-tolerant at humid rest, bed rest, and HR) - 100 calibration persons, view valaug",
+  "horizon_now": {
+   "no_reading": {
+    "half_width_90": 0.39835357666015625,
+    "fold_half_widths": [
+     0.4116783142089844,
+     0.3985786437988281,
+     0.4064292907714844,
+     0.3904914855957031,
+     0.384735107421875
+    ],
+    "crossfit_coverage_pct": 89.83528861782992,
+    "per_person_coverage_median": 97.95880061709194,
+    "per_person_coverage_p10": 69.41688596156101,
+    "share_persons_below_80pct": 18.0,
+    "n_rows": 650289
+   },
+   "reading_today": {
+    "half_width_90": 0.3470044795566025,
+    "fold_half_widths": [
+     0.35758972320367377,
+     0.34696349779227376,
+     0.35156271207728906,
+     0.3448700840868426,
+     0.3335594981858492
+    ],
+    "crossfit_coverage_pct": 89.73511129452426,
+    "per_person_coverage_median": 95.32727970115403,
+    "per_person_coverage_p10": 71.80252261434578,
+    "share_persons_below_80pct": 15.0,
+    "n_rows": 387710
+   },
+   "watch_lower_uncalibrated_C": 0.025674548551776866,
+   "mae_no_reading": 0.19882670044898987,
+   "mae_reading_today": 0.1759183439782665
+  },
+  "horizon_20": {
+   "no_reading": {
+    "half_width_90": 0.4103736877441406,
+    "fold_half_widths": [
+     0.4206733703613281,
+     0.40472412109375,
+     0.41782379150390625,
+     0.4027748107910156,
+     0.4057502746582031
+    ],
+    "crossfit_coverage_pct": 89.90233573072895,
+    "per_person_coverage_median": 97.89501834305104,
+    "per_person_coverage_p10": 68.21011116767568,
+    "share_persons_below_80pct": 16.0,
+    "n_rows": 650289
+   },
+   "reading_today": {
+    "half_width_90": 0.3558787189516792,
+    "fold_half_widths": [
+     0.36346966536508063,
+     0.3494805314914231,
+     0.3614396735469185,
+     0.3546957091802838,
+     0.3493822478725406
+    ],
+    "crossfit_coverage_pct": 89.876454050708,
+    "per_person_coverage_median": 95.48136700491013,
+    "per_person_coverage_p10": 72.61778482385773,
+    "share_persons_below_80pct": 14.000000000000002,
+    "n_rows": 387710
+   },
+   "watch_lower_uncalibrated_C": 0.027247484396230703,
+   "mae_no_reading": 0.19890843331813812,
+   "mae_reading_today": 0.17171938519830188
+  },
+  "horizon_30": {
+   "no_reading": {
+    "half_width_90": 0.42560577392578125,
+    "fold_half_widths": [
+     0.4332923889160156,
+     0.41699981689453125,
+     0.43195343017578125,
+     0.41986846923828125,
+     0.4253730773925781
+    ],
+    "crossfit_coverage_pct": 89.947853954165,
+    "per_person_coverage_median": 97.02296150386067,
+    "per_person_coverage_p10": 66.24776407128911,
+    "share_persons_below_80pct": 18.0,
+    "n_rows": 650289
+   },
+   "reading_today": {
+    "half_width_90": 0.37489374918125407,
+    "fold_half_widths": [
+     0.37930831590750813,
+     0.36585947143618114,
+     0.3806727809426036,
+     0.3762564544857625,
+     0.3730719133465641
+    ],
+    "crossfit_coverage_pct": 89.99613112893657,
+    "per_person_coverage_median": 94.97649420083962,
+    "per_person_coverage_p10": 77.36210018226689,
+    "share_persons_below_80pct": 13.0,
+    "n_rows": 387710
+   },
+   "watch_lower_uncalibrated_C": 0.025356012372263592,
+   "mae_no_reading": 0.2053445428609848,
+   "mae_reading_today": 0.1793952984955837
+  },
+  "coverage_now_no_reading_per_kappa_tercile_final_q": {
+   "T1": 89.77981148072416,
+   "T2": 89.48692077913687,
+   "T3": 90.75019186492709
+  }
+ },
+ "htt_conformal": {
+  "label": "young adults 18-33, chamber walk, DEV - LOSO conformal (quantile from the other 64 people)",
+  "horizon_now": {
+   "no_reading": {
+    "half_width_90_all": 0.566558837890625,
+    "loso_coverage_pct": 89.79517190929042,
+    "mae": 0.28020042181015015
+   },
+   "reading_today": {
+    "half_width_90_all": 0.511458398952044,
+    "loso_coverage_pct": 89.88782180614963,
+    "mae": 0.24656200214101928
+   }
+  },
+  "horizon_20": {
+   "no_reading": {
+    "half_width_90_all": 0.5504837036132812,
+    "loso_coverage_pct": 89.7362023948861,
+    "mae": 0.2747642695903778
+   },
+   "reading_today": {
+    "half_width_90_all": 0.5177802418431625,
+    "loso_coverage_pct": 89.70782856561132,
+    "mae": 0.2504084584301572
+   }
+  }
+ },
+ "m6_4_nn_vs_v12_same_budget": {
+  "note": "M6.4: NN vs v1.2 where the NN has its extra senses: SIM-DEV calibration persons, per day type (S1 ordinary, PRE,\nS2 heat wave incl. S3-type hot nights, POST; S4 errands happen inside these days), per-minute series per person-day.\nSame FA budget: the NN rule's threshold is chosen per person fold on the other folds so its FA/h <= the v1.2 rule's\nFA/h there, then scored on the held-out fold. Rules: Drink v1.2 f20 >= 37.85 - margin vs NN f20_eff (+offset);\nDanger v1.2 logistic z >= -1.450 vs NN logit_p385 alone vs OR.",
+  "k_sd": 0.0,
+  "S1 ordinary": {
+   "Drink": {
+    "v12": {
+     "events": 170,
+     "detected": 149,
+     "sensitivity": 87.6470588235294,
+     "false_alarms": 3208,
+     "hours": 10152.0,
+     "fa_per_h": 0.31599684791174154,
+     "lead_median": 36.0,
+     "lead_middle_half": [
+      11.0,
+      103.0
+     ],
+     "sensitivity_95": [
+      80.40301092459366,
+      93.3892902677433
+     ],
+     "fa_per_h_95": [
+      0.28682408888643723,
+      0.34252817682983716
+     ]
+    },
+    "nn_same_budget": {
+     "events": 170,
+     "detected": 170,
+     "sensitivity": 100.0,
+     "false_alarms": 2134,
+     "hours": 10152.0,
+     "fa_per_h": 0.21020488573680063,
+     "lead_median": 54.5,
+     "lead_middle_half": [
+      29.25,
+      160.0
+     ],
+     "sensitivity_95": [
+      100.0,
+      100.0
+     ],
+     "fa_per_h_95": [
+      0.19762867647058824,
+      0.22466170634920635
+     ]
+    },
+    "gain_points": 12.352941176470594,
+    "chosen": [
+     -0.15,
+     -0.15,
+     -0.15,
+     -0.15,
+     -0.15
+    ],
+    "nn_beats_v12": true
+   },
+   "Danger_NN_alone": {
+    "v12": {
+     "events": 10,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 31,
+     "hours": 10152.0,
+     "fa_per_h": 0.003053585500394011,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.0012513546240587841,
+      0.005406693799550942
+     ]
+    },
+    "nn_same_budget": {
+     "events": 10,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 12,
+     "hours": 10152.0,
+     "fa_per_h": 0.001182033096926714,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.0,
+      0.0030772407895643767
+     ]
+    },
+    "gain_points": 0.0,
+    "chosen": [
+     1000000000.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "nn_beats_v12": false
+   },
+   "Danger_OR": {
+    "v12": {
+     "events": 10,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 31,
+     "hours": 10152.0,
+     "fa_per_h": 0.003053585500394011,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.0012513546240587841,
+      0.005406693799550942
+     ]
+    },
+    "nn_same_budget": {
+     "events": 10,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 31,
+     "hours": 10152.0,
+     "fa_per_h": 0.003053585500394011,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.0012513546240587841,
+      0.005406693799550942
+     ]
+    },
+    "gain_points": 0.0,
+    "chosen": [
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0
+    ],
+    "nn_beats_v12": false
+   }
+  },
+  "PRE": {
+   "Drink": {
+    "v12": {
+     "events": 49,
+     "detected": 45,
+     "sensitivity": 91.83673469387755,
+     "false_alarms": 752,
+     "hours": 2424.0,
+     "fa_per_h": 0.3102310231023102,
+     "lead_median": 47.0,
+     "lead_middle_half": [
+      19.0,
+      112.0
+     ],
+     "sensitivity_95": [
+      82.89583333333333,
+      97.93936170212766
+     ],
+     "fa_per_h_95": [
+      0.2794851232572237,
+      0.3410028215831787
+     ]
+    },
+    "nn_same_budget": {
+     "events": 49,
+     "detected": 48,
+     "sensitivity": 97.95918367346938,
+     "false_alarms": 475,
+     "hours": 2424.0,
+     "fa_per_h": 0.19595709570957096,
+     "lead_median": 47.0,
+     "lead_middle_half": [
+      22.25,
+      89.5
+     ],
+     "sensitivity_95": [
+      92.93604651162791,
+      100.0
+     ],
+     "fa_per_h_95": [
+      0.17208008203281314,
+      0.21628156565656564
+     ]
+    },
+    "gain_points": 6.122448979591837,
+    "chosen": [
+     -0.1,
+     -0.1,
+     -0.1,
+     -0.1,
+     -0.05
+    ],
+    "nn_beats_v12": true
+   },
+   "Danger_NN_alone": {
+    "v12": {
+     "events": 0,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 9,
+     "hours": 2424.0,
+     "fa_per_h": 0.0037128712871287127,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.0008499947932937624,
+      0.007539772727272726
+     ]
+    },
+    "nn_same_budget": {
+     "events": 0,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 0,
+     "hours": 2424.0,
+     "fa_per_h": 0.0,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.0,
+      0.0
+     ]
+    },
+    "gain_points": 0.0,
+    "chosen": [
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0
+    ],
+    "nn_beats_v12": false
+   },
+   "Danger_OR": {
+    "v12": {
+     "events": 0,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 9,
+     "hours": 2424.0,
+     "fa_per_h": 0.0037128712871287127,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.0008499947932937624,
+      0.007539772727272726
+     ]
+    },
+    "nn_same_budget": {
+     "events": 0,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 9,
+     "hours": 2424.0,
+     "fa_per_h": 0.0037128712871287127,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.0008499947932937624,
+      0.007539772727272726
+     ]
+    },
+    "gain_points": 0.0,
+    "chosen": [
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0
+    ],
+    "nn_beats_v12": false
+   }
+  },
+  "POST": {
+   "Drink": {
+    "v12": {
+     "events": 63,
+     "detected": 57,
+     "sensitivity": 90.47619047619048,
+     "false_alarms": 1022,
+     "hours": 3264.0,
+     "fa_per_h": 0.3131127450980392,
+     "lead_median": 38.0,
+     "lead_middle_half": [
+      22.0,
+      121.0
+     ],
+     "sensitivity_95": [
+      82.64367816091955,
+      96.63983050847457
+     ],
+     "fa_per_h_95": [
+      0.27557444852941176,
+      0.3443780637254902
+     ]
+    },
+    "nn_same_budget": {
+     "events": 63,
+     "detected": 62,
+     "sensitivity": 98.41269841269842,
+     "false_alarms": 649,
+     "hours": 3264.0,
+     "fa_per_h": 0.19883578431372548,
+     "lead_median": 39.5,
+     "lead_middle_half": [
+      26.0,
+      91.5
+     ],
+     "sensitivity_95": [
+      94.38941299790356,
+      100.0
+     ],
+     "fa_per_h_95": [
+      0.17445618872549018,
+      0.2230545343137255
+     ]
+    },
+    "gain_points": 7.936507936507937,
+    "chosen": [
+     -0.1,
+     -0.1,
+     -0.1,
+     -0.05,
+     -0.1
+    ],
+    "nn_beats_v12": true
+   },
+   "Danger_NN_alone": {
+    "v12": {
+     "events": 1,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 25,
+     "hours": 3264.0,
+     "fa_per_h": 0.007659313725490196,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.001983762254901961,
+      0.015931372549019607
+     ]
+    },
+    "nn_same_budget": {
+     "events": 1,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 0,
+     "hours": 3264.0,
+     "fa_per_h": 0.0,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.0,
+      0.0
+     ]
+    },
+    "gain_points": 0.0,
+    "chosen": [
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0
+    ],
+    "nn_beats_v12": false
+   },
+   "Danger_OR": {
+    "v12": {
+     "events": 1,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 25,
+     "hours": 3264.0,
+     "fa_per_h": 0.007659313725490196,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.001983762254901961,
+      0.015931372549019607
+     ]
+    },
+    "nn_same_budget": {
+     "events": 1,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 25,
+     "hours": 3264.0,
+     "fa_per_h": 0.007659313725490196,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.001983762254901961,
+      0.015931372549019607
+     ]
+    },
+    "gain_points": 0.0,
+    "chosen": [
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0
+    ],
+    "nn_beats_v12": false
+   }
+  },
+  "S2 heat wave (incl. hot nights)": {
+   "Drink": {
+    "v12": {
+     "events": 184,
+     "detected": 175,
+     "sensitivity": 95.1086956521739,
+     "false_alarms": 2523,
+     "hours": 8160.0,
+     "fa_per_h": 0.30919117647058825,
+     "lead_median": 36.0,
+     "lead_middle_half": [
+      15.5,
+      114.0
+     ],
+     "sensitivity_95": [
+      91.77403310520452,
+      98.1282557799239
+     ],
+     "fa_per_h_95": [
+      0.279047181372549,
+      0.34229779411764705
+     ]
+    },
+    "nn_same_budget": {
+     "events": 184,
+     "detected": 182,
+     "sensitivity": 98.91304347826087,
+     "false_alarms": 1674,
+     "hours": 8160.0,
+     "fa_per_h": 0.2051470588235294,
+     "lead_median": 115.5,
+     "lead_middle_half": [
+      33.0,
+      221.75
+     ],
+     "sensitivity_95": [
+      96.33868808567604,
+      100.0
+     ],
+     "fa_per_h_95": [
+      0.19024816176470588,
+      0.2167310049019608
+     ]
+    },
+    "gain_points": 3.8043478260869676,
+    "chosen": [
+     -0.25,
+     -0.25,
+     -0.25,
+     -0.1,
+     -0.25
+    ],
+    "nn_beats_v12": true
+   },
+   "Danger_NN_alone": {
+    "v12": {
+     "events": 4,
+     "detected": 1,
+     "sensitivity": 25.0,
+     "false_alarms": 79,
+     "hours": 8160.0,
+     "fa_per_h": 0.009681372549019608,
+     "lead_median": 32.0,
+     "lead_middle_half": [
+      32.0,
+      32.0
+     ],
+     "sensitivity_95": [
+      0.0,
+      75.0
+     ],
+     "fa_per_h_95": [
+      0.00392156862745098,
+      0.016743259803921554
+     ]
+    },
+    "nn_same_budget": {
+     "events": 4,
+     "detected": 0,
+     "sensitivity": 0.0,
+     "false_alarms": 0,
+     "hours": 8160.0,
+     "fa_per_h": 0.0,
+     "lead_median": null,
+     "lead_middle_half": null,
+     "sensitivity_95": [
+      0.0,
+      0.0
+     ],
+     "fa_per_h_95": [
+      0.0,
+      0.0
+     ]
+    },
+    "gain_points": -25.0,
+    "chosen": [
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0
+    ],
+    "nn_beats_v12": false
+   },
+   "Danger_OR": {
+    "v12": {
+     "events": 4,
+     "detected": 1,
+     "sensitivity": 25.0,
+     "false_alarms": 79,
+     "hours": 8160.0,
+     "fa_per_h": 0.009681372549019608,
+     "lead_median": 32.0,
+     "lead_middle_half": [
+      32.0,
+      32.0
+     ],
+     "sensitivity_95": [
+      0.0,
+      75.0
+     ],
+     "fa_per_h_95": [
+      0.00392156862745098,
+      0.016743259803921554
+     ]
+    },
+    "nn_same_budget": {
+     "events": 4,
+     "detected": 1,
+     "sensitivity": 25.0,
+     "false_alarms": 79,
+     "hours": 8160.0,
+     "fa_per_h": 0.009681372549019608,
+     "lead_median": 32.0,
+     "lead_middle_half": [
+      32.0,
+      32.0
+     ],
+     "sensitivity_95": [
+      0.0,
+      75.0
+     ],
+     "fa_per_h_95": [
+      0.00392156862745098,
+      0.016743259803921554
+     ]
+    },
+    "gain_points": 0.0,
+    "chosen": [
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0,
+     1000000000.0
+    ],
+    "nn_beats_v12": false
+   }
+  }
+ },
+ "export": {
+  "HG2_RANGE90_NOW_NOREAD": 0.3957061767578125,
+  "HG2_RANGE90_NOW_READ": 0.3401052688399844,
+  "HG2_RANGE90_F20_NOREAD": 0.4114875793457031,
+  "HG2_RANGE90_F20_READ": 0.3549817819817491,
+  "HG2_WATCH_LOWER_UNCAL": 0.028252898681977,
+  "HG2_CONF_HALF_CAL": 0.3401052688399844,
+  "HG2_CONF_HALF_UNCAL": 0.3957061767578125
+ }
+}

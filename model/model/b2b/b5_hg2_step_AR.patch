@@ -1,0 +1,59 @@
+--- a/guardian/c/hg2_step.c
++++ b/guardian/c/hg2_step.c
+@@ -107,6 +107,21 @@
+   return c == HG2_NN_CRC32;
+ }
+ 
++#ifndef HG_B2B
++#define HG_B2B 0
++#endif
++#ifndef HG_B2B_ENV
++#define HG_B2B_ENV 1
++#endif
++#ifndef HG_B2B_R
++#define HG_B2B_R 0.30f
++#endif
++#ifndef HG_B2B_RUP
++#define HG_B2B_RUP HG_B2B_R
++#endif
++#ifndef HG_B2B_RAMP
++#define HG_B2B_RAMP 0.5f
++#endif
+ static float clampf(float x, float lo, float hi) { return x < lo ? lo : (x > hi ? hi : x); }
+ static int popcount32(uint32_t v) { int n = 0; while (v) { v &= v - 1; n++; } return n; }
+ 
+@@ -251,7 +266,34 @@
+ #endif
+   /* M5.1: D7 replaced - what the tiers use is the forecast itself (no "+1 sd"); field kept for API stability */
+   out->f20_eff = out->core_20;
++#if !HG2_WEIGHTS_STUB && HG_B2B
++  /* B2b AR (model/b2b/residual.py): core = v1.2 + w * clamp(NN - v1.2, -R, R); w = skin gate x envelope ramp x M11.3 HR gate */
++  float core20_noff;
++  {
++    static const float EA[9] = {24, 26, 28, 30, 32, 34, 36, 38, 40};
++    static const float EL[9] = {7.10f, 6.51f, 5.45f, 3.89f, 2.43f, 0.91f, -0.72f, -2.53f, -4.06f};
++    static const float EH[9] = {12.22f, 10.46f, 8.99f, 7.38f, 5.73f, 4.15f, 2.31f, 0.64f, -0.77f};
++    float w = (t1ok && tairok && worn == 2 && s->min_since_don >= HG_DON_BLANK_MIN) ? 1.0f : 0.0f;
++#if HG_B2B_ENV
++    if (w > 0.0f) {
++      float a = tair < EA[0] ? EA[0] : (tair > EA[8] ? EA[8] : tair), lo = EL[8], hi = EH[8];
++      for (int k = 0; k < 8; k++) if (a <= EA[k + 1]) { float f = (a - EA[k]) / (EA[k + 1] - EA[k]); lo = EL[k] + f * (EL[k + 1] - EL[k]); hi = EH[k] + f * (EH[k + 1] - EH[k]); break; }
++      const float d = t1 - tair; float o = lo - d; if (d - hi > o) o = d - hi; if (o < 0.0f) o = 0.0f;
++      w = w * clampf(1.0f - o / HG_B2B_RAMP, 0.0f, 1.0f);
++    }
++#endif
++    if (x[X_HR_RESERVE] > HG_OOD_RESERVE || x[X_HR] > HG_OOD_HR) w = 0.0f;
++    const float n0 = out->core_now - off, n1 = out->core_20 - off, n2 = out->core_30 - off;
++    const float r0 = clampf(n0 - ko.est, -HG_B2B_R, HG_B2B_RUP), r1 = clampf(n1 - ko.f20, -HG_B2B_R, HG_B2B_RUP), r2 = clampf(n2 - ko.f20, -HG_B2B_R, HG_B2B_RUP);
++    out->core_now = hg2_clampf(ko.est + w * r0, 30.0f, 45.0f) + off;
++    out->core_20 = hg2_clampf(ko.f20 + w * r1, 30.0f, 45.0f) + off;
++    out->core_30 = hg2_clampf(ko.f20 + w * r2, 30.0f, 45.0f) + off;
++    core20_noff = hg2_clampf(ko.f20 + w * r1, 30.0f, 45.0f);
++    out->f20_eff = out->core_20; out->f30_eff = out->core_30;
++  }
++#else
+   const float core20_noff = HG2_WEIGHTS_STUB ? ko.f20 : hg2_clampf(mean[1] * HG2_Y_STD[1] + HG2_Y_MEAN[1], 30.0f, 45.0f);   /* M4.3 */
++#endif
+   out->f30_eff = out->core_30;
+   out->kf = ko.kf;
+   out->core_flux = flux_valid ? core_flux : NAN;

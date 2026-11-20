@@ -1,0 +1,2710 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heat Guardian simulation</title>
+<style>
+:root{
+  /* light, printed-instrument look: white field, 1 px grey rules, one accent (DESIGN.md brand/primary, deep Greek blue) */
+  --bg:#FFFFFF; --rule:#D9D9D9; --rule2:#BDBDBD;
+  --text:#111111; --text2:#4A4A4A; --label:#6B6B6B;
+  --accent:#003F88;
+  /* heat-state colours darkened for white (DESIGN.md hues), only where they carry meaning */
+  --water:#1F63C6; --heat:#C25E00; --danger:#C62828; --warm:#8A6200;
+  --good:#1B7F4B; --off:#B35C00;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.lbl{font-size:13px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--label)}
+
+.stage{height:100vh;display:grid;grid-template-rows:64px minmax(0,1fr) 34px;grid-template-columns:minmax(0,1fr)}
+
+/* top rule bar */
+.top{display:flex;align-items:center;gap:20px;padding:0 24px;border-bottom:1px solid var(--rule)}
+.top h1{font-size:19px;font-weight:700;letter-spacing:.02em}
+.top .preview{display:none;font-family:var(--mono);font-size:13px;color:var(--heat);border:1px solid var(--heat);padding:3px 8px;border-radius:2px}
+body.preview .top .preview{display:inline-block}
+.controls{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn{height:40px;padding:0 16px;border:1px solid var(--rule2);background:transparent;border-radius:3px;font-size:16px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#F2F2F2}
+.btn:disabled{opacity:.35;cursor:default}
+.btn.go{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.go:hover{background:#00336E}
+.lnk{background:none;border:0;color:var(--text2);font-size:15px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.chk{display:flex;align-items:center;gap:8px;font-size:16px;cursor:pointer;white-space:nowrap;user-select:none;padding:0 6px}
+.chk input{appearance:none;width:18px;height:18px;border:1px solid var(--text2);background:#fff;border-radius:2px;display:grid;place-content:center;cursor:pointer}
+.chk input:checked{background:var(--danger);border-color:var(--danger)}
+.chk input:checked::after{content:"";width:8px;height:8px;background:#fff}
+select.btn{font-weight:500;padding:0 10px;background:var(--bg)}
+body.linked .conn{display:none}
+body:not(.linked) #btnGo,body:not(.linked) #btnStop{display:none}
+.top>*,.controls>*{transition:opacity .4s}
+body.running .top>*:not(.controls):not(.preview),body.running .controls>*:not(#btnStop){opacity:.15;pointer-events:none}
+body.running #btnStop{border-color:var(--text);opacity:1}
+
+/* three columns separated by rules */
+.main{display:grid;grid-template-columns:360px minmax(0,1fr) 410px;min-height:0}
+.col{min-height:0;padding:20px 28px;border-right:1px solid #EEEEEE}
+.col:last-child{border-right:0}
+
+/* terminal: plain */
+.term{display:flex;flex-direction:column;padding:20px 0 12px 20px;background:#FAFAFA}
+.term .lbl{padding-right:22px;display:flex}
+.term .lbl span:last-child{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:400;font-family:var(--mono)}
+.tbody{position:relative;flex:1;min-height:0;margin-top:10px;overflow:hidden}
+.tscroll{position:absolute;left:0;right:14px;bottom:0;font-family:var(--mono);font-size:12.5px;line-height:1.4;color:#7A7A7A}
+.tl{white-space:pre-wrap;overflow-wrap:anywhere;padding-left:2ch;text-indent:-2ch}
+.tl .k{color:#ABABAB}
+.tl .pre{color:#ABABAB}
+.tl.cmd{color:var(--text);font-weight:600}
+.tl.rep{color:#7A7A7A}
+.tl.ctl{color:#6B6B6B}
+.tl.ev{color:#6B6B6B}
+.tl.ev.newest{color:var(--accent);font-weight:600}
+.tl.ev .k{color:#9AA9C0;font-weight:400}
+.tl.dim{color:#8A8A8A}
+.tl .st-DRINK{color:#6F93CC}.tl .st-COOL{color:#C99062}.tl .st-CHECK,.tl .st-DANGER,.tl .st-HELP{color:#C98080}
+.cur{display:inline-block;width:.62em;height:1.1em;background:#9A9A9A;vertical-align:-3px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+
+.center{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:18px}
+.clock{font-size:92px;line-height:.95;font-weight:500;letter-spacing:-.03em;transition:opacity .4s}
+.clock.pending{opacity:.25}
+.chartwrap{position:relative;min-height:0}
+#chart{position:absolute;inset:0;width:100%;height:100%}
+.key{position:absolute;right:4px;top:2px;display:flex;gap:18px;font-size:14px;color:var(--text2)}
+.key span{display:flex;align-items:center;gap:7px}
+.key i{display:inline-block;width:20px;border-top:2px solid}
+
+.ladder{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px;border-top:1px solid #EEEEEE}
+.rung{padding:12px 0 4px;border-top:3px solid transparent;margin-top:-1px;color:var(--label);transition:border-color .6s,color .6s}
+.rung .sq{width:9px;height:9px;background:#E0E0E0;border:1px solid var(--rule2)}
+.rung.lit{border-top-color:var(--c)}
+.rung.lit .sq{background:var(--c);border-color:var(--c)}
+.rung .meta{font-family:var(--mono);font-size:14px;margin-top:8px;line-height:1.5;color:var(--text2);min-height:42px;white-space:pre-line}
+.rung .meta .y{color:var(--good)}.rung .meta .n{color:var(--danger)}.rung .meta .w{color:var(--warm)}
+
+.band{display:flex;flex-direction:column;align-items:center;gap:8px}
+.bandbody{width:132px;height:158px;border-radius:30px;background:#1A1A1A;border:1px solid #000;padding:8px}
+.screen{width:100%;height:100%;border-radius:22px;background:#5a5a5a;position:relative;overflow:hidden;transition:background-color .8s}
+.screen svg{position:absolute;inset:0}
+.screen .stxt{position:absolute;left:6px;right:6px;bottom:12px;text-align:center;font-size:13px;font-weight:700;line-height:1.15}
+.v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:27px;font-weight:500;margin-top:4px;transition:color .5s}
+.v small{font-size:14px;color:var(--text2);margin-left:3px}
+.v .wait{font-family:var(--sans);font-size:15px;color:var(--label);font-weight:400}
+.v.good{color:var(--good)}.v.off{color:var(--off)}
+.acc{flex:none;padding-top:2px}
+.acc p{font-size:15.5px;line-height:1.35;color:var(--text);padding:4px 0}
+.acc b.good{color:var(--good)}
+.acc .wait{color:var(--label);font-weight:400}
+.acc b{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+.acc .pop{font-size:13.5px;color:var(--label);padding-top:2px}
+/* evidence: proves the pipeline is live (real link, real firmware build, real clock) */
+.evi{flex:none;margin-top:auto;border-top:1px solid #EEEEEE;padding-top:8px;font-family:var(--mono);font-size:12px;line-height:1.4;color:#7A7A7A}
+.evi .lbl{font-size:11px}
+.evi .lbl{font-family:var(--sans);margin-bottom:3px}
+.evi .ln{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.evi b{font-weight:600;color:var(--text)}
+.evi .ldot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#BDBDBD;margin-right:7px;vertical-align:0}
+.evi .ldot.on{background:var(--good);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+.evi .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}
+.evi canvas{display:block;image-rendering:pixelated}
+.evi canvas[hidden],.evi .src[hidden]{display:none}
+.evi .src{white-space:normal;overflow-wrap:anywhere}
+
+/* view switch: Now | Tomorrow */
+.views{display:flex;height:40px;border:1px solid var(--rule2);border-radius:3px;overflow:hidden}
+.vw{padding:0 18px;border:0;background:transparent;font-size:16px;font-weight:600;color:var(--text2);cursor:pointer}
+.vw+.vw{border-left:1px solid var(--rule2)}
+.vw.on{background:#111;color:#fff;cursor:default}
+body.view-tmr .center>.readline,body.view-tmr .center>.chartwrap,body.view-tmr .center>.ladder{display:none}
+body.view-tmr .center{grid-template-rows:minmax(0,1fr)}
+.tmr{display:none}
+body.view-tmr .tmr{display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto auto;min-height:0}
+.t-head{display:grid;grid-template-columns:1fr auto;align-items:end;gap:28px;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+.t-city{font-size:24px;font-weight:600;margin-top:6px}
+.t-date{font-size:17px;color:var(--text2);margin-top:2px}
+.t-max{text-align:right}
+.t-num{font-size:48px;line-height:1;font-weight:500;margin-top:6px;letter-spacing:-.01em}
+.t-num small{font-size:20px;color:var(--text2);margin-left:4px}
+.t-say{padding:22px 0 6px}
+.t-verdict{font-size:44px;line-height:1.12;font-weight:700;letter-spacing:-.01em;max-width:24ch;text-wrap:balance}
+.t-best{font-size:22px;margin-top:10px;color:var(--good);font-weight:600}
+.t-chart{position:relative;min-height:0}
+#tChart{position:absolute;inset:0;width:100%;height:100%}
+.t-band{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:0;border-top:1px solid var(--rule);padding-top:10px}
+.t-band .lbl{padding:4px 22px 0 0;max-width:150px;line-height:1.35}
+.t-band .bl{padding:0 14px;border-left:1px solid var(--rule)}
+.t-band .gr{font-size:20px;font-weight:600;line-height:1.25}
+.t-band .en{font-size:15px;color:var(--text2);margin-top:2px}
+.t-foot{font-size:13.5px;color:var(--label);padding-top:12px;line-height:1.45}
+.t-miss{display:none;font-size:20px;color:var(--label);padding-top:28px;max-width:40ch;line-height:1.4}
+.tmr.empty>*{display:none}.tmr.empty>.t-miss{display:block}
+
+.status{display:flex;align-items:center;gap:26px;padding:0 24px;border-top:1px solid var(--rule);font-size:14px;color:var(--text2)}
+.status .num{font-size:13px}
+.dot{display:inline-block;width:8px;height:8px;margin-right:8px;background:#BDBDBD;vertical-align:0}
+.dot.on{background:var(--good)}.dot.wait{background:var(--warm);animation:blink 1s steps(2) infinite}
+.status .r{margin-left:auto}
+.toast{position:fixed;left:50%;top:76px;transform:translateX(-50%);background:var(--bg);border:1px solid var(--rule2);padding:10px 16px;font-size:16px;z-index:5;display:none;max-width:900px}
+.toast.on{display:block}
+@media (prefers-reduced-motion:reduce){.cur,.dot.wait,.evi .ldot.on{animation:none}*{transition-duration:.01ms!important}}
+
+/* ===== SIMPLE NOW VIEW: hero (state word + band) -> chart -> steps; everything else small and quiet ===== */
+/* three type sizes: 64 px (hero), 16 px (body), 12.5 px (small) */
+.main{grid-template-columns:330px minmax(0,1fr)}
+.center{grid-template-rows:auto minmax(0,1fr) auto auto;gap:22px;padding:26px 40px 18px}
+.hero{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:32px}
+.band{display:flex;flex-direction:column;align-items:center;gap:6px}
+.bandbody{width:120px;height:144px}
+.band .cap{font-size:12.5px;color:var(--label);text-align:center;min-height:0}
+.state .w{font-size:64px;line-height:1;font-weight:700;letter-spacing:-.02em;transition:color .8s}
+.state .g{font-size:16px;color:var(--text2);margin-top:10px}
+.state .g:empty{display:none}
+.state .g.fam{color:var(--accent);font-weight:600}
+.state .est b{font-family:var(--mono);font-weight:600;color:var(--text)}
+.meta-r{align-self:start;text-align:right;color:var(--label)}
+.clock{font-size:16px;font-weight:600;color:var(--text);letter-spacing:0;line-height:1.4;transition:opacity .4s}
+.clock.pending{opacity:.35}
+.small{font-size:12.5px;color:var(--label)}
+.who{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:4px}
+.who svg{width:13px;height:13px;flex:none}
+.key{font-size:12.5px;gap:16px;color:var(--label)}
+.ladder{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px;border-top:0}
+.rung{padding:8px 0 0;border-top:3px solid #EEEEEE;color:#ABABAB;transition:border-color .6s,color .6s}
+.rung.lit{border-top-color:var(--c);color:var(--text)}
+.rung .nm{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600}
+.rung .sq{width:8px;height:8px;background:#E6E6E6;border:0;flex:none}
+.rung.lit .sq{background:var(--c)}
+.rung .meta{font-family:var(--mono);font-size:12.5px;margin-top:4px;line-height:1.45;color:var(--text2);min-height:18px;white-space:pre-line}
+.rung.out .alt+.alt{margin-top:4px}
+.foot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:end}
+.acc p{font-size:16px;color:var(--text2);padding:0}
+.acc b{font-family:var(--mono);font-weight:600;color:var(--text)}
+.acc .pop{font-size:12.5px;color:var(--label);padding-top:4px}
+.evi{margin-top:0;border-top:0;padding-top:0;font-size:11px;line-height:1.38;color:#9A9A9A;max-width:430px}
+.evi .row{gap:10px}
+.evi .ldot{width:7px;height:7px;margin-right:6px}
+.tl{font-size:12px}
+body.view-tmr .center>.hero,body.view-tmr .center>.foot{display:none}
+
+/* ===== APPLE LOOK (Apple Health light): #f5f5f7 page, white 20 px cards, system colours, SF Pro / SF Mono ===== */
+:root{--bg:#F5F5F7;--card:#FFFFFF;--text:#1D1D1F;--text2:#86868B;--label:#86868B;--rule:#E5E5EA;--rule2:#D2D2D7;
+  --accent:#007AFF;--water:#007AFF;--good:#34C759;--goodtxt:#248A3D;--warm:#FFCC00;--heat:#FF9500;--danger:#FF3B30;
+  --ease:cubic-bezier(.42,0,.58,1)}
+body{background:var(--bg);color:var(--text)}
+.top{border-bottom:0;background:transparent;padding:0 28px}
+.top h1{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.btn{border-radius:980px;border:0;background:#E8E8ED;font-weight:500;font-size:15px;height:36px;padding:0 18px}
+.btn:hover{background:#DCDCE1}
+.btn.go{background:var(--accent);color:#fff}.btn.go:hover{background:#0068DA}
+select.btn{background:#E8E8ED}
+.views{border:0;background:#E8E8ED;border-radius:980px;padding:3px;height:36px}
+.vw{border-radius:980px;font-weight:500;font-size:15px;color:var(--text)}
+.vw+.vw{border-left:0}
+.vw.on{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.chk input:checked{background:var(--accent);border-color:var(--accent)}
+.chk input{border-radius:5px;border-color:#C7C7CC}
+.top .preview{border-radius:980px;color:#C93400;border-color:#FFB37A;background:#FFF4EA}
+body.running #btnStop{background:#1D1D1F;color:#fff}
+.main{gap:20px;padding:4px 20px 16px;grid-template-columns:320px minmax(0,1fr)}
+.col{border-right:0}
+.term{background:#1C1C1E;border-radius:20px;padding:18px 0 14px 18px}
+.term .lbl{color:#8E8E93;font-size:12.5px;letter-spacing:.02em;text-transform:none;font-weight:600}
+.tscroll{color:#8E8E93}
+.tl .k,.tl .pre{color:#5A5A5E}
+.tl.rep,.tl.ctl,.tl.ev{color:#AEAEB2}
+.tl.ev .k{color:#5A6E8A}
+.tl.ev.newest{color:#64D2FF}
+.tl.cmd{color:#fff}
+.tl .st-DRINK{color:#D9B840}.tl .st-COOL{color:#E39A4A}.tl .st-CHECK,.tl .st-DANGER,.tl .st-HELP{color:#E07A72}
+.cur{background:#8E8E93}
+.center{padding:0;gap:16px}
+.hero,.chartwrap,.foot>*,.tmr{background:var(--card);border-radius:20px}
+.hero{padding:22px 30px}
+.chartwrap{padding:0}
+.foot{gap:16px;align-items:stretch}
+.acc{padding:16px 24px;display:flex;flex-direction:column;justify-content:center}
+.evi{padding:12px 16px;max-width:480px}
+.evi .ldot.on{background:var(--good)}
+.state .w{font-weight:700;letter-spacing:-.025em;transition:color .3s var(--ease)}
+.state .g{color:var(--text2)}
+.state .g.fam{color:var(--accent)}
+.acc b.good{color:var(--goodtxt)}
+.acc .pop{color:var(--text2)}
+.key{top:16px;left:30px;right:auto}
+.key i{border-top-width:3px;border-radius:2px}
+/* the band: an Apple-Watch-like device, coloured screen, gauge ring */
+.bandbody{width:118px;height:142px;border-radius:36px;background:linear-gradient(160deg,#3A3A3C,#1C1C1E);border:0;padding:7px;box-shadow:0 8px 24px rgba(0,0,0,.18),inset 0 0 0 1px rgba(255,255,255,.08)}
+.screen{border-radius:30px;transition:background-color .3s var(--ease)}
+.screen .stxt{font-family:var(--sans);font-weight:600;font-size:12.5px}
+/* steps: rounded chips */
+.ladder{gap:12px}
+.rung{border-top:0;padding:0;color:var(--text2)}
+.rung .nm{background:#E8E8ED;border-radius:14px;padding:12px 14px;font-size:15px;font-weight:600;color:#8E8E93;transition:background-color .3s var(--ease),color .3s var(--ease)}
+.rung .sq{display:none}
+.rung.lit .nm{background:var(--c);color:#fff}
+#r-water.lit .nm,#r-still.lit .nm{color:#1D1D1F}
+#r-out.lit #o-ok .nm{background:var(--good)}
+.rung .meta{text-align:center;margin-top:6px;color:var(--text2)}
+.rung .meta .y{color:var(--goodtxt)}.rung .meta .n{color:var(--danger)}
+.rung.out .alt+.alt{margin-top:0}
+.tmr{padding:22px 30px}
+.status{border-top:0;color:var(--text2)}
+.t-steps{display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:14px;margin-bottom:18px}
+.ts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;background:#F5F5F7;border-radius:16px;padding:14px 16px}
+.tn{width:26px;height:26px;border-radius:50%;background:#007AFF;color:#fff;font-weight:600;font-size:14px;display:grid;place-content:center}
+.ts .tt{font-size:16px;font-weight:600}
+.ts .sub{font-size:14px;color:#1D1D1F;margin-top:4px;line-height:1.35}
+.ts .small{margin-top:4px;line-height:1.35}
+.tw{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;margin-top:6px}
+#twChart{width:100%;height:78px;display:block}
+.twf{font-size:14px;line-height:1.45}
+.twf b{font-weight:600}
+.ts .warn{color:#C93400}
+.tmr{grid-template-rows:auto auto auto minmax(0,1fr) auto auto}
+.t-head{border-bottom:0}
+.t-verdict{font-size:44px}
+.t-best{color:var(--goodtxt)}
+.acc b{font-family:var(--sans);font-variant-numeric:tabular-nums}
+#eLast,#eCommit,#ePid{display:inline}
+#eLink+*{}
+.evi .ln.cat{white-space:normal}
+</style>
+</head>
+<body>
+<div class="stage">
+  <header class="top">
+    <h1>HEAT GUARDIAN</h1>
+    <span class="preview">PREVIEW: RECORDED BAND OUTPUT</span>
+    <div class="views" role="tablist" aria-label="View"><button class="vw on" id="vNow" role="tab" aria-selected="true">Now</button><button class="vw" id="vTmr" role="tab" aria-selected="false">Tomorrow</button></div>
+    <div class="controls">
+      <span class="conn"><button class="btn" id="btnBle">Connect band</button></span>
+      <span class="conn"><button class="lnk" id="btnUsb">USB instead</button></span>
+      <span class="conn"><button class="lnk" id="btnPreview">Preview without band</button></span>
+      <label class="chk"><input type="checkbox" id="noresp"> She doesn't respond</label>
+      <select class="btn" id="speed" aria-label="Seconds per simulated minute">
+        <option value="1">1 s / sim min</option>
+        <option value="2" selected>2 s / sim min</option>
+        <option value="3">3 s / sim min</option>
+        <option value="4">4 s / sim min</option>
+        <option value="6">6 s / sim min</option>
+      </select>
+      <button class="btn" id="btnStop" disabled>Stop</button>
+      <button class="btn go" id="btnGo" disabled>Simulate heat episode</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="col term" aria-label="The band's output, live">
+      <div class="lbl"><span>Band output</span><span id="termSrc">not connected</span></div>
+      <div class="tbody"><div class="tscroll" id="term"><div class="tl dim">waiting for the band</div><div class="tl"><span class="cur"></span></div></div></div>
+    </section>
+
+    <section class="col center">
+      <div class="hero">
+        <div class="band" aria-label="The band's screen, mirrored">
+          <div class="bandbody"><div class="screen" id="screen">
+            <svg viewBox="0 0 190 226" aria-hidden="true">
+              <path d="M39.6 150 A64 64 0 1 1 150.4 150" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="10" stroke-linecap="round"/>
+              <circle id="gDot" cx="95" cy="67" r="11" fill="#fff" stroke="rgba(0,0,0,.35)" stroke-width="2" opacity="0"/>
+            </svg>
+            <div class="stxt" id="sTxt"></div>
+          </div></div>
+          <div class="cap" id="bandCap"></div>
+        </div>
+        <div class="state">
+          <div class="w" id="stEn">Not connected</div>
+          <div class="g" id="stGr">Connect the band, then simulate</div>
+          <div class="g est" id="roLine">Band's estimate of her body temperature <b id="roBand"></b></div>
+        </div>
+        <div class="meta-r">
+          <div><span class="clock num" id="clock">--:--</span> <span class="small">simulated time</span></div>
+          <div class="small who"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="4.5" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 15 Q3 9 8 9 Q13 9 13.5 15" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><span id="whoName">Simulated person</span></div>
+        </div>
+      </div>
+      <div class="chartwrap">
+        <canvas id="chart" aria-label="Her simulated core temperature, the band's estimate and its 20-minute forecast"></canvas>
+        <div class="key">
+          <span><i style="border-color:#AEAEB2"></i>Her body temperature (true)</span>
+          <span><i style="border-color:#007AFF"></i>Band's estimate</span>
+          <span><i style="border-color:#007AFF;border-top-style:dotted"></i>Prediction, 20 min ahead</span>
+        </div>
+      </div>
+      <div class="ladder" id="ladder" aria-label="The band's steps">
+        <div class="rung" id="r-water" style="--c:var(--warm)"><div class="nm"><span class="sq"></span>Drink water</div><div class="meta"></div></div>
+        <div class="rung" id="r-still" style="--c:#FFB340"><div class="nm"><span class="sq"></span>Still heating</div><div class="meta"></div></div>
+        <div class="rung" id="r-cool" style="--c:var(--heat)"><div class="nm"><span class="sq"></span>Go somewhere cool</div><div class="meta"></div></div>
+        <div class="rung" id="r-seeme" style="--c:var(--danger)"><div class="nm"><span class="sq"></span>Press if you see me</div><div class="meta"></div></div>
+        <div class="rung out" id="r-out" style="--c:var(--accent)">
+          <div class="alt" id="o-fam"><div class="nm"><span class="sq"></span>Family alerted</div><div class="meta"></div></div>
+          <div class="alt" id="o-ok"><div class="nm"><span class="sq"></span>Cooling down</div><div class="meta"></div></div>
+          <div class="alt" id="o-none"><div class="nm"><span class="sq"></span>Outcome</div><div class="meta"></div></div></div>
+      </div>
+      <div class="foot">
+        <div class="acc" aria-label="How close the band is">
+          <p>This run: band estimate <b id="aMae"></b> off on average &middot; 20-min prediction <b id="aFcMae"></b></p>
+          <p class="pop" id="aPop"></p>
+        </div>
+        <div class="evi" id="evi" aria-label="Evidence: live link, firmware build, frozen model, clock">
+          <div class="row">
+            <div style="min-width:0">
+              <div class="ln"><span class="ldot" id="eDot"></span><span id="eLink">Live link: not connected</span></div>
+              <div class="ln"><span id="eLast">Last band message: &mdash;</span></div>
+              <div class="ln"><span id="eFw">Firmware: &mdash;</span></div>
+              <div class="ln"><span id="eCommit"></span> &middot; <span id="eHash"></span></div>
+              <div class="ln"><span id="ePid"></span> &middot; <span id="eClock">--:--:--</span></div>
+              <div class="ln src" id="eSrc" hidden></div>
+            </div>
+            <canvas id="eQr" width="84" height="84" aria-label="QR code: source code repository" hidden></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="tmr empty" id="tmr" aria-label="Tomorrow: the simulated elder on a real weather forecast">
+        <div class="t-steps" aria-label="How tomorrow's plan is made">
+          <div class="ts"><div class="tn">1</div><div><div class="tt">The band collected her measurements</div>
+            <div class="sub">Every minute for <span id="twDays">7</span> days: wrist skin, air, heart rate, movement, sleep.</div>
+            <div class="small">7 simulated days (Virtual Elders simulator), not a real person</div></div></div>
+          <div class="ts"><div class="tn">2</div><div style="min-width:0"><div class="tt">The Body Twin learned her body</div>
+            <div class="tw"><canvas id="twChart" aria-label="Her learned resting heart rate, night by night"></canvas>
+              <div class="twf"><div id="twHr"></div><div id="twOff"></div></div></div>
+            <div class="small" id="twNote"></div></div></div>
+          <div class="ts"><div class="tn">3</div><div><div class="tt">Tomorrow&rsquo;s real weather &rarr; her day tomorrow</div>
+            <div class="sub" id="tsPlan"></div></div></div>
+        </div>
+        <div class="t-head">
+          <div><div class="lbl">Tomorrow</div><div class="t-city" id="tCity"></div><div class="t-date" id="tDate"></div></div>
+          <div class="t-max"><div class="lbl">Forecast high</div><div class="t-num num" id="tMax"></div></div>
+        </div>
+        <div class="t-say"><div class="t-verdict" id="tVerdict"></div><div class="t-best" id="tBest"></div></div>
+        <div class="t-chart"><canvas id="tChart" aria-label="Tomorrow hour by hour: the temperature outside and her body temperature at home, risky hours shaded"></canvas></div>
+        <div class="t-band" id="tBand"></div>
+        <div class="t-foot" id="tFoot"></div>
+        <div class="t-miss" id="tMiss">No forecast for tomorrow yet. Run make_tomorrow.command in this folder, then reload the page.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="status">
+    <span><span class="dot" id="connDot"></span><span id="connTxt">Band not connected</span></span>
+    <span class="num" id="fwTxt">firmware: unknown</span>
+    <span id="lagTxt"></span>
+    <span class="r">Hardware in the loop: real band firmware, simulated elder</span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script id="core">
+/* SIM-STAGE core: parses the band's real output and folds it into one stage state.
+ * Pure (no DOM): index.html inlines this file; tools/test_parser.js runs it in node against the transcripts.
+ * Every value on the page comes from a line or frame the band sent. Line formats: see README.txt. */
+var HG = (function () {
+  'use strict';
+  var STN = ['OK', 'DRINK', 'COOL', 'CHECK', 'DANGER', 'IMOK', 'NOT_WORN', 'BATTERY', 'HELP'];
+  /* STATUS frame byte 1 bits 0-2 (frozen/hg_frames.h): 0 OK 1 DRINK 2 COOL 3 DANGER 4 IMOK 5 BATTERY 6 CHECK 7 HELP */
+  var STATUS_CODE = ['OK', 'DRINK', 'COOL', 'DANGER', 'IMOK', 'BATTERY', 'CHECK', 'HELP'];
+  var EVN = { 8: 'WARN_SHOWN', 12: 'ALL_CLEAR', 17: 'LD_REMIND', 18: 'LD_DONE', 19: 'LD_WORKED', 20: 'LD_ESCALATED', 21: 'LD_NOTE' };
+  var GAUGE_STEPS = ['green', 'yellow-green', 'yellow', 'orange', 'red'];
+
+  function num(s) { var v = parseFloat(s); return isFinite(v) ? v : null; }
+  function hm(s) { var p = s.split(':'); return (+p[0]) * 60 + (+p[1]); }
+
+  /* one text line -> a record (or null). Lines that do not start with '#' are not ours (hex records). */
+  function parseLine(raw) {
+    var line = String(raw).replace(/\r$/, '');
+    if (line.charAt(0) !== '#') return null;
+    if (/^#R /.test(line)) return parseR(line.slice(3));
+    if (/^#E /.test(line)) return parseE(line.slice(3));
+    var demo = /^# DEMO /.test(line);
+    var b = demo ? line.slice(7) : line.slice(2);
+    var m;
+    if (demo && (m = /^(\d\d:\d\d) t=(\d+)s \| SIM input T1 (\S+) T2 (\S+) air (\S+) RH (\S+) HR (\S+) \| SIM true core (\S+) \| band core (\S+) f20 (\S+) -> (\w+) level (\d+)/.exec(b)))
+      return { kind: 'minute', mod: hm(m[1]), clock: m[1], t: +m[2], t1: num(m[3]), t2: num(m[4]), air: num(m[5]), rh: num(m[6]), hr: num(m[7]),
+               trueCore: num(m[8]), bandCore: num(m[9]), f20: num(m[10]), state: m[11], level: +m[12] };
+    if ((m = /^REPLAY started \((\d+) s per simulated minute, (\d+) s in all\)/.exec(b))) return { kind: 'replayStarted', S: +m[1], total: +m[2] };
+    if ((m = /^REPLAY start: .*?\((.+?) person, (\d+) min from (\d\d:\d\d)\), (\d+) s per simulated minute/.exec(b)))
+      return { kind: 'replayStart', who: m[1], n: +m[2], startMod: hm(m[3]), S: +m[4] };
+    if ((m = /^REPLAY warm-up done: state (\w+); showing (\d\d:\d\d)-(\d\d:\d\d)/.exec(b))) return { kind: 'warmDone', state: m[1], from: hm(m[2]), to: hm(m[3]) };
+    if (/^REPLAY end of the episode/.test(b)) return { kind: 'replayEnd' };
+    if ((m = /^REPLAY stop why=(.*?):/.exec(b))) return { kind: 'replayStop', why: m[1] };
+    if ((m = /^REPLAY noresp: (.*)/.exec(b))) return { kind: 'replayNoresp', text: m[1], demo: demo };
+    if (/^REPLAY (already running|refused|not running)/.test(b) || /^REPLAY: replay \[/.test(b)) return { kind: 'replayMsg', text: b };
+    if ((m = /^STATE (\d+) screen (\d+) level (\d+) tiers (\d+) core (\S+) sd (\S+) f20 (\S+) why (\S+) worn (\d+) check (\d+) family (\d+)/.exec(b)))
+      return { kind: 'state', state: STN[+m[1]] || '?', screen: +m[2], level: +m[3], core: num(m[5]), f20: num(m[7]), family: +m[11], demo: demo };
+    if ((m = /^GAUGE (\S+) -> (\S+) f20 (\S+) dot (-?\d+) lines (\S+)\/(\S+)\/(\S+)/.exec(b)))
+      return { kind: 'gauge', from: m[1], to: m[2], f20: num(m[3]), dot: +m[4], lineW: num(m[5]), lineC: num(m[6]), lineD: num(m[7]), demo: demo };
+    if ((m = /^ALERT (DRINK|COOL) shown( soft)?.*?f20 (\S+)\)/.exec(b))) return { kind: 'alert', what: m[1], soft: !!m[2], f20: num(m[3]), demo: demo };
+    if ((m = /^ALERT (\S+) (held|audit|hold limit)/.exec(b))) return { kind: 'held', what: m[1], demo: demo };
+    if ((m = /^ALERT all-clear peak=(\d+) minutes=(\d+)/.exec(b))) return { kind: 'allClear', peak: +m[1], minutes: +m[2], demo: demo };
+    if ((m = /^EVT seq=(\d+) type=(\d+) (\S+) arg=(\d+)/.exec(b))) return { kind: 'evt', seq: +m[1], type: +m[2], name: m[3], arg: +m[4], demo: demo };
+    if ((m = /^LADDER (\S+) arg=(\d+) state=(\S+)/.exec(b))) return { kind: 'ladder', name: m[1], arg: +m[2], state: m[3], demo: demo };
+    if ((m = /^BUTTON press -> ladder (\w+) \((\S+)\)/.exec(b))) return { kind: 'button', meaning: m[1], ladder: m[2], demo: demo };
+    if ((m = /^STAT fw=(\S+)/.exec(b))) return { kind: 'fw', version: m[1] };
+    if ((m = /^STAT gauge: (\S+) dot=(-?\d+) lines water=(\S+) cool=(\S+) danger=(\S+)/.exec(b)))
+      return { kind: 'gaugeStat', step: m[1], dot: +m[2], lineW: num(m[3]), lineC: num(m[4]), lineD: num(m[5]) };
+    return { kind: 'other', text: b, demo: demo };
+  }
+
+  /* b7n (0.9.17-demo-b7n, 8947e2c) compact BLE lines, 09_guardian.ino demoStart()/demoLine()/demoService():
+   *   #R start el=velders-pid90416 nr=0 s=2 n=110 t0=13:00      #R warm done st=OK      #R end      #R stop why=command
+   *   #R k=29 t=13:29 c=37.42 f=37.70 sc=37.75 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=4 fam=0 nr=0 b=0
+   *   #E k=29 fam=0 ev=WARN_SHOWN.1,LD_REMIND.1      (right after a minute line; never skipped; holds presses since the last line) */
+  var EVT_TYPE = { NUDGE_SHOWN: 1, NUDGE_DONE: 2, NUDGE_MISSED: 3, IM_OK: 4, HELP: 5, HELP_CANCEL: 6, WARN_SHOWN: 8, ALL_CLEAR: 12,
+                   LD_REMIND: 17, LD_DONE: 18, LD_WORKED: 19, LD_ESCALATED: 20, LD_NOTE: 21 };
+  function kvOf(b) { var kv = {}; b.split(' ').forEach(function (p) { var i = p.indexOf('='); if (i > 0) kv[p.slice(0, i)] = p.slice(i + 1); }); return kv; }
+  function evList(v) { return (v && v !== '-') ? v.split(',').map(function (e) { var q = e.split('.'); return { kind: 'evt', type: EVT_TYPE[q[0]] || 0, name: q[0], arg: +q[1] }; }) : []; }
+  function parseR(b) {
+    var m;
+    if ((m = /^start (.*)/.exec(b))) { var a = kvOf(m[1]);
+      return { kind: 'replayStart', el: a.el || null, noresp: +a.nr || 0, S: +a.s || 2, n: +a.n || 110, startMod: a.t0 ? hm(a.t0) : 780, who: a.el || 'sim/velders', r: true }; }
+    if (/^warm done/.test(b)) return { kind: 'warmDone', r: true };
+    if (/^end\b/.test(b)) return { kind: 'replayEnd' };
+    if ((m = /^stop why=(.*)/.exec(b))) return { kind: 'replayStop', why: m[1] };
+    if (/^k=/.test(b)) {
+      var kv = kvOf(b), pick = function (a, c) { return kv[a] != null ? kv[a] : kv[c]; };   // final names, then the earlier b7n draft names
+      return { kind: 'rmin', k: +kv.k, clock: kv.t, mod: hm(kv.t || '0:0'), bandCore: num(pick('c', 'core')), f20: num(pick('f', 'f20')), trueCore: num(kv.sc),
+               state: kv.st, level: kv.lv != null ? +kv.lv : null, ladder: kv.ld, rm: kv.rm, ga: kv.ga, dot: kv.dot != null ? +kv.dot : null,
+               fam: kv.fam === '1', noresp: kv.nr === '1', btnIgnored: +pick('b', 'btn') || 0, evs: evList(kv.ev) };
+    }
+    return { kind: 'other', text: '#R ' + b };
+  }
+  function parseE(b) { var kv = kvOf(b); return { kind: 'emin', k: +kv.k, fam: kv.fam === '1', evs: evList(kv.ev) }; }
+
+  function crc8(p, n) { var c = 0; for (var i = 0; i < n; i++) { c ^= p[i]; for (var k = 0; k < 8; k++) c = (c & 0x80) ? ((c << 1) ^ 0x07) & 0xFF : (c << 1) & 0xFF; } return c; }
+  /* STATUS (HG service 0001, 20 bytes, frozen/hg_frames.c hg_status_pack) */
+  function parseStatus(u8) {
+    if (!u8 || u8.length !== 20 || (u8[0] & 0x0F) !== 0x01 || crc8(u8, 19) !== u8[19]) return null;
+    var core = u8[2] | (u8[3] << 8);
+    return { kind: 'status', state: STATUS_CODE[u8[1] & 7], family: !!(u8[0] & 0x10), core: core ? core / 100 : null,
+             minuteCounter: u8[17] | (u8[18] << 8) };
+  }
+  /* EVENTS (HG service 0004, 20 bytes, ECOSYSTEM_SPEC.md §5): [0]=0x03 [1-2] seq [9] type [10] arg [19] crc8 */
+  function parseEventFrame(u8) {
+    if (!u8 || u8.length !== 20 || u8[0] !== 0x03 || crc8(u8, 19) !== u8[19]) return null;
+    var t = u8[9];
+    return { kind: 'evt', seq: u8[1] | (u8[2] << 8), type: t, name: EVN[t] || ('type' + t), arg: u8[10], frame: true };
+  }
+
+  function fresh() {
+    return {
+      phase: 'idle',            // idle | warm | run | end | stopped
+      S: 2, n: 110, startMod: 780, who: null,
+      minutes: [],              // by simulated minute k: { k, mod, trueCore, bandCore, f20, state, level }
+      k: -1, clock: null,
+      state: null, level: 0, family: false,
+      f20: null, f20k: null,    // the latest forecast the band printed, and at which minute
+      lines: { w: 37.75, c: 38.15, d: 38.50, fromBand: false },   // source defaults (hg_ga_lines with no learned base); replaced by the band's GAUGE line
+      gauge: { step: null, dot: null },
+      alert: null, allClear: null,
+      rungs: {
+        water: { lit: null, repeat: null, pressed: null, noResponse: null },
+        still: { lit: null },
+        cool: { lit: null, repeat: null, pressed: null, noResponse: null },
+        seeme: { lit: null, pressed: null, why: null },
+        family: { lit: null, why: null, again: null },
+        worked: { lit: null }
+      },
+      ladderState: 'idle', active: null,
+      presses: [], seen: {}, pending: [], minuteLines: false, rLines: false, rm: null, btnIgnored: 0, el: null, noresp: false,
+      statusBase: null, fw: null, msg: null, lastLine: null, nLines: 0
+    };
+  }
+
+  function clockOf(s, k) { var mod = s.startMod + Math.max(0, k); return pad(Math.floor(mod / 60) % 24) + ':' + pad(mod % 60); }
+  function pad(x) { return (x < 10 ? '0' : '') + x; }
+
+  function applyEvt(s, r, k) {
+    if (r.seq != null) { if (s.seen[r.seq]) return; s.seen[r.seq] = 1; }
+    var t = { k: k, clock: clockOf(s, k) };
+    var R = s.rungs, step = r.arg;
+    switch (r.type) {
+      case 17: { var g = step === 2 ? R.cool : R.water;      // LD_REMIND
+        if (!g.lit || g.pressed) { g.lit = t; g.pressed = null; g.repeat = null; g.noResponse = null; } else g.repeat = t;
+        s.active = step === 2 ? 'cool' : 'water'; s.ladderState = 'remind'; break; }
+      case 18: { var g2 = step === 2 ? R.cool : R.water; g2.pressed = t; s.ladderState = 'check20'; s.presses.push(t); break; }   // LD_DONE
+      case 19: R.worked.lit = t; s.active = 'worked'; s.ladderState = 'done'; break;                                            // LD_WORKED
+      case 20: R.seeme.lit = t; R.seeme.why = step === 1 ? 'danger line' : 'still heating'; R.family.lit = R.family.lit || t;  // LD_ESCALATED (+ family alert)
+        R.family.why = R.family.why || 'escalation'; s.active = 'seeme'; s.ladderState = 'escalated'; break;
+      case 21:                                                                                                                 // LD_NOTE
+        if (step === 1) { R.still.lit = t; }
+        else if (step === 2) { var g3 = s.active === 'cool' ? R.cool : R.water; g3.noResponse = t; if (R.family.lit) R.family.again = t; else { R.family.lit = t; R.family.why = 'no response'; } s.active = 'family'; }
+        else if (step === 3) { R.seeme.pressed = t; s.presses.push(t); }
+        break;
+      case 12: s.allClear = t; break;
+      default: break;
+    }
+  }
+
+  function flushPending(s) { var p = s.pending; s.pending = []; for (var i = 0; i < p.length; i++) applyRec(s, p[i], true); }
+
+  /* fold one record into the state. now=true: attribute to the current minute without queueing */
+  function applyRec(s, r, now) {
+    if (!r) return s;
+    s.nLines++;
+    var k = s.k < 0 ? 0 : s.k;
+    // events printed by guardianMinute() come just BEFORE that minute's "# DEMO hh:mm" line: hold them for it (USB);
+    // press-driven lines (LD_DONE, LD_NOTE 3, BUTTON) come after the minute line: they belong to the current minute.
+    if (!now && s.minuteLines && s.phase === 'run' && r.demo &&
+        (r.kind === 'state' || r.kind === 'gauge' || r.kind === 'alert' || r.kind === 'allClear' ||
+         (r.kind === 'evt' && r.type !== 18 && !(r.type === 21 && r.arg === 3)))) { s.pending.push(r); return s; }
+    if (!now && s.minuteLines && s.phase === 'run' && s.pending.length && r.kind === 'minute') { /* flushed below with k+1 */ }
+    switch (r.kind) {
+      case 'replayStarted': { var keepFw = s.fw; var keepStatus = s.statusBase; Object.assign(s, fresh()); s.fw = keepFw; s.phase = 'warm'; s.S = r.S; s.n = Math.round(r.total / r.S) || s.n; s.statusBase = null; break; }
+      case 'replayStart': if (s.phase === 'idle' || s.phase === 'end' || s.phase === 'stopped') { var f = s.fw; Object.assign(s, fresh()); s.fw = f; }
+        s.phase = 'warm'; s.n = r.n; s.startMod = r.startMod; s.S = r.S; s.who = r.who; if (r.el) s.el = r.el; if (r.r) s.noresp = !!r.noresp; break;
+      case 'warmDone': s.phase = 'run'; if (r.from != null) { s.startMod = r.from; s.n = r.to - r.from + 1; } break;
+      case 'emin': {   // b7n `#E`: the EVENTS since the last line. A press can only happen between two minute lines,
+        s.rLines = true; // so the press events (LD_DONE, LD_NOTE 3) belong to the minute before this line; the rest to this minute.
+        if (r.fam) s.family = true;
+        for (var j = 0; j < r.evs.length; j++) { var ev = r.evs[j], press = ev.type === 18 || (ev.type === 21 && ev.arg === 3);
+          applyEvt(s, ev, press ? Math.max(0, r.k - 1) : r.k); }
+        break; }
+      case 'replayNoresp': s.noresp = true; break;
+      case 'rmin': {   // BLE compact minute: band estimate, forecast, state, gauge, ladder and this minute's EVENTS
+        s.rLines = true; if (s.phase === 'warm' || s.phase === 'idle') s.phase = 'run';
+        if (s.minuteLines) break;   // USB long lines win when both arrive
+        s.k = r.k; s.clock = r.clock;
+        var pv = s.minutes[r.k] || {};
+        s.minutes[r.k] = { k: r.k, mod: r.mod, trueCore: r.trueCore != null ? r.trueCore : (pv.trueCore != null ? pv.trueCore : null), bandCore: r.bandCore, f20: r.f20, state: r.state, level: r.level != null ? r.level : (pv.level || 0) };
+        s.state = r.state; s.f20 = r.f20; s.f20k = r.k; if (r.level != null) s.level = r.level;
+        if (r.ga) s.gauge = { step: r.ga, dot: r.dot != null ? r.dot : s.gauge.dot };
+        s.noresp = r.noresp;
+        if (r.fam) s.family = true;
+        s.rm = r.rm; s.btnIgnored = r.btnIgnored;
+        for (var e = 0; e < r.evs.length; e++) applyEvt(s, r.evs[e], r.k);
+        if (r.ladder) s.ladderState = r.ladder;
+        if (r.k >= s.n - 1) s.phase = 'end';
+        break; }
+      case 'minute': {
+        s.minuteLines = true; if (s.phase === 'warm' || s.phase === 'idle') s.phase = 'run';
+        var kk = r.mod - s.startMod; if (kk < 0) kk += 1440;
+        s.k = kk; s.clock = r.clock;
+        flushPending(s);
+        s.minutes[kk] = { k: kk, mod: r.mod, trueCore: r.trueCore, bandCore: r.bandCore, f20: r.f20, state: r.state, level: r.level };
+        s.state = r.state; s.level = r.level; s.f20 = r.f20; s.f20k = kk;
+        break; }
+      case 'status': {   // BLE: one STATUS per simulated minute while a replay runs
+        if (s.phase !== 'warm' && s.phase !== 'run') break;
+        if (s.minuteLines || s.rLines) break;   // USB minute lines / BLE #R lines are richer: they win
+        if (s.statusBase == null) { s.statusBase = r.minuteCounter; s.phase = 'run'; }
+        var k2 = r.minuteCounter - s.statusBase; if (k2 < 0) k2 += 65536; if (k2 <= s.k) k2 = s.k + 1;
+        s.k = k2; s.clock = clockOf(s, k2);
+        var prev = s.minutes[k2] || {};
+        s.minutes[k2] = { k: k2, mod: s.startMod + k2, trueCore: null, bandCore: r.core, f20: prev.f20 != null ? prev.f20 : null, state: r.state, level: prev.level || 0 };
+        s.state = r.state; s.family = r.family || s.family;
+        if (k2 >= s.n - 1) s.phase = 'end';
+        break; }
+      case 'state': s.state = r.state; s.level = r.level; if (r.f20 != null) { s.f20 = r.f20; s.f20k = k; if (s.minutes[k]) s.minutes[k].f20 = s.minutes[k].f20 != null ? s.minutes[k].f20 : r.f20; } if (r.family) s.family = true; break;
+      case 'gauge': s.gauge = { step: r.to, dot: r.dot }; s.lines = { w: r.lineW, c: r.lineC, d: r.lineD, fromBand: true };
+        if (r.f20 != null) { s.f20 = r.f20; s.f20k = k; } break;
+      case 'gaugeStat': s.lines = { w: r.lineW, c: r.lineC, d: r.lineD, fromBand: true }; break;
+      case 'alert': s.alert = { what: r.what, k: k, clock: clockOf(s, k), soft: r.soft }; break;
+      case 'allClear': s.allClear = { k: k, clock: clockOf(s, k) }; break;
+      case 'evt': if (r.frame && s.rLines) break; applyEvt(s, r, k); break;
+      case 'button': s.ladderState = r.ladder; break;
+      case 'replayEnd': flushPending(s); s.phase = 'end'; break;
+      case 'replayStop': s.phase = 'stopped'; break;
+      case 'replayMsg': s.msg = r.text; break;
+      case 'fw': s.fw = r.version; break;
+      default: break;
+    }
+    return s;
+  }
+
+  /* gauge dot from a forecast, the band's own formula (hg_fw_ladder.c hg_ga_step): pos = (f20 - centre)/(line_d - centre)*10 */
+  function dotFor(lines, f20) {
+    if (f20 == null) return null;
+    var centre = lines.w - 0.50, p = (f20 - centre) / (lines.d - centre) * 10;
+    return Math.round(Math.max(-10, Math.min(10, p)));
+  }
+
+  /* model accuracy, ONLY from minutes the band printed with both values (b7n `#R ... c= f= sc=`, or the USB `# DEMO` line):
+   *   estimate error  = |c(k) - sc(k)|                      (the band's estimate now vs the simulation's true core now)
+   *   forecast error  = f(j) - sc(k), j = k - 20             (the forecast printed 20 simulated minutes earlier vs the truth now;
+   *                     if minute k-20 was thinned away on a slow link, the nearest printed minute within k-22..k-18, its age shown) */
+  var TOL = 0.3, TOL5 = 0.5;
+  function accuracy(s) {
+    var M = s.minutes, est = [], fc = [], last = null, lastF = null;
+    for (var k = 0; k < M.length; k++) {
+      var m = M[k]; if (!m || m.trueCore == null) continue;
+      if (m.bandCore != null) { var e = Math.abs(m.bandCore - m.trueCore); est.push({ k: k, err: e }); last = { k: k, err: e }; }
+      var j = -1; for (var d = 0; d <= 2 && j < 0 && k >= 20; d++) { if (M[k - 20 - d] && M[k - 20 - d].f20 != null) j = k - 20 - d; else if (d && M[k - 20 + d] && M[k - 20 + d].f20 != null) j = k - 20 + d; }
+      if (j >= 0) { var fe = M[j].f20 - m.trueCore; fc.push({ k: k, from: j, err: fe }); lastF = { k: k, from: j, err: fe }; }
+    }
+    function mean(a, f) { if (!a.length) return null; var t = 0; for (var i = 0; i < a.length; i++) t += f(a[i]); return t / a.length; }
+    return {
+      tol: TOL, now: last, nEst: est.length,
+      mae: mean(est, function (x) { return x.err; }),
+      within: est.length ? est.filter(function (x) { return x.err <= TOL + 1e-9; }).length / est.length : null,
+      fcNow: lastF, nFc: fc.length,
+      fcMae: mean(fc, function (x) { return Math.abs(x.err); }),
+      fcWithin: fc.length ? fc.filter(function (x) { return Math.abs(x.err) <= TOL + 1e-9; }).length / fc.length : null,
+      tol5: TOL5,   // the page's plain lines: share of minutes within +-0.5 C
+      within5: est.length ? est.filter(function (x) { return x.err <= TOL5 + 1e-9; }).length / est.length : null,
+      fcWithin5: fc.length ? fc.filter(function (x) { return Math.abs(x.err) <= TOL5 + 1e-9; }).length / fc.length : null,
+      est: est, fc: fc
+    };
+  }
+
+  /* Tomorrow: plain-language summary of a Tomorrow Engine plan (tomorrow_plan.json, made by make_tomorrow.command).
+   * Every number comes from the plan. Risky hours = the engine's AVOID hours; best time to go out = the engine's own
+   * first run of safe hours (the same run its «Έξοδος hh:00-hh:00» line names). The English under each Greek band line
+   * is a translation of that engine string, keyed by its id. */
+  var TMR_EN = {
+    HEAT_DAY: 'Heat wave tomorrow', SAFE_HOURS_T: 'Go out {t}', NO_SAFE_HOURS: 'Do not go out tomorrow',
+    DRINK_PLENTY: 'Drink plenty of fluids', DRINK_NOW: 'Drink water now', MOVE_ERRAND_T: 'Do not go out at {t}',
+    NIGHT_HEAT_T: 'Open the windows at {t}', NIGHT_CLOSED: 'Keep the windows closed', OPEN_AT_BEDTIME: 'Open the windows',
+    CLOSE_MORNING: 'Close the windows', GO_COOL: 'Go somewhere cool', SHOWER: 'Lukewarm shower', STALE_FORECAST: "Yesterday's forecast"
+  };
+  function hh(h) { return pad(h % 24) + ':00'; }
+  function runsOf(flags) { var out = [], s = -1; for (var h = 0; h <= flags.length; h++) { var f = h < flags.length && flags[h]; if (f && s < 0) s = h; if (!f && s >= 0) { out.push([s, h]); s = -1; } } return out; }
+  function tomorrow(plan) {
+    var H = plan && plan.hours;
+    if (!H || H.length !== 24 || !H.every(function (x, i) { return x.h === i && typeof x.t_out === 'number' && typeof x.core_indoor === 'number' && x.advice; }))
+      return { ok: false, why: 'tomorrow_plan.json is not a Tomorrow Engine plan (needs 24 hours)' };
+    var D = plan.display || {}, risky = runsOf(H.map(function (x) { return x.advice === 'AVOID'; }));
+    var best = runsOf(H.map(function (x) { return !!x.safe; }))[0] || null;
+    var verdict = risky.length ? 'Too hot for her to go out from ' + hh(risky[0][0]) + ' to ' + hh(risky[risky.length - 1][1]) + '.'
+                               : 'No risky hours for her tomorrow.';
+    var ids = (plan.details && plan.details.advice_ids) || [], gr = plan.advice_gr || [];
+    var band = gr.slice(0, 3).map(function (g, i) {
+      var t = /(\d\d:\d\d(?:-\d\d:\d\d)?)/.exec(g), en = TMR_EN[ids[i]] || '';
+      return { gr: g, en: en.replace('{t}', t ? t[1].replace('-', '\u2013') : '') };
+    });
+    var tmax = typeof D.forecast_tmax === 'number' ? D.forecast_tmax : Math.max.apply(null, H.map(function (x) { return x.t_out; }));
+    return {
+      ok: true, date: plan.date, city: D.city || null, country: D.country || '', tmax: tmax,
+      risky: risky, best: best, verdict: verdict,
+      bestText: best ? 'Best time to go out: ' + hh(best[0]) + '\u2013' + hh(best[1]) : 'No good time to go out tomorrow',
+      band: band, out: H.map(function (x) { return x.t_out; }), body: H.map(function (x) { return x.core_indoor; }),
+      fetchedAt: D.fetched_at || (plan.details && plan.details.fetched_at) || null, attribution: plan.attribution || 'Weather data by Open-Meteo.com',
+      source: plan.source, homeClass: plan.home_class || null, fan: !!D.fan
+    };
+  }
+
+  return { accuracy: accuracy, parseLine: parseLine, parseStatus: parseStatus, parseEventFrame: parseEventFrame, crc8: crc8, fresh: fresh, applyRec: applyRec,
+           clockOf: clockOf, dotFor: dotFor, GAUGE_STEPS: GAUGE_STEPS, tomorrow: tomorrow, runsOf: runsOf };
+})();
+if (typeof module !== 'undefined') module.exports = HG;
+
+</script>
+<script id="qr">
+/* QR encoder (offline, no CDN). Kazuhiko Arase's 'QRCode for JavaScript' (MIT, (c) 2009 Kazuhiko Arase, d-project.com),
+ * as vendored in qrcode-terminal (Apache-2.0); modules bundled unchanged behind a tiny require() shim by SIM-STAGE.
+ * 'QR Code' is a registered trademark of DENSO WAVE INCORPORATED.
+ * API: HGQR.matrix(text) -> array of rows of booleans (error correction M, smallest version that fits). */
+var HGQR = (function () {
+  var M = {};
+  function require(p) { return M[p.replace('./', '')]; }
+  M['QRMode'] = (function () { var module = { exports: {} }; var exports = module.exports;
+module.exports = {
+    MODE_NUMBER :       1 << 0,
+    MODE_ALPHA_NUM :    1 << 1,
+    MODE_8BIT_BYTE :    1 << 2,
+    MODE_KANJI :        1 << 3
+};
+
+  return module.exports; })();
+  M['QRMath'] = (function () { var module = { exports: {} }; var exports = module.exports;
+var QRMath = {
+
+	glog : function(n) {
+	
+		if (n < 1) {
+			throw new Error("glog(" + n + ")");
+		}
+		
+		return QRMath.LOG_TABLE[n];
+	},
+	
+	gexp : function(n) {
+	
+		while (n < 0) {
+			n += 255;
+		}
+	
+		while (n >= 256) {
+			n -= 255;
+		}
+	
+		return QRMath.EXP_TABLE[n];
+	},
+	
+	EXP_TABLE : new Array(256),
+	
+	LOG_TABLE : new Array(256)
+
+};
+	
+for (var i = 0; i < 8; i++) {
+	QRMath.EXP_TABLE[i] = 1 << i;
+}
+for (var i = 8; i < 256; i++) {
+	QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4]
+		^ QRMath.EXP_TABLE[i - 5]
+		^ QRMath.EXP_TABLE[i - 6]
+		^ QRMath.EXP_TABLE[i - 8];
+}
+for (var i = 0; i < 255; i++) {
+	QRMath.LOG_TABLE[QRMath.EXP_TABLE[i] ] = i;
+}
+
+module.exports = QRMath;
+
+  return module.exports; })();
+  M['QRPolynomial'] = (function () { var module = { exports: {} }; var exports = module.exports;
+var QRMath = require('./QRMath');
+
+function QRPolynomial(num, shift) {
+	if (num.length === undefined) {
+		throw new Error(num.length + "/" + shift);
+	}
+
+	var offset = 0;
+
+	while (offset < num.length && num[offset] === 0) {
+		offset++;
+	}
+
+	this.num = new Array(num.length - offset + shift);
+	for (var i = 0; i < num.length - offset; i++) {
+		this.num[i] = num[i + offset];
+	}
+}
+
+QRPolynomial.prototype = {
+
+	get : function(index) {
+		return this.num[index];
+	},
+	
+	getLength : function() {
+		return this.num.length;
+	},
+	
+	multiply : function(e) {
+	
+		var num = new Array(this.getLength() + e.getLength() - 1);
+	
+		for (var i = 0; i < this.getLength(); i++) {
+			for (var j = 0; j < e.getLength(); j++) {
+				num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i) ) + QRMath.glog(e.get(j) ) );
+			}
+		}
+	
+		return new QRPolynomial(num, 0);
+	},
+	
+	mod : function(e) {
+	
+		if (this.getLength() - e.getLength() < 0) {
+			return this;
+		}
+	
+		var ratio = QRMath.glog(this.get(0) ) - QRMath.glog(e.get(0) );
+	
+		var num = new Array(this.getLength() );
+		
+		for (var i = 0; i < this.getLength(); i++) {
+			num[i] = this.get(i);
+		}
+		
+		for (var x = 0; x < e.getLength(); x++) {
+			num[x] ^= QRMath.gexp(QRMath.glog(e.get(x) ) + ratio);
+		}
+	
+		// recursive call
+		return new QRPolynomial(num, 0).mod(e);
+	}
+};
+
+module.exports = QRPolynomial;
+
+  return module.exports; })();
+  M['QRMaskPattern'] = (function () { var module = { exports: {} }; var exports = module.exports;
+module.exports = {
+	PATTERN000 : 0,
+	PATTERN001 : 1,
+	PATTERN010 : 2,
+	PATTERN011 : 3,
+	PATTERN100 : 4,
+	PATTERN101 : 5,
+	PATTERN110 : 6,
+	PATTERN111 : 7
+};
+
+  return module.exports; })();
+  M['QRErrorCorrectLevel'] = (function () { var module = { exports: {} }; var exports = module.exports;
+module.exports = {
+	L : 1,
+	M : 0,
+	Q : 3,
+	H : 2
+};
+
+
+  return module.exports; })();
+  M['QR8bitByte'] = (function () { var module = { exports: {} }; var exports = module.exports;
+var QRMode = require('./QRMode');
+
+function QR8bitByte(data) {
+	this.mode = QRMode.MODE_8BIT_BYTE;
+	this.data = data;
+}
+
+QR8bitByte.prototype = {
+
+	getLength : function() {
+		return this.data.length;
+	},
+	
+	write : function(buffer) {
+		for (var i = 0; i < this.data.length; i++) {
+			// not JIS ...
+			buffer.put(this.data.charCodeAt(i), 8);
+		}
+	}
+};
+
+module.exports = QR8bitByte;
+
+  return module.exports; })();
+  M['QRUtil'] = (function () { var module = { exports: {} }; var exports = module.exports;
+var QRMode = require('./QRMode');
+var QRPolynomial = require('./QRPolynomial');
+var QRMath = require('./QRMath');
+var QRMaskPattern = require('./QRMaskPattern');
+
+var QRUtil = {
+
+    PATTERN_POSITION_TABLE : [
+        [],
+        [6, 18],
+        [6, 22],
+        [6, 26],
+        [6, 30],
+        [6, 34],
+        [6, 22, 38],
+        [6, 24, 42],
+        [6, 26, 46],
+        [6, 28, 50],
+        [6, 30, 54],        
+        [6, 32, 58],
+        [6, 34, 62],
+        [6, 26, 46, 66],
+        [6, 26, 48, 70],
+        [6, 26, 50, 74],
+        [6, 30, 54, 78],
+        [6, 30, 56, 82],
+        [6, 30, 58, 86],
+        [6, 34, 62, 90],
+        [6, 28, 50, 72, 94],
+        [6, 26, 50, 74, 98],
+        [6, 30, 54, 78, 102],
+        [6, 28, 54, 80, 106],
+        [6, 32, 58, 84, 110],
+        [6, 30, 58, 86, 114],
+        [6, 34, 62, 90, 118],
+        [6, 26, 50, 74, 98, 122],
+        [6, 30, 54, 78, 102, 126],
+        [6, 26, 52, 78, 104, 130],
+        [6, 30, 56, 82, 108, 134],
+        [6, 34, 60, 86, 112, 138],
+        [6, 30, 58, 86, 114, 142],
+        [6, 34, 62, 90, 118, 146],
+        [6, 30, 54, 78, 102, 126, 150],
+        [6, 24, 50, 76, 102, 128, 154],
+        [6, 28, 54, 80, 106, 132, 158],
+        [6, 32, 58, 84, 110, 136, 162],
+        [6, 26, 54, 82, 110, 138, 166],
+        [6, 30, 58, 86, 114, 142, 170]
+    ],
+
+    G15 : (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
+    G18 : (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
+    G15_MASK : (1 << 14) | (1 << 12) | (1 << 10)    | (1 << 4) | (1 << 1),
+
+    getBCHTypeInfo : function(data) {
+        var d = data << 10;
+        while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) >= 0) {
+            d ^= (QRUtil.G15 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) ) );    
+        }
+        return ( (data << 10) | d) ^ QRUtil.G15_MASK;
+    },
+
+    getBCHTypeNumber : function(data) {
+        var d = data << 12;
+        while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) >= 0) {
+            d ^= (QRUtil.G18 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) ) );    
+        }
+        return (data << 12) | d;
+    },
+
+    getBCHDigit : function(data) {
+
+        var digit = 0;
+
+        while (data !== 0) {
+            digit++;
+            data >>>= 1;
+        }
+
+        return digit;
+    },
+
+    getPatternPosition : function(typeNumber) {
+        return QRUtil.PATTERN_POSITION_TABLE[typeNumber - 1];
+    },
+
+    getMask : function(maskPattern, i, j) {
+        
+        switch (maskPattern) {
+            
+        case QRMaskPattern.PATTERN000 : return (i + j) % 2 === 0;
+        case QRMaskPattern.PATTERN001 : return i % 2 === 0;
+        case QRMaskPattern.PATTERN010 : return j % 3 === 0;
+        case QRMaskPattern.PATTERN011 : return (i + j) % 3 === 0;
+        case QRMaskPattern.PATTERN100 : return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 === 0;
+        case QRMaskPattern.PATTERN101 : return (i * j) % 2 + (i * j) % 3 === 0;
+        case QRMaskPattern.PATTERN110 : return ( (i * j) % 2 + (i * j) % 3) % 2 === 0;
+        case QRMaskPattern.PATTERN111 : return ( (i * j) % 3 + (i + j) % 2) % 2 === 0;
+
+        default :
+            throw new Error("bad maskPattern:" + maskPattern);
+        }
+    },
+
+    getErrorCorrectPolynomial : function(errorCorrectLength) {
+
+        var a = new QRPolynomial([1], 0);
+
+        for (var i = 0; i < errorCorrectLength; i++) {
+            a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0) );
+        }
+
+        return a;
+    },
+
+    getLengthInBits : function(mode, type) {
+
+        if (1 <= type && type < 10) {
+
+            // 1 - 9
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 10;
+            case QRMode.MODE_ALPHA_NUM  : return 9;
+            case QRMode.MODE_8BIT_BYTE  : return 8;
+            case QRMode.MODE_KANJI      : return 8;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else if (type < 27) {
+
+            // 10 - 26
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 12;
+            case QRMode.MODE_ALPHA_NUM  : return 11;
+            case QRMode.MODE_8BIT_BYTE  : return 16;
+            case QRMode.MODE_KANJI      : return 10;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else if (type < 41) {
+
+            // 27 - 40
+
+            switch(mode) {
+            case QRMode.MODE_NUMBER     : return 14;
+            case QRMode.MODE_ALPHA_NUM  : return 13;
+            case QRMode.MODE_8BIT_BYTE  : return 16;
+            case QRMode.MODE_KANJI      : return 12;
+            default :
+                throw new Error("mode:" + mode);
+            }
+
+        } else {
+            throw new Error("type:" + type);
+        }
+    },
+
+    getLostPoint : function(qrCode) {
+        
+        var moduleCount = qrCode.getModuleCount();
+        var lostPoint = 0;
+        var row = 0; 
+        var col = 0;
+
+        
+        // LEVEL1
+        
+        for (row = 0; row < moduleCount; row++) {
+
+            for (col = 0; col < moduleCount; col++) {
+
+                var sameCount = 0;
+                var dark = qrCode.isDark(row, col);
+
+                for (var r = -1; r <= 1; r++) {
+
+                    if (row + r < 0 || moduleCount <= row + r) {
+                        continue;
+                    }
+
+                    for (var c = -1; c <= 1; c++) {
+
+                        if (col + c < 0 || moduleCount <= col + c) {
+                            continue;
+                        }
+
+                        if (r === 0 && c === 0) {
+                            continue;
+                        }
+
+                        if (dark === qrCode.isDark(row + r, col + c) ) {
+                            sameCount++;
+                        }
+                    }
+                }
+
+                if (sameCount > 5) {
+                    lostPoint += (3 + sameCount - 5);
+                }
+            }
+        }
+
+        // LEVEL2
+
+        for (row = 0; row < moduleCount - 1; row++) {
+            for (col = 0; col < moduleCount - 1; col++) {
+                var count = 0;
+                if (qrCode.isDark(row,     col    ) ) count++;
+                if (qrCode.isDark(row + 1, col    ) ) count++;
+                if (qrCode.isDark(row,     col + 1) ) count++;
+                if (qrCode.isDark(row + 1, col + 1) ) count++;
+                if (count === 0 || count === 4) {
+                    lostPoint += 3;
+                }
+            }
+        }
+
+        // LEVEL3
+
+        for (row = 0; row < moduleCount; row++) {
+            for (col = 0; col < moduleCount - 6; col++) {
+                if (qrCode.isDark(row, col) && 
+                        !qrCode.isDark(row, col + 1) && 
+                         qrCode.isDark(row, col + 2) && 
+                         qrCode.isDark(row, col + 3) && 
+                         qrCode.isDark(row, col + 4) && 
+                        !qrCode.isDark(row, col + 5) && 
+                         qrCode.isDark(row, col + 6) ) {
+                    lostPoint += 40;
+                }
+            }
+        }
+
+        for (col = 0; col < moduleCount; col++) {
+            for (row = 0; row < moduleCount - 6; row++) {
+                if (qrCode.isDark(row, col) &&
+                        !qrCode.isDark(row + 1, col) &&
+                         qrCode.isDark(row + 2, col) &&
+                         qrCode.isDark(row + 3, col) &&
+                         qrCode.isDark(row + 4, col) &&
+                        !qrCode.isDark(row + 5, col) &&
+                         qrCode.isDark(row + 6, col) ) {
+                    lostPoint += 40;
+                }
+            }
+        }
+
+        // LEVEL4
+        
+        var darkCount = 0;
+
+        for (col = 0; col < moduleCount; col++) {
+            for (row = 0; row < moduleCount; row++) {
+                if (qrCode.isDark(row, col) ) {
+                    darkCount++;
+                }
+            }
+        }
+        
+        var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+        lostPoint += ratio * 10;
+
+        return lostPoint;       
+    }
+
+};
+
+module.exports = QRUtil;
+
+  return module.exports; })();
+  M['QRRSBlock'] = (function () { var module = { exports: {} }; var exports = module.exports;
+var QRErrorCorrectLevel = require('./QRErrorCorrectLevel');
+
+function QRRSBlock(totalCount, dataCount) {
+	this.totalCount = totalCount;
+	this.dataCount  = dataCount;
+}
+
+QRRSBlock.RS_BLOCK_TABLE = [
+
+	// L
+	// M
+	// Q
+	// H
+
+	// 1
+	[1, 26, 19],
+	[1, 26, 16],
+	[1, 26, 13],
+	[1, 26, 9],
+	
+	// 2
+	[1, 44, 34],
+	[1, 44, 28],
+	[1, 44, 22],
+	[1, 44, 16],
+
+	// 3
+	[1, 70, 55],
+	[1, 70, 44],
+	[2, 35, 17],
+	[2, 35, 13],
+
+	// 4		
+	[1, 100, 80],
+	[2, 50, 32],
+	[2, 50, 24],
+	[4, 25, 9],
+	
+	// 5
+	[1, 134, 108],
+	[2, 67, 43],
+	[2, 33, 15, 2, 34, 16],
+	[2, 33, 11, 2, 34, 12],
+	
+	// 6
+	[2, 86, 68],
+	[4, 43, 27],
+	[4, 43, 19],
+	[4, 43, 15],
+	
+	// 7		
+	[2, 98, 78],
+	[4, 49, 31],
+	[2, 32, 14, 4, 33, 15],
+	[4, 39, 13, 1, 40, 14],
+	
+	// 8
+	[2, 121, 97],
+	[2, 60, 38, 2, 61, 39],
+	[4, 40, 18, 2, 41, 19],
+	[4, 40, 14, 2, 41, 15],
+	
+	// 9
+	[2, 146, 116],
+	[3, 58, 36, 2, 59, 37],
+	[4, 36, 16, 4, 37, 17],
+	[4, 36, 12, 4, 37, 13],
+	
+	// 10		
+	[2, 86, 68, 2, 87, 69],
+	[4, 69, 43, 1, 70, 44],
+	[6, 43, 19, 2, 44, 20],
+	[6, 43, 15, 2, 44, 16],
+
+	// 11
+	[4, 101, 81],
+	[1, 80, 50, 4, 81, 51],
+	[4, 50, 22, 4, 51, 23],
+	[3, 36, 12, 8, 37, 13],
+
+	// 12
+	[2, 116, 92, 2, 117, 93],
+	[6, 58, 36, 2, 59, 37],
+	[4, 46, 20, 6, 47, 21],
+	[7, 42, 14, 4, 43, 15],
+
+	// 13
+	[4, 133, 107],
+	[8, 59, 37, 1, 60, 38],
+	[8, 44, 20, 4, 45, 21],
+	[12, 33, 11, 4, 34, 12],
+
+	// 14
+	[3, 145, 115, 1, 146, 116],
+	[4, 64, 40, 5, 65, 41],
+	[11, 36, 16, 5, 37, 17],
+	[11, 36, 12, 5, 37, 13],
+
+	// 15
+	[5, 109, 87, 1, 110, 88],
+	[5, 65, 41, 5, 66, 42],
+	[5, 54, 24, 7, 55, 25],
+	[11, 36, 12],
+
+	// 16
+	[5, 122, 98, 1, 123, 99],
+	[7, 73, 45, 3, 74, 46],
+	[15, 43, 19, 2, 44, 20],
+	[3, 45, 15, 13, 46, 16],
+
+	// 17
+	[1, 135, 107, 5, 136, 108],
+	[10, 74, 46, 1, 75, 47],
+	[1, 50, 22, 15, 51, 23],
+	[2, 42, 14, 17, 43, 15],
+
+	// 18
+	[5, 150, 120, 1, 151, 121],
+	[9, 69, 43, 4, 70, 44],
+	[17, 50, 22, 1, 51, 23],
+	[2, 42, 14, 19, 43, 15],
+
+	// 19
+	[3, 141, 113, 4, 142, 114],
+	[3, 70, 44, 11, 71, 45],
+	[17, 47, 21, 4, 48, 22],
+	[9, 39, 13, 16, 40, 14],
+
+	// 20
+	[3, 135, 107, 5, 136, 108],
+	[3, 67, 41, 13, 68, 42],
+	[15, 54, 24, 5, 55, 25],
+	[15, 43, 15, 10, 44, 16],
+
+	// 21
+	[4, 144, 116, 4, 145, 117],
+	[17, 68, 42],
+	[17, 50, 22, 6, 51, 23],
+	[19, 46, 16, 6, 47, 17],
+
+	// 22
+	[2, 139, 111, 7, 140, 112],
+	[17, 74, 46],
+	[7, 54, 24, 16, 55, 25],
+	[34, 37, 13],
+
+	// 23
+	[4, 151, 121, 5, 152, 122],
+	[4, 75, 47, 14, 76, 48],
+	[11, 54, 24, 14, 55, 25],
+	[16, 45, 15, 14, 46, 16],
+
+	// 24
+	[6, 147, 117, 4, 148, 118],
+	[6, 73, 45, 14, 74, 46],
+	[11, 54, 24, 16, 55, 25],
+	[30, 46, 16, 2, 47, 17],
+
+	// 25
+	[8, 132, 106, 4, 133, 107],
+	[8, 75, 47, 13, 76, 48],
+	[7, 54, 24, 22, 55, 25],
+	[22, 45, 15, 13, 46, 16],
+
+	// 26
+	[10, 142, 114, 2, 143, 115],
+	[19, 74, 46, 4, 75, 47],
+	[28, 50, 22, 6, 51, 23],
+	[33, 46, 16, 4, 47, 17],
+
+	// 27
+	[8, 152, 122, 4, 153, 123],
+	[22, 73, 45, 3, 74, 46],
+	[8, 53, 23, 26, 54, 24],
+	[12, 45, 15, 28, 46, 16],
+
+	// 28
+	[3, 147, 117, 10, 148, 118],
+	[3, 73, 45, 23, 74, 46],
+	[4, 54, 24, 31, 55, 25],
+	[11, 45, 15, 31, 46, 16],
+
+	// 29
+	[7, 146, 116, 7, 147, 117],
+	[21, 73, 45, 7, 74, 46],
+	[1, 53, 23, 37, 54, 24],
+	[19, 45, 15, 26, 46, 16],
+
+	// 30
+	[5, 145, 115, 10, 146, 116],
+	[19, 75, 47, 10, 76, 48],
+	[15, 54, 24, 25, 55, 25],
+	[23, 45, 15, 25, 46, 16],
+
+	// 31
+	[13, 145, 115, 3, 146, 116],
+	[2, 74, 46, 29, 75, 47],
+	[42, 54, 24, 1, 55, 25],
+	[23, 45, 15, 28, 46, 16],
+
+	// 32
+	[17, 145, 115],
+	[10, 74, 46, 23, 75, 47],
+	[10, 54, 24, 35, 55, 25],
+	[19, 45, 15, 35, 46, 16],
+
+	// 33
+	[17, 145, 115, 1, 146, 116],
+	[14, 74, 46, 21, 75, 47],
+	[29, 54, 24, 19, 55, 25],
+	[11, 45, 15, 46, 46, 16],
+
+	// 34
+	[13, 145, 115, 6, 146, 116],
+	[14, 74, 46, 23, 75, 47],
+	[44, 54, 24, 7, 55, 25],
+	[59, 46, 16, 1, 47, 17],
+
+	// 35
+	[12, 151, 121, 7, 152, 122],
+	[12, 75, 47, 26, 76, 48],
+	[39, 54, 24, 14, 55, 25],
+	[22, 45, 15, 41, 46, 16],
+
+	// 36
+	[6, 151, 121, 14, 152, 122],
+	[6, 75, 47, 34, 76, 48],
+	[46, 54, 24, 10, 55, 25],
+	[2, 45, 15, 64, 46, 16],
+
+	// 37
+	[17, 152, 122, 4, 153, 123],
+	[29, 74, 46, 14, 75, 47],
+	[49, 54, 24, 10, 55, 25],
+	[24, 45, 15, 46, 46, 16],
+
+	// 38
+	[4, 152, 122, 18, 153, 123],
+	[13, 74, 46, 32, 75, 47],
+	[48, 54, 24, 14, 55, 25],
+	[42, 45, 15, 32, 46, 16],
+
+	// 39
+	[20, 147, 117, 4, 148, 118],
+	[40, 75, 47, 7, 76, 48],
+	[43, 54, 24, 22, 55, 25],
+	[10, 45, 15, 67, 46, 16],
+
+	// 40
+	[19, 148, 118, 6, 149, 119],
+	[18, 75, 47, 31, 76, 48],
+	[34, 54, 24, 34, 55, 25],
+	[20, 45, 15, 61, 46, 16]
+];
+
+QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
+	
+	var rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
+	
+	if (rsBlock === undefined) {
+		throw new Error("bad rs block @ typeNumber:" + typeNumber + "/errorCorrectLevel:" + errorCorrectLevel);
+	}
+
+	var length = rsBlock.length / 3;
+	
+	var list = [];
+	
+	for (var i = 0; i < length; i++) {
+
+		var count = rsBlock[i * 3 + 0];
+		var totalCount = rsBlock[i * 3 + 1];
+		var dataCount  = rsBlock[i * 3 + 2];
+
+		for (var j = 0; j < count; j++) {
+			list.push(new QRRSBlock(totalCount, dataCount) );	
+		}
+	}
+	
+	return list;
+};
+
+QRRSBlock.getRsBlockTable = function(typeNumber, errorCorrectLevel) {
+
+	switch(errorCorrectLevel) {
+	case QRErrorCorrectLevel.L :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+	case QRErrorCorrectLevel.M :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+	case QRErrorCorrectLevel.Q :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+	case QRErrorCorrectLevel.H :
+		return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+	default :
+		return undefined;
+	}
+};
+
+module.exports = QRRSBlock;
+
+  return module.exports; })();
+  M['QRBitBuffer'] = (function () { var module = { exports: {} }; var exports = module.exports;
+function QRBitBuffer() {
+	this.buffer = [];
+	this.length = 0;
+}
+
+QRBitBuffer.prototype = {
+
+	get : function(index) {
+		var bufIndex = Math.floor(index / 8);
+		return ( (this.buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+	},
+	
+	put : function(num, length) {
+		for (var i = 0; i < length; i++) {
+			this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+		}
+	},
+	
+	getLengthInBits : function() {
+		return this.length;
+	},
+	
+	putBit : function(bit) {
+	
+		var bufIndex = Math.floor(this.length / 8);
+		if (this.buffer.length <= bufIndex) {
+			this.buffer.push(0);
+		}
+	
+		if (bit) {
+			this.buffer[bufIndex] |= (0x80 >>> (this.length % 8) );
+		}
+	
+		this.length++;
+	}
+};
+
+module.exports = QRBitBuffer;
+
+  return module.exports; })();
+  M['index'] = (function () { var module = { exports: {} }; var exports = module.exports;
+//---------------------------------------------------------------------
+// QRCode for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//   http://www.opensource.org/licenses/mit-license.php
+//
+// The word "QR Code" is registered trademark of 
+// DENSO WAVE INCORPORATED
+//   http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+// Modified to work in node for this project (and some refactoring)
+//---------------------------------------------------------------------
+
+var QR8bitByte = require('./QR8bitByte');
+var QRUtil = require('./QRUtil');
+var QRPolynomial = require('./QRPolynomial');
+var QRRSBlock = require('./QRRSBlock');
+var QRBitBuffer = require('./QRBitBuffer');
+
+function QRCode(typeNumber, errorCorrectLevel) {
+	this.typeNumber = typeNumber;
+	this.errorCorrectLevel = errorCorrectLevel;
+	this.modules = null;
+	this.moduleCount = 0;
+	this.dataCache = null;
+	this.dataList = [];
+}
+
+QRCode.prototype = {
+	
+	addData : function(data) {
+		var newData = new QR8bitByte(data);
+		this.dataList.push(newData);
+		this.dataCache = null;
+	},
+	
+	isDark : function(row, col) {
+		if (row < 0 || this.moduleCount <= row || col < 0 || this.moduleCount <= col) {
+			throw new Error(row + "," + col);
+		}
+		return this.modules[row][col];
+	},
+
+	getModuleCount : function() {
+		return this.moduleCount;
+	},
+	
+	make : function() {
+		// Calculate automatically typeNumber if provided is < 1
+		if (this.typeNumber < 1 ){
+			var typeNumber = 1;
+			for (typeNumber = 1; typeNumber < 40; typeNumber++) {
+				var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, this.errorCorrectLevel);
+
+				var buffer = new QRBitBuffer();
+				var totalDataCount = 0;
+				for (var i = 0; i < rsBlocks.length; i++) {
+					totalDataCount += rsBlocks[i].dataCount;
+				}
+
+				for (var x = 0; x < this.dataList.length; x++) {
+					var data = this.dataList[x];
+					buffer.put(data.mode, 4);
+					buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber) );
+					data.write(buffer);
+				}
+				if (buffer.getLengthInBits() <= totalDataCount * 8)
+					break;
+			}
+			this.typeNumber = typeNumber;
+		}
+		this.makeImpl(false, this.getBestMaskPattern() );
+	},
+	
+	makeImpl : function(test, maskPattern) {
+		
+		this.moduleCount = this.typeNumber * 4 + 17;
+		this.modules = new Array(this.moduleCount);
+		
+		for (var row = 0; row < this.moduleCount; row++) {
+			
+			this.modules[row] = new Array(this.moduleCount);
+			
+			for (var col = 0; col < this.moduleCount; col++) {
+				this.modules[row][col] = null;//(col + row) % 3;
+			}
+		}
+	
+		this.setupPositionProbePattern(0, 0);
+		this.setupPositionProbePattern(this.moduleCount - 7, 0);
+		this.setupPositionProbePattern(0, this.moduleCount - 7);
+		this.setupPositionAdjustPattern();
+		this.setupTimingPattern();
+		this.setupTypeInfo(test, maskPattern);
+		
+		if (this.typeNumber >= 7) {
+			this.setupTypeNumber(test);
+		}
+	
+		if (this.dataCache === null) {
+			this.dataCache = QRCode.createData(this.typeNumber, this.errorCorrectLevel, this.dataList);
+		}
+	
+		this.mapData(this.dataCache, maskPattern);
+	},
+
+	setupPositionProbePattern : function(row, col)  {
+		
+		for (var r = -1; r <= 7; r++) {
+			
+			if (row + r <= -1 || this.moduleCount <= row + r) continue;
+			
+			for (var c = -1; c <= 7; c++) {
+				
+				if (col + c <= -1 || this.moduleCount <= col + c) continue;
+				
+				if ( (0 <= r && r <= 6 && (c === 0 || c === 6) ) || 
+                     (0 <= c && c <= 6 && (r === 0 || r === 6) ) || 
+                     (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+					this.modules[row + r][col + c] = true;
+				} else {
+					this.modules[row + r][col + c] = false;
+				}
+			}		
+		}		
+	},
+	
+	getBestMaskPattern : function() {
+	
+		var minLostPoint = 0;
+		var pattern = 0;
+	
+		for (var i = 0; i < 8; i++) {
+			
+			this.makeImpl(true, i);
+	
+			var lostPoint = QRUtil.getLostPoint(this);
+	
+			if (i === 0 || minLostPoint >  lostPoint) {
+				minLostPoint = lostPoint;
+				pattern = i;
+			}
+		}
+	
+		return pattern;
+	},
+	
+	createMovieClip : function(target_mc, instance_name, depth) {
+	
+		var qr_mc = target_mc.createEmptyMovieClip(instance_name, depth);
+		var cs = 1;
+	
+		this.make();
+
+		for (var row = 0; row < this.modules.length; row++) {
+			
+			var y = row * cs;
+			
+			for (var col = 0; col < this.modules[row].length; col++) {
+	
+				var x = col * cs;
+				var dark = this.modules[row][col];
+			
+				if (dark) {
+					qr_mc.beginFill(0, 100);
+					qr_mc.moveTo(x, y);
+					qr_mc.lineTo(x + cs, y);
+					qr_mc.lineTo(x + cs, y + cs);
+					qr_mc.lineTo(x, y + cs);
+					qr_mc.endFill();
+				}
+			}
+		}
+		
+		return qr_mc;
+	},
+
+	setupTimingPattern : function() {
+		
+		for (var r = 8; r < this.moduleCount - 8; r++) {
+			if (this.modules[r][6] !== null) {
+				continue;
+			}
+			this.modules[r][6] = (r % 2 === 0);
+		}
+	
+		for (var c = 8; c < this.moduleCount - 8; c++) {
+			if (this.modules[6][c] !== null) {
+				continue;
+			}
+			this.modules[6][c] = (c % 2 === 0);
+		}
+	},
+	
+	setupPositionAdjustPattern : function() {
+	
+		var pos = QRUtil.getPatternPosition(this.typeNumber);
+		
+		for (var i = 0; i < pos.length; i++) {
+		
+			for (var j = 0; j < pos.length; j++) {
+			
+				var row = pos[i];
+				var col = pos[j];
+				
+				if (this.modules[row][col] !== null) {
+					continue;
+				}
+				
+				for (var r = -2; r <= 2; r++) {
+				
+					for (var c = -2; c <= 2; c++) {
+					
+						if (Math.abs(r) === 2 || 
+                            Math.abs(c) === 2 ||
+                            (r === 0 && c === 0) ) {
+							this.modules[row + r][col + c] = true;
+						} else {
+							this.modules[row + r][col + c] = false;
+						}
+					}
+				}
+			}
+		}
+	},
+	
+	setupTypeNumber : function(test) {
+	
+		var bits = QRUtil.getBCHTypeNumber(this.typeNumber);
+        var mod;
+	
+		for (var i = 0; i < 18; i++) {
+			mod = (!test && ( (bits >> i) & 1) === 1);
+			this.modules[Math.floor(i / 3)][i % 3 + this.moduleCount - 8 - 3] = mod;
+		}
+	
+		for (var x = 0; x < 18; x++) {
+			mod = (!test && ( (bits >> x) & 1) === 1);
+			this.modules[x % 3 + this.moduleCount - 8 - 3][Math.floor(x / 3)] = mod;
+		}
+	},
+	
+	setupTypeInfo : function(test, maskPattern) {
+	
+		var data = (this.errorCorrectLevel << 3) | maskPattern;
+		var bits = QRUtil.getBCHTypeInfo(data);
+        var mod;
+	
+		// vertical		
+		for (var v = 0; v < 15; v++) {
+	
+			mod = (!test && ( (bits >> v) & 1) === 1);
+	
+			if (v < 6) {
+				this.modules[v][8] = mod;
+			} else if (v < 8) {
+				this.modules[v + 1][8] = mod;
+			} else {
+				this.modules[this.moduleCount - 15 + v][8] = mod;
+			}
+		}
+	
+		// horizontal
+		for (var h = 0; h < 15; h++) {
+	
+			mod = (!test && ( (bits >> h) & 1) === 1);
+			
+			if (h < 8) {
+				this.modules[8][this.moduleCount - h - 1] = mod;
+			} else if (h < 9) {
+				this.modules[8][15 - h - 1 + 1] = mod;
+			} else {
+				this.modules[8][15 - h - 1] = mod;
+			}
+		}
+	
+		// fixed module
+		this.modules[this.moduleCount - 8][8] = (!test);
+	
+	},
+	
+	mapData : function(data, maskPattern) {
+		
+		var inc = -1;
+		var row = this.moduleCount - 1;
+		var bitIndex = 7;
+		var byteIndex = 0;
+		
+		for (var col = this.moduleCount - 1; col > 0; col -= 2) {
+	
+			if (col === 6) col--;
+	
+			while (true) {
+	
+				for (var c = 0; c < 2; c++) {
+					
+					if (this.modules[row][col - c] === null) {
+						
+						var dark = false;
+	
+						if (byteIndex < data.length) {
+							dark = ( ( (data[byteIndex] >>> bitIndex) & 1) === 1);
+						}
+	
+						var mask = QRUtil.getMask(maskPattern, row, col - c);
+	
+						if (mask) {
+							dark = !dark;
+						}
+						
+						this.modules[row][col - c] = dark;
+						bitIndex--;
+	
+						if (bitIndex === -1) {
+							byteIndex++;
+							bitIndex = 7;
+						}
+					}
+				}
+								
+				row += inc;
+	
+				if (row < 0 || this.moduleCount <= row) {
+					row -= inc;
+					inc = -inc;
+					break;
+				}
+			}
+		}
+		
+	}
+
+};
+
+QRCode.PAD0 = 0xEC;
+QRCode.PAD1 = 0x11;
+
+QRCode.createData = function(typeNumber, errorCorrectLevel, dataList) {
+	
+	var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
+	
+	var buffer = new QRBitBuffer();
+	
+	for (var i = 0; i < dataList.length; i++) {
+		var data = dataList[i];
+		buffer.put(data.mode, 4);
+		buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber) );
+		data.write(buffer);
+	}
+
+	// calc num max data.
+	var totalDataCount = 0;
+	for (var x = 0; x < rsBlocks.length; x++) {
+		totalDataCount += rsBlocks[x].dataCount;
+	}
+
+	if (buffer.getLengthInBits() > totalDataCount * 8) {
+		throw new Error("code length overflow. (" + 
+            buffer.getLengthInBits() + 
+            ">" +  
+            totalDataCount * 8 + 
+            ")");
+	}
+
+	// end code
+	if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+		buffer.put(0, 4);
+	}
+
+	// padding
+	while (buffer.getLengthInBits() % 8 !== 0) {
+		buffer.putBit(false);
+	}
+
+	// padding
+	while (true) {
+		
+		if (buffer.getLengthInBits() >= totalDataCount * 8) {
+			break;
+		}
+		buffer.put(QRCode.PAD0, 8);
+		
+		if (buffer.getLengthInBits() >= totalDataCount * 8) {
+			break;
+		}
+		buffer.put(QRCode.PAD1, 8);
+	}
+
+	return QRCode.createBytes(buffer, rsBlocks);
+};
+
+QRCode.createBytes = function(buffer, rsBlocks) {
+
+	var offset = 0;
+	
+	var maxDcCount = 0;
+	var maxEcCount = 0;
+	
+	var dcdata = new Array(rsBlocks.length);
+	var ecdata = new Array(rsBlocks.length);
+	
+	for (var r = 0; r < rsBlocks.length; r++) {
+
+		var dcCount = rsBlocks[r].dataCount;
+		var ecCount = rsBlocks[r].totalCount - dcCount;
+
+		maxDcCount = Math.max(maxDcCount, dcCount);
+		maxEcCount = Math.max(maxEcCount, ecCount);
+		
+		dcdata[r] = new Array(dcCount);
+		
+		for (var i = 0; i < dcdata[r].length; i++) {
+			dcdata[r][i] = 0xff & buffer.buffer[i + offset];
+		}
+		offset += dcCount;
+		
+		var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+		var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+		var modPoly = rawPoly.mod(rsPoly);
+		ecdata[r] = new Array(rsPoly.getLength() - 1);
+		for (var x = 0; x < ecdata[r].length; x++) {
+            var modIndex = x + modPoly.getLength() - ecdata[r].length;
+			ecdata[r][x] = (modIndex >= 0)? modPoly.get(modIndex) : 0;
+		}
+
+	}
+	
+	var totalCodeCount = 0;
+	for (var y = 0; y < rsBlocks.length; y++) {
+		totalCodeCount += rsBlocks[y].totalCount;
+	}
+
+	var data = new Array(totalCodeCount);
+	var index = 0;
+
+	for (var z = 0; z < maxDcCount; z++) {
+		for (var s = 0; s < rsBlocks.length; s++) {
+			if (z < dcdata[s].length) {
+				data[index++] = dcdata[s][z];
+			}
+		}
+	}
+
+	for (var xx = 0; xx < maxEcCount; xx++) {
+		for (var t = 0; t < rsBlocks.length; t++) {
+			if (xx < ecdata[t].length) {
+				data[index++] = ecdata[t][xx];
+			}
+		}
+	}
+
+	return data;
+
+};
+
+module.exports = QRCode;
+
+  return module.exports; })();
+  function matrix(text) {
+    var Q = new M['index'](-1, M['QRErrorCorrectLevel'].M); Q.addData(text); Q.make();
+    var n = Q.getModuleCount(), rows = [];
+    for (var r = 0; r < n; r++) { var row = []; for (var c = 0; c < n; c++) row.push(Q.isDark(r, c)); rows.push(row); }
+    return rows;
+  }
+  return { matrix: matrix };
+})();
+if (typeof module !== 'undefined') module.exports = HGQR;
+
+</script>
+<script id="build">
+var BUILD = {"FW": "09-guardian-0.9.17-demo-b7g", "COMMIT": "9f9d483", "FROZEN12": "baef78b19790", "PID": "90862", "WHO": "Simulated person: a 74-year-old woman", "POP_TEXT": "Across 100 other simulated elders the model never trained on: estimate 0.23 °C off on average, 20-minute prediction 0.29 °C.", "REPO_URL": "https://github.com/anastasiadisfoivos-hub/heat-guardian"};
+window.TWIN_WEEK = {"pid": 90862, "days": 7, "defaults": {"rest_hr": 70.0, "core_offset": 0.0, "k_person": 0.12}, "nights": [{"night": 1, "day": 1, "rest_hr": 67.24, "p10_night_hr": 55.81428527832031, "frozen": ""}, {"night": 2, "day": 2, "rest_hr": 64.83, "p10_night_hr": 54.193748474121094, "frozen": ""}, {"night": 3, "day": 3, "rest_hr": 63.22, "p10_night_hr": 54.47222137451172, "frozen": ""}, {"night": 4, "day": 4, "rest_hr": 62.23, "p10_night_hr": 54.90666580200195, "frozen": ""}, {"night": 5, "day": 5, "rest_hr": 61.66, "p10_night_hr": 55.33529281616211, "frozen": ""}, {"night": 6, "day": 6, "rest_hr": 61.15, "p10_night_hr": 54.97222137451172, "frozen": ""}, {"night": 7, "day": 7, "rest_hr": 60.85, "p10_night_hr": 55.13333511352539, "frozen": ""}], "learned": {"rest_hr": 60.8, "core_offset": 0.0, "k_person": 0.12, "c_bodyheat": 0.15, "days_learned": 7, "t1_night_base": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], "t1_night_mean_00_06": null}, "truth": {"rest_hr_same_definition": 62.4, "night_hr_floor_true": 57.4, "rest_hr_drawn_seated": 67.5, "t1_night_mean_00_06": 35.59, "note": "the twin's rest_hr = 10th percentile of her still sleeping heart rate + 5 bpm (hg_twin.py); rest_hr_same_definition = the same on the simulator's TRUE heart rate over the week; rest_hr_drawn_seated = velders draw_one hr_rest (a different quantity: awake, seated)"}, "what": "SIMULATION: 7 simulated days of wear, Virtual Elder pid 90862; Body Twin = twin/hg_twin.py (mirror of hg_twin.c)"};
+</script>
+<script type="text/plain" id="tx-ble-press">
+# REPLAY started (2 s per simulated minute, 220 s in all); `replay stop` = back to live now
+#R start el=velders-pid90862 nr=0 s=2 n=110 t0=13:00
+#R warm done st=OK
+#R k=0 t=13:00 c=37.53 f=37.57 sc=37.54 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=0 b=0
+#R k=1 t=13:01 c=37.52 f=37.56 sc=37.53 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=0 b=0
+#R k=2 t=13:02 c=37.55 f=37.60 sc=37.52 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=0 b=0
+#R k=3 t=13:03 c=37.53 f=37.57 sc=37.51 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=0 b=0
+#R k=4 t=13:04 c=37.50 f=37.54 sc=37.51 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=5 t=13:05 c=37.52 f=37.56 sc=37.50 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=6 t=13:06 c=37.52 f=37.56 sc=37.50 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=7 t=13:07 c=37.52 f=37.57 sc=37.49 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=0 b=0
+#R k=8 t=13:08 c=37.52 f=37.57 sc=37.49 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=0 b=0
+#R k=9 t=13:09 c=37.52 f=37.58 sc=37.49 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=0 b=0
+#R k=10 t=13:10 c=37.57 f=37.65 sc=37.49 st=OK lv=0 ld=idle rm=- ga=yellow-green dot=3 fam=0 nr=0 b=0
+#R k=11 t=13:11 c=37.58 f=37.67 sc=37.50 st=OK lv=0 ld=idle rm=- ga=yellow-green dot=3 fam=0 nr=0 b=0
+#R k=12 t=13:12 c=37.60 f=37.70 sc=37.52 st=OK lv=0 ld=idle rm=- ga=yellow-green dot=4 fam=0 nr=0 b=0
+#R k=13 t=13:13 c=37.68 f=37.78 sc=37.53 st=OK lv=0 ld=idle rm=- ga=yellow dot=4 fam=0 nr=0 b=0
+#R k=14 t=13:14 c=37.70 f=37.81 sc=37.54 st=OK lv=0 ld=idle rm=- ga=yellow dot=4 fam=0 nr=0 b=0
+#R k=15 t=13:15 c=37.70 f=37.82 sc=37.55 st=OK lv=0 ld=idle rm=- ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=16 t=13:16 c=37.71 f=37.83 sc=37.57 st=OK lv=0 ld=idle rm=- ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=17 t=13:17 c=37.72 f=37.84 sc=37.58 st=OK lv=0 ld=idle rm=- ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=18 t=13:18 c=37.74 f=37.85 sc=37.59 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=19 t=13:19 c=37.74 f=37.86 sc=37.60 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=20 t=13:20 c=37.74 f=37.86 sc=37.61 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=21 t=13:21 c=37.70 f=37.83 sc=37.62 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=22 t=13:22 c=37.70 f=37.82 sc=37.63 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=23 t=13:23 c=37.73 f=37.86 sc=37.63 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=24 t=13:24 c=37.74 f=37.87 sc=37.64 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=25 t=13:25 c=37.75 f=37.88 sc=37.65 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#E k=25 fam=0 ev=WARN_SHOWN.1,LD_REMIND.1
+#R k=26 t=13:26 c=37.71 f=37.83 sc=37.66 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=27 t=13:27 c=37.71 f=37.82 sc=37.67 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=28 t=13:28 c=37.76 f=37.88 sc=37.68 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=29 t=13:29 c=37.69 f=37.80 sc=37.68 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=4 fam=0 nr=0 b=0
+#R k=30 t=13:30 c=37.68 f=37.80 sc=37.69 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=4 fam=0 nr=0 b=0
+#R k=31 t=13:31 c=37.74 f=37.87 sc=37.70 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=32 t=13:32 c=37.74 f=37.86 sc=37.70 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#E k=32 fam=0 ev=LD_DONE.1
+#R k=33 t=13:33 c=37.74 f=37.87 sc=37.71 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=34 t=13:34 c=37.77 f=37.90 sc=37.72 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=35 t=13:35 c=37.79 f=37.92 sc=37.72 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=36 t=13:36 c=37.79 f=37.92 sc=37.73 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=37 t=13:37 c=37.80 f=37.93 sc=37.73 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=38 t=13:38 c=37.74 f=37.86 sc=37.74 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=39 t=13:39 c=37.76 f=37.88 sc=37.75 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=40 t=13:40 c=37.75 f=37.88 sc=37.75 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=41 t=13:41 c=37.82 f=37.95 sc=37.76 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=42 t=13:42 c=37.82 f=37.95 sc=37.76 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=43 t=13:43 c=37.82 f=37.95 sc=37.77 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=44 t=13:44 c=37.83 f=37.96 sc=37.77 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=45 t=13:45 c=37.83 f=37.96 sc=37.78 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=46 t=13:46 c=37.84 f=37.97 sc=37.78 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=47 t=13:47 c=37.84 f=37.97 sc=37.79 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=48 t=13:48 c=37.84 f=37.97 sc=37.79 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=49 t=13:49 c=37.84 f=37.97 sc=37.79 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=50 t=13:50 c=37.84 f=37.97 sc=37.80 st=DRINK lv=1 ld=check20 rm=water ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=51 t=13:51 c=37.84 f=37.97 sc=37.80 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=6 fam=1 nr=0 b=0
+#E k=51 fam=1 ev=LD_NOTE.1,LD_REMIND.2
+#R k=52 t=13:52 c=37.85 f=37.98 sc=37.81 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=53 t=13:53 c=37.84 f=37.97 sc=37.81 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=54 t=13:54 c=37.87 f=38.00 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=55 t=13:55 c=37.86 f=37.98 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=56 t=13:56 c=37.77 f=37.88 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=57 t=13:57 c=37.82 f=37.94 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=58 t=13:58 c=37.75 f=37.85 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=59 t=13:59 c=37.78 f=37.88 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=60 t=14:00 c=37.77 f=37.87 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=61 t=14:01 c=37.76 f=37.86 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#E k=61 fam=0 ev=LD_REMIND.2
+#R k=62 t=14:02 c=37.75 f=37.86 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=63 t=14:03 c=37.74 f=37.84 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=64 t=14:04 c=37.81 f=37.92 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=65 t=14:05 c=37.84 f=37.95 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=6 fam=0 nr=0 b=0
+#R k=66 t=14:06 c=37.79 f=37.90 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=67 t=14:07 c=37.79 f=37.89 sc=37.82 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=68 t=14:08 c=37.78 f=37.89 sc=37.83 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=69 t=14:09 c=37.77 f=37.86 sc=37.83 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=70 t=14:10 c=37.75 f=37.81 sc=37.83 st=DRINK lv=1 ld=remind rm=cool ga=yellow dot=4 fam=0 nr=0 b=0
+#R k=71 t=14:11 c=37.78 f=37.85 sc=37.81 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#E k=71 fam=0 ev=LD_DONE.2
+#R k=72 t=14:12 c=37.81 f=37.85 sc=37.79 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=73 t=14:13 c=37.79 f=37.81 sc=37.77 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=4 fam=0 nr=0 b=0
+#R k=74 t=14:14 c=37.79 f=37.81 sc=37.74 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=75 t=14:15 c=37.80 f=37.84 sc=37.72 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=76 t=14:16 c=37.81 f=37.87 sc=37.70 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=77 t=14:17 c=37.81 f=37.89 sc=37.68 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=78 t=14:18 c=37.81 f=37.89 sc=37.66 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=79 t=14:19 c=37.81 f=37.89 sc=37.64 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=80 t=14:20 c=37.80 f=37.89 sc=37.63 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=81 t=14:21 c=37.79 f=37.88 sc=37.61 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=82 t=14:22 c=37.77 f=37.87 sc=37.60 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=83 t=14:23 c=37.75 f=37.85 sc=37.59 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=5 fam=0 nr=0 b=0
+#R k=84 t=14:24 c=37.70 f=37.78 sc=37.58 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=4 fam=0 nr=0 b=0
+#R k=85 t=14:25 c=37.64 f=37.71 sc=37.57 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=4 fam=0 nr=0 b=0
+#R k=86 t=14:26 c=37.63 f=37.68 sc=37.56 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=3 fam=0 nr=0 b=0
+#R k=87 t=14:27 c=37.60 f=37.65 sc=37.56 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=3 fam=0 nr=0 b=0
+#R k=88 t=14:28 c=37.57 f=37.61 sc=37.55 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=3 fam=0 nr=0 b=0
+#R k=89 t=14:29 c=37.57 f=37.62 sc=37.54 st=DRINK lv=1 ld=check20 rm=cool ga=yellow dot=3 fam=0 nr=0 b=0
+#R k=90 t=14:30 c=37.55 f=37.59 sc=37.53 st=DRINK lv=1 ld=done rm=- ga=yellow dot=3 fam=0 nr=0 b=0
+#E k=90 fam=0 ev=LD_WORKED.2
+#R k=91 t=14:31 c=37.52 f=37.56 sc=37.53 st=DRINK lv=1 ld=done rm=- ga=yellow dot=2 fam=0 nr=0 b=0
+#R k=92 t=14:32 c=37.52 f=37.56 sc=37.52 st=DRINK lv=1 ld=done rm=- ga=yellow dot=3 fam=0 nr=0 b=0
+#R k=93 t=14:33 c=37.52 f=37.56 sc=37.51 st=DRINK lv=1 ld=done rm=- ga=yellow dot=2 fam=0 nr=0 b=0
+#R k=94 t=14:34 c=37.51 f=37.56 sc=37.50 st=DRINK lv=1 ld=done rm=- ga=yellow dot=2 fam=0 nr=0 b=0
+#R k=95 t=14:35 c=37.48 f=37.53 sc=37.49 st=DRINK lv=1 ld=done rm=- ga=yellow dot=2 fam=0 nr=0 b=0
+#R k=96 t=14:36 c=37.50 f=37.55 sc=37.49 st=DRINK lv=1 ld=done rm=- ga=yellow dot=2 fam=0 nr=0 b=0
+#R k=97 t=14:37 c=37.52 f=37.57 sc=37.48 st=OK lv=0 ld=done rm=- ga=yellow-green dot=3 fam=0 nr=0 b=0
+#R k=98 t=14:38 c=37.49 f=37.54 sc=37.47 st=OK lv=0 ld=done rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=99 t=14:39 c=37.49 f=37.54 sc=37.46 st=OK lv=0 ld=done rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=100 t=14:40 c=37.46 f=37.51 sc=37.45 st=OK lv=0 ld=done rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=101 t=14:41 c=37.50 f=37.56 sc=37.44 st=OK lv=0 ld=done rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=102 t=14:42 c=37.46 f=37.52 sc=37.43 st=OK lv=0 ld=done rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=103 t=14:43 c=37.46 f=37.53 sc=37.43 st=OK lv=0 ld=done rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=104 t=14:44 c=37.45 f=37.52 sc=37.42 st=OK lv=0 ld=done rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=105 t=14:45 c=37.45 f=37.52 sc=37.41 st=OK lv=0 ld=done rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=106 t=14:46 c=37.44 f=37.50 sc=37.40 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=0 b=0
+#E k=106 fam=0 ev=ALL_CLEAR.1
+#R k=107 t=14:47 c=37.40 f=37.47 sc=37.39 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=108 t=14:48 c=37.42 f=37.49 sc=37.38 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R k=109 t=14:49 c=37.40 f=37.47 sc=37.37 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=0 b=0
+#R end
+</script>
+<script type="text/plain" id="tx-ble-noresp">
+# REPLAY started (2 s per simulated minute, 220 s in all); `replay stop` = back to live now
+# REPLAY noresp: no presses; first reminder ~50 s, repeat ~70 s, no-response note ~90 s after the warm-up
+#R start el=velders-pid90862 nr=1 s=2 n=110 t0=13:00
+#R warm done st=OK
+#R k=0 t=13:00 c=37.53 f=37.57 sc=37.54 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=1 b=0
+#R k=1 t=13:01 c=37.52 f=37.56 sc=37.53 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=1 b=0
+#R k=2 t=13:02 c=37.55 f=37.60 sc=37.52 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=1 b=0
+#R k=3 t=13:03 c=37.53 f=37.57 sc=37.51 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=1 b=0
+#R k=4 t=13:04 c=37.50 f=37.54 sc=37.51 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=1 b=0
+#R k=5 t=13:05 c=37.52 f=37.56 sc=37.50 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=1 b=0
+#R k=6 t=13:06 c=37.52 f=37.56 sc=37.50 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=1 b=0
+#R k=7 t=13:07 c=37.52 f=37.57 sc=37.49 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=1 b=0
+#R k=8 t=13:08 c=37.52 f=37.57 sc=37.49 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=1 b=0
+#R k=9 t=13:09 c=37.52 f=37.58 sc=37.49 st=OK lv=0 ld=idle rm=- ga=green dot=3 fam=0 nr=1 b=0
+#R k=10 t=13:10 c=37.57 f=37.65 sc=37.49 st=OK lv=0 ld=idle rm=- ga=yellow-green dot=3 fam=0 nr=1 b=0
+#R k=11 t=13:11 c=37.58 f=37.67 sc=37.50 st=OK lv=0 ld=idle rm=- ga=yellow-green dot=3 fam=0 nr=1 b=0
+#R k=12 t=13:12 c=37.60 f=37.70 sc=37.52 st=OK lv=0 ld=idle rm=- ga=yellow-green dot=4 fam=0 nr=1 b=0
+#R k=13 t=13:13 c=37.68 f=37.78 sc=37.53 st=OK lv=0 ld=idle rm=- ga=yellow dot=4 fam=0 nr=1 b=0
+#R k=14 t=13:14 c=37.70 f=37.81 sc=37.54 st=OK lv=0 ld=idle rm=- ga=yellow dot=4 fam=0 nr=1 b=0
+#R k=15 t=13:15 c=37.70 f=37.82 sc=37.55 st=OK lv=0 ld=idle rm=- ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=16 t=13:16 c=37.71 f=37.83 sc=37.57 st=OK lv=0 ld=idle rm=- ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=17 t=13:17 c=37.72 f=37.84 sc=37.58 st=OK lv=0 ld=idle rm=- ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=18 t=13:18 c=37.74 f=37.85 sc=37.59 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=19 t=13:19 c=37.74 f=37.86 sc=37.60 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=20 t=13:20 c=37.74 f=37.86 sc=37.61 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=21 t=13:21 c=37.70 f=37.83 sc=37.62 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=22 t=13:22 c=37.70 f=37.82 sc=37.63 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=23 t=13:23 c=37.73 f=37.86 sc=37.63 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=24 t=13:24 c=37.74 f=37.87 sc=37.64 st=DRINK lv=1 ld=idle rm=- ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=25 t=13:25 c=37.75 f=37.88 sc=37.65 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#E k=25 fam=0 ev=WARN_SHOWN.1,LD_REMIND.1
+#R k=26 t=13:26 c=37.71 f=37.83 sc=37.66 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=27 t=13:27 c=37.71 f=37.82 sc=37.67 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=28 t=13:28 c=37.76 f=37.88 sc=37.68 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=29 t=13:29 c=37.69 f=37.80 sc=37.68 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=4 fam=0 nr=1 b=0
+#R k=30 t=13:30 c=37.68 f=37.80 sc=37.69 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=4 fam=0 nr=1 b=0
+#R k=31 t=13:31 c=37.74 f=37.87 sc=37.70 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=32 t=13:32 c=37.74 f=37.86 sc=37.70 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=33 t=13:33 c=37.74 f=37.87 sc=37.71 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=34 t=13:34 c=37.77 f=37.90 sc=37.72 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=35 t=13:35 c=37.79 f=37.92 sc=37.72 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#E k=35 fam=0 ev=LD_REMIND.1
+#R k=36 t=13:36 c=37.79 f=37.92 sc=37.73 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=37 t=13:37 c=37.80 f=37.93 sc=37.73 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=38 t=13:38 c=37.74 f=37.86 sc=37.74 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=39 t=13:39 c=37.76 f=37.88 sc=37.75 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=40 t=13:40 c=37.75 f=37.88 sc=37.75 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=41 t=13:41 c=37.82 f=37.95 sc=37.76 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=42 t=13:42 c=37.82 f=37.95 sc=37.76 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=43 t=13:43 c=37.82 f=37.95 sc=37.77 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=44 t=13:44 c=37.83 f=37.96 sc=37.77 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=45 t=13:45 c=37.83 f=37.96 sc=37.78 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=1 nr=1 b=0
+#E k=45 fam=1 ev=LD_NOTE.2
+#R k=46 t=13:46 c=37.84 f=37.97 sc=37.78 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=47 t=13:47 c=37.84 f=37.97 sc=37.79 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=48 t=13:48 c=37.84 f=37.97 sc=37.79 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=49 t=13:49 c=37.84 f=37.97 sc=37.79 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=50 t=13:50 c=37.84 f=37.97 sc=37.80 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=51 t=13:51 c=37.84 f=37.97 sc=37.80 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=52 t=13:52 c=37.85 f=37.98 sc=37.81 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=53 t=13:53 c=37.84 f=37.97 sc=37.81 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=54 t=13:54 c=37.87 f=38.00 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=55 t=13:55 c=37.86 f=37.98 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=56 t=13:56 c=37.77 f=37.88 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=57 t=13:57 c=37.82 f=37.94 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=58 t=13:58 c=37.75 f=37.85 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=59 t=13:59 c=37.78 f=37.88 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=60 t=14:00 c=37.77 f=37.87 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=61 t=14:01 c=37.76 f=37.86 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=62 t=14:02 c=37.75 f=37.86 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=63 t=14:03 c=37.74 f=37.84 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=64 t=14:04 c=37.81 f=37.92 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=65 t=14:05 c=37.84 f=37.95 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=6 fam=0 nr=1 b=0
+#R k=66 t=14:06 c=37.79 f=37.90 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=67 t=14:07 c=37.79 f=37.89 sc=37.82 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=68 t=14:08 c=37.78 f=37.89 sc=37.83 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=69 t=14:09 c=37.77 f=37.86 sc=37.83 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=70 t=14:10 c=37.75 f=37.81 sc=37.83 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=4 fam=0 nr=1 b=0
+#R k=71 t=14:11 c=37.78 f=37.85 sc=37.81 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=72 t=14:12 c=37.81 f=37.85 sc=37.79 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=73 t=14:13 c=37.79 f=37.81 sc=37.77 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=4 fam=0 nr=1 b=0
+#R k=74 t=14:14 c=37.79 f=37.81 sc=37.74 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=75 t=14:15 c=37.80 f=37.84 sc=37.72 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=76 t=14:16 c=37.81 f=37.87 sc=37.70 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=77 t=14:17 c=37.81 f=37.89 sc=37.68 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=78 t=14:18 c=37.81 f=37.89 sc=37.66 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=79 t=14:19 c=37.81 f=37.89 sc=37.64 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=80 t=14:20 c=37.80 f=37.89 sc=37.63 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=81 t=14:21 c=37.79 f=37.88 sc=37.61 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=82 t=14:22 c=37.77 f=37.87 sc=37.60 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=83 t=14:23 c=37.75 f=37.85 sc=37.59 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=5 fam=0 nr=1 b=0
+#R k=84 t=14:24 c=37.70 f=37.78 sc=37.58 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=4 fam=0 nr=1 b=0
+#R k=85 t=14:25 c=37.64 f=37.71 sc=37.57 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=4 fam=0 nr=1 b=0
+#R k=86 t=14:26 c=37.63 f=37.68 sc=37.56 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=3 fam=0 nr=1 b=0
+#R k=87 t=14:27 c=37.60 f=37.65 sc=37.56 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=3 fam=0 nr=1 b=0
+#R k=88 t=14:28 c=37.57 f=37.61 sc=37.55 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=3 fam=0 nr=1 b=0
+#R k=89 t=14:29 c=37.57 f=37.62 sc=37.54 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=3 fam=0 nr=1 b=0
+#R k=90 t=14:30 c=37.55 f=37.59 sc=37.53 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=3 fam=0 nr=1 b=0
+#R k=91 t=14:31 c=37.52 f=37.56 sc=37.53 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=2 fam=0 nr=1 b=0
+#R k=92 t=14:32 c=37.52 f=37.56 sc=37.52 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=3 fam=0 nr=1 b=0
+#R k=93 t=14:33 c=37.52 f=37.56 sc=37.51 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=2 fam=0 nr=1 b=0
+#R k=94 t=14:34 c=37.51 f=37.56 sc=37.50 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=2 fam=0 nr=1 b=0
+#R k=95 t=14:35 c=37.48 f=37.53 sc=37.49 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=2 fam=0 nr=1 b=0
+#R k=96 t=14:36 c=37.50 f=37.55 sc=37.49 st=DRINK lv=1 ld=remind rm=water ga=yellow dot=2 fam=0 nr=1 b=0
+#R k=97 t=14:37 c=37.52 f=37.57 sc=37.48 st=OK lv=0 ld=remind rm=water ga=yellow-green dot=3 fam=0 nr=1 b=0
+#R k=98 t=14:38 c=37.49 f=37.54 sc=37.47 st=OK lv=0 ld=remind rm=water ga=green dot=2 fam=0 nr=1 b=0
+#R k=99 t=14:39 c=37.49 f=37.54 sc=37.46 st=OK lv=0 ld=remind rm=water ga=green dot=2 fam=0 nr=1 b=0
+#R k=100 t=14:40 c=37.46 f=37.51 sc=37.45 st=OK lv=0 ld=remind rm=water ga=green dot=2 fam=0 nr=1 b=0
+#R k=101 t=14:41 c=37.50 f=37.56 sc=37.44 st=OK lv=0 ld=remind rm=water ga=green dot=2 fam=0 nr=1 b=0
+#R k=102 t=14:42 c=37.46 f=37.52 sc=37.43 st=OK lv=0 ld=remind rm=water ga=green dot=2 fam=0 nr=1 b=0
+#R k=103 t=14:43 c=37.46 f=37.53 sc=37.43 st=OK lv=0 ld=remind rm=water ga=green dot=2 fam=0 nr=1 b=0
+#R k=104 t=14:44 c=37.45 f=37.52 sc=37.42 st=OK lv=0 ld=remind rm=water ga=green dot=2 fam=0 nr=1 b=0
+#R k=105 t=14:45 c=37.45 f=37.52 sc=37.41 st=OK lv=0 ld=remind rm=water ga=green dot=2 fam=0 nr=1 b=0
+#R k=106 t=14:46 c=37.44 f=37.50 sc=37.40 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=1 b=0
+#E k=106 fam=0 ev=ALL_CLEAR.1
+#R k=107 t=14:47 c=37.40 f=37.47 sc=37.39 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=1 b=0
+#R k=108 t=14:48 c=37.42 f=37.49 sc=37.38 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=1 b=0
+#R k=109 t=14:49 c=37.40 f=37.47 sc=37.37 st=OK lv=0 ld=idle rm=- ga=green dot=2 fam=0 nr=1 b=0
+#R end
+</script>
+<script>
+(function () {
+'use strict';
+var $ = function (id) { return document.getElementById(id); };
+var S = HG.fresh();
+var NUS = '6e400001-b5a3-f393-e0a9-e50e24dcca9e', NUS_RX = '6e400002-b5a3-f393-e0a9-e50e24dcca9e', NUS_TX = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+var HGS = '0c760000-038b-46d5-8532-954dd1c5e01d', HG_STATUS = '0c760001-038b-46d5-8532-954dd1c5e01d', HG_EVENTS = '0c760004-038b-46d5-8532-954dd1c5e01d';
+var link = null;               // { kind:'ble'|'usb'|'preview', send(text) }
+var lastMinuteAt = 0, wantNoresp = false, lastRxAt = 0, connCls = '';
+
+/* ---------- colours (meaningful only) ---------- */
+var BAND_COL = { 'green': '#007832', 'yellow-green': '#96C81E', 'yellow': '#FADC28', 'orange': '#EB7800', 'red': '#AA0000', 'grey': '#5a5a5a' };   // hg_fw_ladder.c COL[]
+var BAND_TXT_WHITE = { 'green': 1, 'red': 1, 'grey': 1 };
+function hex2rgb(h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
+function mix(a, b, t) { var A = hex2rgb(a), B = hex2rgb(b); return 'rgb(' + A.map(function (v, i) { return Math.round(v + (B[i] - v) * t); }).join(',') + ')'; }
+function heatColour(t) {   // core temperature -> DESIGN.md state hues, keyed to the band's own lines
+  var L = S.lines, stops = [[L.w - 0.55, '#13A89E'], [L.w - 0.15, '#13A89E'], [L.w, '#C98A00'], [L.c, '#E07B12'], [L.d, '#D32F2F']];
+  if (t == null) return '#13A89E';
+  if (t <= stops[0][0]) return stops[0][1];
+  for (var i = 1; i < stops.length; i++) if (t <= stops[i][0]) return mix(stops[i - 1][1], stops[i][1], (t - stops[i - 1][0]) / (stops[i][0] - stops[i - 1][0]));
+  return stops[stops.length - 1][1];
+}
+var WORD = {   // the headline only; the band's own Greek words are on the mirrored screen and in the steps (not repeated here)
+  OK: ['All good', ''], DRINK: ['Drink water', ''], COOL: ['Cool down', ''],
+  CHECK: ['Are you OK?', ''], DANGER: ['Too hot', ''], HELP: ['Help asked', ''], IMOK: ['She is OK', ''],
+  NOT_WORN: ['Band not worn', ''], BATTERY: ['Charge the band', '']
+};
+var RED = { CHECK: 1, DANGER: 1, HELP: 1 };
+var WORD_COL = { OK: '#248A3D', DRINK: '#B98900', COOL: '#FF9500', CHECK: '#FF3B30', DANGER: '#FF3B30', HELP: '#FF3B30' };   // Apple system colours (yellow darkened for text)
+var FAM_COL = '#007AFF';
+
+/* ---------- terminal: every line the band sends, as it arrives ---------- */
+var term = $('term'), cursorRow = term.lastChild, termN = 0;
+function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function termAdd(text, cls) {
+  if (termN === 0 && term.firstChild && term.firstChild.classList.contains('dim')) term.removeChild(term.firstChild);
+  var d = document.createElement('div'); d.className = 'tl ' + (cls || '');
+  if (cls === 'ev') { var old = term.querySelector('.tl.ev.newest'); if (old) old.classList.remove('newest'); d.classList.add('newest'); }
+  if (cls === undefined || cls === 'ev') {
+    var m = /^(#[RE]|# DEMO|#) ([\s\S]*)$/.exec(text) || [null, '', text];
+    d.innerHTML = (m[1] ? '<span class="pre">' + esc(m[1]) + '</span> ' : '') + esc(m[2]).replace(/(\S+?=)/g, '<span class="k">$1</span>')
+      .replace(/(st=<\/span>)(DRINK|COOL|CHECK|DANGER|HELP)\b/, '$1<span class="st-$2">$2</span>');
+  }
+  else d.textContent = text;
+  term.insertBefore(d, cursorRow); termN++;
+  while (term.childNodes.length > 240) term.removeChild(term.firstChild);
+}
+function classOf(l) {
+  if (/^#E /.test(l)) return 'ev';
+  if (/^#R k=/.test(l)) return undefined;
+  if (/^#R /.test(l)) return 'ctl';
+  if (/^# DEMO /.test(l)) return /^# DEMO \d\d:\d\d t=/.test(l) ? 'dim' : undefined;
+  return 'rep';
+}
+
+/* ---------- feeding ---------- */
+function onLine(line) {
+  if (!link || link.kind !== 'preview') lastRxAt = Date.now();   // evidence: a real message from the band (never the recording)
+  termAdd(line, classOf(line));
+  var r = HG.parseLine(line); if (!r) return;
+  if (r.kind === 'minute' || r.kind === 'rmin') lastMinuteAt = performance.now();
+  HG.applyRec(S, r);
+  if (r.kind === 'replayMsg') toast(r.text.indexOf('replay [') >= 0 && wantNoresp && r.text.indexOf('noresp') < 0 ? 'This band firmware does not know "replay noresp". Flash 0.9.17-demo-b7n, or untick "She doesn\'t respond".' : r.text);
+  if (r.kind === 'fw') { S.fw = r.version; setPlain('fwTxt', 'firmware ' + r.version); }
+  paintDiscrete();
+}
+function onStatusFrame(u8) { lastRxAt = Date.now(); var r = HG.parseStatus(u8); if (!r) return; if (!S.rLines && !S.minuteLines) lastMinuteAt = performance.now(); HG.applyRec(S, r); paintDiscrete(); }
+function onEventFrame(u8) { lastRxAt = Date.now(); var r = HG.parseEventFrame(u8); if (!r) return; HG.applyRec(S, r, true); paintDiscrete(); }
+function LineSplitter(cb) { var dec = new TextDecoder('utf-8'), buf = '';   // UTF-8 safe across chunk boundaries (Greek is 2 bytes a letter)
+  this.push = function (u8) { buf += dec.decode(u8, { stream: true }); var i; while ((i = buf.indexOf('\n')) >= 0) { var l = buf.slice(0, i).replace(/\r$/, ''); buf = buf.slice(i + 1); if (l.charAt(0) === '#') cb(l); } if (buf.length > 4096) buf = ''; };
+}
+
+/* ---------- transports ---------- */
+var bleDevice = null, bleWanted = false, bleRetry = 0, bleSplit = null;
+function onNusTx(e) { bleSplit.push(new Uint8Array(e.target.value.buffer)); }
+function onStTx(e) { onStatusFrame(new Uint8Array(e.target.value.buffer)); }
+function onEvTx(e) { onEventFrame(new Uint8Array(e.target.value.buffer)); }
+function listen(ch, fn) { ch.removeEventListener('characteristicvaluechanged', fn); ch.addEventListener('characteristicvaluechanged', fn); }   // never twice after a reconnect
+async function connectBle() {
+  if (!navigator.bluetooth) { toast('No Web Bluetooth in this browser. Use Chrome on the Mac at http://localhost:8765'); return; }
+  try {
+    bleDevice = await navigator.bluetooth.requestDevice({ filters: [{ name: 'HeatGuardian' }, { services: [HGS] }], optionalServices: [NUS, HGS, 'device_information'] });
+  } catch (e) { if (e && e.name !== 'NotFoundError') toast('Bluetooth: ' + e.message); return; }
+  bleWanted = true; bleDevice.removeEventListener('gattserverdisconnected', onBleDrop); bleDevice.addEventListener('gattserverdisconnected', onBleDrop);
+  await bleOpen();
+}
+async function bleOpen() {
+  setConn('wait', 'Connecting to ' + (bleDevice.name || 'the band') + ' (Bluetooth)');
+  try {
+    var server = await bleDevice.gatt.connect();
+    var nus = await server.getPrimaryService(NUS);
+    var tx = await nus.getCharacteristic(NUS_TX), rx = await nus.getCharacteristic(NUS_RX);
+    bleSplit = new LineSplitter(onLine);   // fresh: a half line from before a drop is dropped, never glued
+    listen(tx, onNusTx); await tx.startNotifications();
+    try {   // binary STATUS / EVENTS live on their own characteristics: a fallback for older firmware
+      var hg = await server.getPrimaryService(HGS);
+      var st = await hg.getCharacteristic(HG_STATUS), ev = await hg.getCharacteristic(HG_EVENTS);
+      listen(st, onStTx); listen(ev, onEvTx); await st.startNotifications(); await ev.startNotifications();
+    } catch (e) { console.warn('HG service', e); }
+    try { var dis = await server.getPrimaryService('device_information'); var fr = await dis.getCharacteristic('firmware_revision_string');
+      var v = new TextDecoder().decode(await fr.readValue()); S.fw = v.split(' ')[0]; setPlain('fwTxt', 'firmware ' + S.fw); } catch (e) { }
+    var q = Promise.resolve();
+    link = { kind: 'ble', send: function (text) {   // NUS RX: 20 bytes per write
+      var b = new TextEncoder().encode(text + '\n');
+      q = q.then(async function () { for (var i = 0; i < b.length; i += 20) await rx.writeValue(b.slice(i, i + 20)); }).catch(function (e) { toast('Send failed: ' + e.message); });
+      return q; } };
+    bleRetry = 0; setConn('on', 'Band connected (Bluetooth)'); setPlain('termSrc', 'bluetooth nus'); setReady(true);
+  } catch (e) { onBleDrop(); }
+}
+function onBleDrop() {
+  if (!bleWanted) return;
+  setReady(false); link = null;
+  var wait = Math.min(8000, 800 * Math.pow(2, bleRetry++));
+  setConn('wait', 'Band out of reach, reconnecting'); setPlain('termSrc', 'reconnecting');
+  setTimeout(function () { if (bleWanted && bleDevice && !bleDevice.gatt.connected) bleOpen(); }, wait);
+}
+async function connectUsb() {
+  if (!navigator.serial) { toast('No Web Serial in this browser. Use Chrome on the Mac.'); return; }
+  try {
+    var port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 115200 });
+    var w = port.writable.getWriter(), enc = new TextEncoder();
+    link = { kind: 'usb', send: function (t) { return w.write(enc.encode(t + '\n')); } };
+    setConn('on', 'Band connected (USB)'); setPlain('termSrc', 'usb 115200'); setReady(true);
+    var sp = new LineSplitter(onLine);
+    (async function () { var rd = port.readable.getReader(); try { for (;;) { var r = await rd.read(); if (r.done) break; sp.push(r.value); } } catch (e) { }
+      setConn('', 'USB disconnected'); setReady(false); link = null; document.body.classList.remove('linked'); })();
+    setTimeout(function () { link && link.send('stat'); }, 300);
+  } catch (e) { if (e && e.name !== 'NotFoundError') toast('USB: ' + e.message + ' (close band_cmd / screen: only one program can hold the port)'); }
+}
+
+/* ---------- preview: the recorded Bluetooth output of the b7n replay, with the band's timing ---------- */
+var timers = [];
+function startPreview() {
+  document.body.classList.add('preview');
+  link = { kind: 'preview', send: function (cmd) {
+    if (cmd === 'replay stop') { stopTimers(); onLine('#R stop why=command'); return; }
+    var m = /^replay(?: (noresp))?(?: (\d+))?$/.exec(cmd); if (!m) return;
+    playTranscript(m[1] ? 'tx-ble-noresp' : 'tx-ble-press', +(m[2] || 2));
+  } };
+  setConn('on', 'Preview, no band'); setPlain('termSrc', 'recording'); setPlain('fwTxt', 'recorded: ' + BUILD.FW + ' replay, host build'); setReady(true); paintEvidence();
+}
+function stopTimers() { timers.forEach(clearTimeout); timers = []; }
+function txLines(id) { return $(id).textContent.split('\n').filter(function (l) { return l.charAt(0) === '#'; }); }
+var MIN_RE = /^#R k=(\d+) /;
+function speedLine(l, sp) {   // the recording ran at 2 s; the start lines print the chosen speed, with the band's own formulas
+  return l.replace(/\((\d+) s per simulated minute, (\d+) s in all\)/, '(' + sp + ' s per simulated minute, ' + (sp * 110) + ' s in all)')
+          .replace(/^(#R start .*?) s=\d+ /, '$1 s=' + sp + ' ')
+          .replace(/first reminder ~\d+ s, repeat ~\d+ s, no-response note ~\d+ s/, 'first reminder ~' + 25 * sp + ' s, repeat ~' + 35 * sp + ' s, no-response note ~' + 45 * sp + ' s');
+}
+function playTranscript(id, sp) {
+  stopTimers();
+  var lines = txLines(id), i = 0, base = 1200;
+  function at(ms, ls) { timers.push(setTimeout(function () { ls.forEach(onLine); }, ms)); }
+  for (; i < lines.length && !MIN_RE.test(lines[i]); i++) at(200 + i * 150, [speedLine(lines[i], sp)]);
+  var cur = [], k = -1;
+  for (; i < lines.length; i++) { var m = MIN_RE.exec(lines[i]); if (m) { if (cur.length) at(base + k * sp * 1000, cur); k = +m[1]; cur = [lines[i]]; } else cur.push(lines[i]); }
+  if (cur.length) at(base + k * sp * 1000, cur);
+}
+function seekPreview(id, k) {   // ?preview=1&seek=49&noresp=1 : the band's output up to and including minute k (its #E too)
+  stopTimers(); var fw0 = S.fw; S = HG.fresh(); S.fw = fw0;
+  var lines = txLines(id);
+  for (var i = 0; i < lines.length; i++) { var m = MIN_RE.exec(lines[i]); if (m && +m[1] > k) break; onLine(i < 4 ? speedLine(lines[i], 2) : lines[i]); }
+  lastMinuteAt = performance.now() - 60000; disp = S.k; prevK = S.k; glideFrom = S.k; paintDiscrete();
+}
+window.__seek = function (k, noresp) { if (!link) startPreview(); seekPreview(noresp ? 'tx-ble-noresp' : 'tx-ble-press', k); };
+
+/* ---------- controls ---------- */
+$('btnBle').onclick = connectBle;
+$('btnUsb').onclick = connectUsb;
+$('btnPreview').onclick = startPreview;
+$('btnGo').onclick = function () {
+  if (!link) return;
+  wantNoresp = $('noresp').checked;
+  var sp = +$('speed').value, cmd = (wantNoresp ? 'replay noresp ' : 'replay ') + sp;
+  var fw0 = S.fw; S = HG.fresh(); S.fw = fw0; disp = -1; prevK = -1;
+  termAdd('> ' + cmd, 'cmd');
+  link.send(cmd);
+  S.phase = 'warm'; S.S = sp; paintDiscrete();
+};
+$('btnStop').onclick = function () { if (link) { termAdd('> replay stop', 'cmd'); link.send('replay stop'); } };
+function setReady(on) { $('btnGo').disabled = !on; $('btnStop').disabled = !on; if (on) document.body.classList.add('linked'); }
+function setConn(cls, txt) { connCls = cls; $('connDot').className = 'dot' + (cls ? ' ' + cls : ''); $('connTxt').textContent = txt; }
+var toastT = 0; function toast(t) { var el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove('on'); }, 6000); }
+function setPlain(id, v) { var el = $(id); if (el.textContent !== v) el.textContent = v; }
+function setHtml(el, h) { if (el.innerHTML !== h) el.innerHTML = h; }
+
+/* ---------- discrete paint (on every line) ---------- */
+function paintDiscrete() {
+  var st = S.state || null, w = WORD[st] || null;
+  if (S.phase !== 'run' && S.phase !== 'end') $('stGr').className = 'g';
+  if (S.phase === 'idle') { setPlain('stEn', link ? 'Ready' : 'Not connected'); setPlain('stGr', link ? 'Press "Simulate heat episode"' : 'Connect the band over Bluetooth'); $('stEn').style.color = ''; }
+  else if (S.phase === 'warm' && S.k < 0) { setPlain('stEn', 'Starting'); setPlain('stGr', 'The band runs the simulated morning first'); $('stEn').style.color = ''; }
+  else if (S.phase === 'stopped') { setPlain('stEn', 'Stopped'); setPlain('stGr', 'The band is back on its live sensors'); $('stEn').style.color = ''; }
+  else if (w) {
+    var over = S.phase === 'end' && st === 'OK', R0 = S.rungs, word = w[0], col = WORD_COL[st] || '';
+    // what the band is asking her right now (its reminder), so the headline matches the mirrored band screen
+    if (!over && S.ladderState !== 'escalated' && (S.rm === 'cool' || (!S.rLines && S.active === 'cool' && (S.ladderState === 'remind' || S.ladderState === 'check20')))) { word = 'Go somewhere cool'; col = WORD_COL.COOL; }
+    // an alarming red word only when the band reached that step (step 4 lit, or a HELP the band reported)
+    if (RED[st] && !(R0.seeme.lit || (st === 'HELP' && S.alert))) col = WORD_COL.OK;
+    if (R0.family.lit && !over) { word = 'Family alerted'; col = FAM_COL; }
+    setPlain('stEn', over ? 'Episode over' : word);
+    var fam = R0.family.lit && !over ? R0.family.lit.clock + (R0.family.why === 'no response' ? ' · she did not answer the band' : ' · the band escalated') :
+              R0.still.lit && !over && S.phase === 'run' ? 'Quiet note to family at ' + R0.still.lit.clock : '';
+    setPlain('stGr', over ? (S.allClear ? 'All clear at ' + S.allClear.clock : '') : fam);
+    $('stGr').className = 'g' + (fam ? ' fam' : '');
+    $('stEn').style.color = over ? '#34C759' : col;
+  }
+  document.body.classList.toggle('running', S.phase === 'warm' || S.phase === 'run');
+  // band mirror
+  var step = S.gauge.step || 'grey';
+  $('screen').style.backgroundColor = BAND_COL[step] || BAND_COL.grey;
+  var txt = S.ladderState === 'escalated' ? 'Πατήστε αν με βλέπετε' : S.rm === 'cool' ? 'Πηγαίνετε κάπου δροσερά' : S.rm === 'water' ? 'Πιείτε νερό' :
+    (!S.rLines && (S.ladderState === 'remind' || S.ladderState === 'check20')) ? (S.active === 'cool' ? 'Πηγαίνετε κάπου δροσερά' : S.active === 'water' ? 'Πιείτε νερό' : '') : '';
+  setPlain('sTxt', txt); $('sTxt').style.color = BAND_TXT_WHITE[step] ? '#fff' : '#111';
+  setPlain('bandCap', S.noresp && S.btnIgnored ? S.btnIgnored + ' press' + (S.btnIgnored > 1 ? 'es' : '') + ' ignored' : 'Her band, live');
+  // ladder
+  var R = S.rungs;
+  function pressLine(g) { return g.pressed ? ' · <span class="y">pressed ' + g.pressed.clock + '</span>' : g.noResponse ? ' · <span class="n">no answer</span>' : ''; }
+  function shown(g) { return g.lit ? g.lit.clock : ''; }
+  var lit = { water: !!R.water.lit, still: !!R.still.lit, cool: !!R.cool.lit, seeme: !!R.seeme.lit, out: !!(R.family.lit || R.worked.lit) };
+  ['water', 'still', 'cool', 'seeme'].forEach(function (k) { $('r-' + k).classList.toggle('lit', lit[k]); });
+  $('r-out').classList.toggle('lit', lit.out);
+  setHtml($('r-water').querySelector('.meta'), R.water.lit ? shown(R.water) + pressLine(R.water) : '');
+  setHtml($('r-still').querySelector('.meta'), R.still.lit ? R.still.lit.clock + ' · note to family' : '');
+  setHtml($('r-cool').querySelector('.meta'), R.cool.lit ? shown(R.cool) + pressLine(R.cool) : '');
+  setHtml($('r-seeme').querySelector('.meta'), R.seeme.lit ? R.seeme.lit.clock + (R.seeme.pressed ? ' · <span class="y">pressed ' + R.seeme.pressed.clock + '</span>' : '') : '');
+  var anyOut = lit.out;
+  $('o-fam').style.display = R.family.lit ? '' : 'none'; $('o-ok').style.display = R.worked.lit ? '' : 'none'; $('o-none').style.display = anyOut ? 'none' : '';
+  setHtml($('o-fam').querySelector('.meta'), R.family.lit ? R.family.lit.clock + (R.family.why === 'no response' ? ' · no answer' : '') : '');
+  setHtml($('o-ok').querySelector('.meta'), R.worked.lit ? R.worked.lit.clock : '');
+  // the elder
+  paintAccuracy(); paintEvidence();
+}
+
+/* ---------- how close the band is: only from minutes the band printed (HG.accuracy in the core) ---------- */
+var DASH = '\u2014';
+function pct(x) { return x != null ? Math.round(x * 100) + ' %' : DASH; }
+var GOOD_EST = 0.3, GOOD_FC = 0.5;   // green: estimate off by <= 0.3 C on average, 20-min prediction <= 0.5 C
+function accB(id, txt, good, wait) { var el = $(id); setPlain(id, txt); el.className = wait ? 'wait' : good ? 'good' : ''; }
+function paintAccuracy() {
+  var A = HG.accuracy(S), started = S.k >= 0, wait = started ? 'measuring' : 'when she starts';
+  accB('aMae', A.mae != null ? A.mae.toFixed(2) + ' \u00b0C' : wait, A.mae != null && A.mae <= GOOD_EST + 1e-9, A.mae == null);
+  var fcFrom = 'checked from ' + HG.clockOf(S, 20);   // a 20-minute prediction can first be checked 20 simulated minutes in
+  accB('aFcMae', A.fcMae != null ? A.fcMae.toFixed(2) + ' \u00b0C' : fcFrom, A.fcMae != null && A.fcMae <= GOOD_FC + 1e-9, A.fcMae == null);
+}
+setPlain('aPop', BUILD.POP_TEXT);
+setPlain('whoName', BUILD.WHO);
+
+/* ---------- evidence corner: only real values (the link, the band's own firmware string, the build constants, the wall clock) ---------- */
+var WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function two(n) { return (n < 10 ? '0' : '') + n; }
+function paintEvidence() {
+  var kind = link ? link.kind : null, preview = kind === 'preview';
+  var dot = $('eDot');
+  if (preview) { dot.className = 'ldot'; setPlain('eLink', 'Preview \u2014 not connected'); }
+  else if (kind && connCls === 'on') { dot.className = 'ldot on'; setPlain('eLink', 'Live link: band connected over ' + (kind === 'usb' ? 'USB' : 'Bluetooth')); }
+  else if (connCls === 'wait') { dot.className = 'ldot'; setPlain('eLink', 'Live link: reconnecting'); }
+  else { dot.className = 'ldot'; setPlain('eLink', 'Live link: not connected'); }
+  setPlain('eLast', preview ? 'Last band message: none (plays a recording)' : lastRxAt ? 'Last band message: ' + Math.max(0, Math.round((Date.now() - lastRxAt) / 1000)) + ' s ago' : 'Last band message: none yet');
+  var fw = preview ? BUILD.FW : S.fw;
+  setPlain('eFw', 'Firmware: ' + (fw || 'not reported yet'));
+  setPlain('eCommit', fw === BUILD.FW ? 'commit ' + BUILD.COMMIT : fw ? 'commit: not this page\'s build' : 'commit: when the band reports');
+  setPlain('eHash', 'frozen model ' + BUILD.FROZEN12);
+  var pid = S.el && /^velders-pid(\d+)$/.exec(S.el); setPlain('ePid', 'Virtual Elder pid ' + (pid ? pid[1] : BUILD.PID));
+  var d = new Date();
+  setPlain('eClock', WD[d.getDay()] + ' ' + d.getDate() + ' ' + MO[d.getMonth()] + ' ' + d.getFullYear() + '  ' + two(d.getHours()) + ':' + two(d.getMinutes()) + ':' + two(d.getSeconds()));
+}
+(function drawQr() {   // offline QR (tools/qr.js), only when build.py has a REPO_URL
+  if (!BUILD.REPO_URL) return;
+  var m = HGQR.matrix(BUILD.REPO_URL), n = m.length, q = 2, cvq = $('eQr'), c = cvq.getContext('2d'), sc = Math.max(2, Math.floor(84 / (n + 2 * q)));
+  cvq.width = cvq.height = (n + 2 * q) * sc; cvq.style.width = cvq.style.height = cvq.width + 'px'; c.fillStyle = '#fff'; c.fillRect(0, 0, cvq.width, cvq.height); c.fillStyle = '#000';
+  for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (m[r][k]) c.fillRect((k + q) * sc, (r + q) * sc, sc, sc);
+  cvq.hidden = false; $('eSrc').hidden = false; $('eSrc').textContent = 'Source code: ' + BUILD.REPO_URL;
+})();
+setInterval(paintEvidence, 1000);
+
+/* ---------- continuous paint: chart + figure. Between two minutes the band printed the line is drawn straight (visual only) ---------- */
+var cv = $('chart'), ctx = cv.getContext('2d'), disp = -1, prevK = -1, glideFrom = -1, FONT = '';
+function sizeCanvas() { var r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); ctx.setTransform(d, 0, 0, d, 0, 0); }
+window.addEventListener('resize', function () { sizeCanvas(); paintDiscrete(); });
+function valAt(arr, key, x) {   // between the two nearest minutes the band printed (minute lines can be thinned on a slow link)
+  var i = Math.floor(x), lo = -1, hi = -1;
+  for (var a = Math.min(i, arr.length - 1); a >= 0; a--) if (arr[a] && arr[a][key] != null) { lo = a; break; }
+  if (lo < 0) return null; if (lo === x) return arr[lo][key];
+  for (var b = lo + 1; b < arr.length; b++) if (arr[b] && arr[b][key] != null) { hi = b; break; }
+  if (hi < 0 || x <= lo) return arr[lo][key]; if (x >= hi) return arr[hi][key];
+  return arr[lo][key] + (arr[hi][key] - arr[lo][key]) * (x - lo) / (hi - lo);
+}
+function frame(now) {
+  var target = S.k;
+  if (target < 0) { disp = -1; prevK = -1; }
+  else if (disp < 0 || target < disp - 0.01) { disp = target; prevK = target; glideFrom = target; }
+  else {   // the head moves from the previous received minute to the new one within one step, never past it
+    if (target !== prevK) { glideFrom = Math.min(disp, target); prevK = target; }
+    var f = Math.min(1, (now - lastMinuteAt) / ((S.S || 2) * 850));
+    disp = Math.max(disp, Math.min(target, glideFrom + (target - glideFrom) * (1 - (1 - f) * (1 - f))));
+  }
+  drawChart(); drawFigure();
+  requestAnimationFrame(frame);
+}
+function fmt(v) { return v == null ? '<span class="wait">' + (S.phase === 'warm' ? 'starting' : S.phase === 'idle' ? '' : 'waiting') + '</span>' : v.toFixed(2) + '<small>°C</small>'; }
+function drawFigure() {
+  var M = S.minutes, x = disp, t = x >= 0 ? valAt(M, 'trueCore', x) : null, b = x >= 0 ? valAt(M, 'bandCore', x) : null;
+  setHtml($('roBand'), fmt(b)); $('roLine').style.visibility = S.phase === 'idle' ? 'hidden' : '';
+  var f = S.f20 != null && S.f20k != null && S.k - S.f20k <= 1 ? S.f20 : null;
+  setPlain('clock', S.k >= 0 ? HG.clockOf(S, Math.round(Math.max(0, x))) : link ? HG.clockOf(S, 0) : '--:--');   // before the first minute: the start time, dimmed
+  $('clock').classList.toggle('pending', S.k < 0);
+  var dot = S.gauge.dot; if (!S.rLines && f != null) dot = HG.dotFor(S.lines, f);   // b7n prints dot=; older firmware: its own formula on its f20
+  var g = $('gDot');
+  if (dot == null || !S.gauge.step) g.setAttribute('opacity', '0');
+  else { var ang = (150 + (dot + 10) / 20 * 240) * Math.PI / 180; g.setAttribute('cx', (95 + 64 * Math.cos(ang)).toFixed(1)); g.setAttribute('cy', (118 + 64 * Math.sin(ang)).toFixed(1)); g.setAttribute('opacity', '1'); }
+  var gap = performance.now() - lastMinuteAt, lag = link && link.kind !== 'preview' && S.phase === 'run' && lastMinuteAt && gap > (S.S || 2) * 1000 * 6 + 2000;
+  setPlain('lagTxt', lag ? 'no minute line from the band for ' + Math.round(gap / 1000) + ' s' : '');
+}
+function drawChart() {   // Apple Health style: smooth lines, soft fill under the estimate, minimal axes, the current point highlighted
+  var r = cv.getBoundingClientRect(), W = r.width, H = r.height; if (!W) return;
+  var dpr = window.devicePixelRatio || 1; if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) sizeCanvas();   // layout changed
+  if (!FONT) FONT = getComputedStyle(document.body).getPropertyValue('--mono');
+  var SANS = getComputedStyle(document.body).getPropertyValue('--sans');
+  ctx.clearRect(0, 0, W, H);
+  var L = S.lines, padL = 64, padR = 130, padT = 52, padB = 40;
+  var y0 = Math.min(36.9, L.w - 0.95), y1 = Math.max(38.7, L.d + 0.2), n = S.n || 110, xmax = n - 1 + 20;
+  var X = function (k) { return padL + (W - padL - padR) * k / xmax; }, Y = function (v) { return padT + (H - padT - padB) * (1 - (v - y0) / (y1 - y0)); };
+  ctx.font = '12.5px ' + SANS; ctx.lineWidth = 1;
+  ctx.fillStyle = '#86868B'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for (var v = Math.ceil(y0 * 2) / 2; v <= y1 + 1e-9; v += 0.5) { var yy = Math.round(Y(v)) + .5; ctx.strokeStyle = '#F0F0F2'; ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(W - padR + 4, yy); ctx.stroke(); ctx.fillText(v.toFixed(1) + '°', padL - 12, yy); }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (var k = 0; k <= n - 1 + 10; k += 15) ctx.fillText(HG.clockOf(S, k), X(k), H - padB + 12);
+  [[L.w, '#B98900', 'Drink water'], [L.c, '#FF9500', 'Cool down'], [L.d, '#FF3B30', 'Danger']].forEach(function (t) {
+    var yy = Math.round(Y(t[0])) + .5; ctx.strokeStyle = t[1]; ctx.globalAlpha = .55; ctx.setLineDash([2, 5]); ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(W - padR + 4, yy); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+    ctx.fillStyle = t[1]; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(t[2] + ' ' + t[0].toFixed(2), W - padR + 14, yy); });
+  var M = S.minutes, x = disp;
+  if (x < 0) return;
+  function pts(key) { var a = []; for (var i = 0; i <= Math.floor(x); i++) { var p = M[i]; if (p && p[key] != null) a.push([X(i), Y(p[key])]); }
+    var hv = valAt(M, key, x); if (a.length && hv != null && X(x) > a[a.length - 1][0]) a.push([X(x), Y(hv)]); return { a: a, v: hv }; }
+  function smooth(a) { ctx.moveTo(a[0][0], a[0][1]); for (var i = 1; i < a.length - 1; i++) { var mx = (a[i][0] + a[i + 1][0]) / 2, my = (a[i][1] + a[i + 1][1]) / 2; ctx.quadraticCurveTo(a[i][0], a[i][1], mx, my); } if (a.length > 1) ctx.lineTo(a[a.length - 1][0], a[a.length - 1][1]); }
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  var T = pts('trueCore'), B = pts('bandCore');
+  if (B.a.length > 1) {   // soft area fill under the band's estimate
+    var g = ctx.createLinearGradient(0, padT, 0, H - padB); g.addColorStop(0, 'rgba(0,122,255,.20)'); g.addColorStop(1, 'rgba(0,122,255,0)');
+    ctx.beginPath(); smooth(B.a); ctx.lineTo(B.a[B.a.length - 1][0], H - padB); ctx.lineTo(B.a[0][0], H - padB); ctx.closePath(); ctx.fillStyle = g; ctx.fill();
+  }
+  if (T.a.length > 1) { ctx.beginPath(); smooth(T.a); ctx.strokeStyle = '#AEAEB2'; ctx.lineWidth = 3; ctx.stroke(); }
+  if (B.a.length > 1) { ctx.beginPath(); smooth(B.a); ctx.strokeStyle = '#007AFF'; ctx.lineWidth = 3.5; ctx.stroke(); }
+  ctx.lineWidth = 1;
+  var hb = B.v, ht = T.v, base = hb != null ? hb : ht;
+  var f = S.f20 != null && S.f20k != null && S.k - S.f20k <= 1 ? S.f20 : null;
+  if (f != null && base != null) {
+    ctx.setLineDash([1, 7]); ctx.strokeStyle = '#007AFF'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(X(x), Y(base)); ctx.lineTo(X(x + 20), Y(f)); ctx.stroke(); ctx.setLineDash([]); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(X(x + 20), Y(f), 4.5, 0, 2 * Math.PI); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = '#007AFF'; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1;
+    ctx.fillStyle = '#007AFF'; ctx.font = '600 12.5px ' + SANS; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; ctx.fillText(f.toFixed(2) + '° in 20 min', X(x + 20) + 9, Y(f) - 5);
+  }
+  if (hb != null) {   // the current point, highlighted with its value
+    var cx = X(x), cy = Y(hb);
+    ctx.strokeStyle = 'rgba(0,0,0,.08)'; ctx.beginPath(); ctx.moveTo(Math.round(cx) + .5, padT); ctx.lineTo(Math.round(cx) + .5, H - padB); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 2 * Math.PI); ctx.fillStyle = '#007AFF'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#fff'; ctx.stroke(); ctx.lineWidth = 1;
+    var lbl = hb.toFixed(2) + '°'; ctx.font = '600 12.5px ' + SANS; var tw = ctx.measureText(lbl).width + 16, lx = cx - tw / 2, ly = Math.max(6, cy - 40);
+    ctx.fillStyle = '#007AFF'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(lx, ly, tw, 22, 11); else ctx.rect(lx, ly, tw, 22); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(lbl, cx, ly + 11);
+  }
+  S.presses.forEach(function (p) { ctx.beginPath(); ctx.arc(X(p.k), H - padB - 6, 4, 0, 2 * Math.PI); ctx.fillStyle = '#34C759'; ctx.fill(); });
+}
+
+/* ---------- Tomorrow: the simulated elder on a real forecast (tomorrow_plan.json from make_tomorrow.command) ---------- */
+var TM = null, TMplan = null, tc = $('tChart'), tx = tc.getContext('2d');
+var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+var HOME = { A: 'an insulated house', B: 'a middle-floor flat', C: 'a top-floor flat under the roof', D: 'a ground-floor flat with thick walls' };
+var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+function longDate(iso) { var p = iso.split('-').map(Number), d = new Date(Date.UTC(p[0], p[1] - 1, p[2])); return DAYS[d.getUTCDay()] + ' ' + p[2] + ' ' + MONTHS[p[1] - 1] + ' ' + p[0]; }
+function utcStamp(iso) { var d = new Date(iso); if (isNaN(d)) return null; var h = d.getUTCHours(), m = d.getUTCMinutes();
+  return d.getUTCDate() + ' ' + MONTHS[d.getUTCMonth()].slice(0, 3) + ' ' + d.getUTCFullYear() + ', ' + (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m + ' UTC'; }
+function loadTomorrow() {
+  fetch('tomorrow_plan.json', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function (plan) { TMplan = plan; var T = HG.tomorrow(plan); if (!T.ok) { setPlain('tMiss', T.why + '. Run make_tomorrow.command again, then reload the page.'); return; } TM = T; paintTomorrow(); })
+    .catch(function () { TM = null; });
+}
+function paintTomorrow() {
+  var T = TM; $('tmr').classList.toggle('empty', !T); if (!T) return;
+  setPlain('tCity', (T.city || 'Forecast point') + (T.country ? ', ' + T.country : ''));
+  setPlain('tDate', longDate(T.date));
+  setHtml($('tMax'), T.tmax.toFixed(1) + '<small>°C</small>');
+  setPlain('tVerdict', T.verdict); setPlain('tBest', T.bestText);
+  $('tBest').style.color = T.best ? '' : 'var(--text2)';
+  setHtml($('tBand'), '<div class="lbl">Her band will show</div>' + T.band.map(function (b) { return '<div class="bl"><div class="gr">«' + esc(b.gr) + '»</div><div class="en">' + esc(b.en) + '</div></div>'; }).join(''));
+  var f = utcStamp(T.fetchedAt);
+  setPlain('tFoot', 'Simulated elder, real forecast: a computer simulation, not a medical prediction. ' + T.attribution +
+    (f ? ', forecast fetched ' + f : '') + (HOME[T.homeClass] ? '. Her simulated home: ' + HOME[T.homeClass] + (T.fan ? ', with a fan' : '') + ', no air conditioning.' : '.'));
+  paintTwinWeek();
+  drawTomorrow();
+}
+/* steps 1-2: what the Body Twin learned over the simulated week (tools/make_twin_week.py -> twin_week.json, inlined) */
+function paintTwinWeek() {
+  var W7 = window.TWIN_WEEK; if (!W7) return;
+  var Lr = W7.learned, Tr = W7.truth;
+  setPlain('twDays', String(W7.days));
+  setHtml($('twHr'), 'Resting heart rate <b>' + Math.round(Lr.rest_hr) + ' bpm</b><br><span class="small">true value ' + Math.round(Tr.rest_hr_same_definition) + ' bpm</span>');
+  setHtml($('twOff'), 'Temperature offset <b>' + (Lr.core_offset >= 0 ? '+' : '') + Lr.core_offset.toFixed(1) + ' °C</b><br><span class="small">no thermometer reading yet</span>');
+  setPlain('twNote', 'Started from 70 bpm, learned night by night. Resting HR = her lowest sleeping heart rate + 5 bpm (the twin\'s rule); her awake, seated rest in the simulation is ' + Math.round(Tr.rest_hr_drawn_seated) + ' bpm.');
+  var name = TMplan && TMplan.twin_used && TMplan.twin_used.name || '', ok = name.indexOf('pid ' + W7.pid + ', Body Twin learned') === 0;
+  setHtml($('tsPlan'), ok ? 'The Tomorrow Engine ran her learned twin through ' + esc(TM ? TM.city || 'the city' : 'the city') + '&rsquo;s real forecast.'
+    : '<span class="warn">This plan was made before her twin was learned (' + esc(name.replace(/ \(.*$/, '') || 'unknown person') + '). Run make_tomorrow.command, then reload.</span>');
+  drawTwinWeek();
+}
+function drawTwinWeek() {
+  var W7 = window.TWIN_WEEK, c = $('twChart'); if (!W7 || !c) return;
+  var r = c.getBoundingClientRect(), Wd = r.width, Hd = r.height; if (!Wd || !Hd) return;
+  var d = window.devicePixelRatio || 1; c.width = Math.round(Wd * d); c.height = Math.round(Hd * d);
+  var g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, Wd, Hd);
+  var SANS = getComputedStyle(document.body).getPropertyValue('--sans');
+  var vals = [W7.defaults.rest_hr].concat(W7.nights.map(function (n) { return n.rest_hr; })), tru = W7.truth.rest_hr_same_definition;
+  var lo = Math.floor(Math.min.apply(null, vals.concat([tru])) - 2), hi = Math.ceil(Math.max.apply(null, vals.concat([tru])) + 2);
+  var pl = 6, pr = 56, pt = 8, pb = 18, X = function (i) { return pl + (Wd - pl - pr) * i / (vals.length - 1); }, Y = function (v) { return pt + (Hd - pt - pb) * (1 - (v - lo) / (hi - lo)); };
+  g.font = '11.5px ' + SANS; g.textBaseline = 'middle';
+  g.strokeStyle = '#34C759'; g.setLineDash([2, 4]); g.lineCap = 'round'; g.beginPath(); g.moveTo(pl, Y(tru)); g.lineTo(Wd - pr, Y(tru)); g.stroke(); g.setLineDash([]);
+  g.fillStyle = '#248A3D'; g.textAlign = 'left'; g.fillText('true ' + Math.round(tru), Wd - pr + 6, Y(tru));
+  g.strokeStyle = '#007AFF'; g.lineWidth = 2.5; g.lineJoin = 'round'; g.beginPath(); vals.forEach(function (v, i) { i ? g.lineTo(X(i), Y(v)) : g.moveTo(X(i), Y(v)); }); g.stroke(); g.lineWidth = 1;
+  vals.forEach(function (v, i) { g.beginPath(); g.arc(X(i), Y(v), i === vals.length - 1 ? 4 : 2.5, 0, 2 * Math.PI); g.fillStyle = '#007AFF'; g.fill(); });
+  g.fillStyle = '#86868B'; g.textAlign = 'center'; g.textBaseline = 'top';
+  g.textAlign = 'left'; g.fillText('start', X(0) - 4, Hd - pb + 4); g.textAlign = 'center'; g.fillText('night ' + (vals.length - 1), X(vals.length - 1), Hd - pb + 4);
+}
+window.addEventListener('resize', drawTwinWeek);
+function drawTomorrow() {
+  var T = TM; if (!T) return;
+  var r = tc.getBoundingClientRect(), W = r.width, H = r.height; if (!W || !H) return;
+  var d = window.devicePixelRatio || 1; if (tc.width !== Math.round(W * d) || tc.height !== Math.round(H * d)) { tc.width = Math.round(W * d); tc.height = Math.round(H * d); }
+  tx.setTransform(d, 0, 0, d, 0, 0); tx.clearRect(0, 0, W, H);
+  if (!FONT) FONT = getComputedStyle(document.body).getPropertyValue('--mono');
+  var SANS = getComputedStyle(document.body).getPropertyValue('--sans');
+  var padL = 56, padR = 20, top = 34, bottom = H - 30, gap = 26, split = top + (bottom - top - gap) * 0.42;
+  var P1 = [top, split], P2 = [split + gap, bottom];   // outside (top), her body (bottom)
+  var X = function (h) { return padL + (W - padL - padR) * h / 24; };
+  function rng(a, step, minSpan) { var lo = Math.min.apply(null, a), hi = Math.max.apply(null, a); lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step; if (hi - lo < minSpan) hi = lo + minSpan; return [lo, hi]; }
+  var R1 = rng(T.out, 5, 10), R2 = rng(T.body, 0.5, 1.5);
+  function Y(P, R, v) { return P[0] + (P[1] - P[0]) * (1 - (v - R[0]) / (R[1] - R[0])); }
+  // risky hours: pale heat band through both panels, named in words
+  T.risky.forEach(function (q) {
+    tx.fillStyle = '#FFF0DE'; tx.fillRect(X(q[0]), top, X(q[1]) - X(q[0]), bottom - top);
+  });
+  if (T.risky.length) {
+    var a = T.risky[0][0], b = T.risky[T.risky.length - 1][1];
+    tx.fillStyle = '#C93400'; tx.font = '600 15px ' + SANS; tx.textAlign = 'center'; tx.textBaseline = 'bottom';
+    tx.fillText('Risky hours', (X(a) + X(b)) / 2, top - 8);
+  }
+  if (T.best) {   // best time to go out: a green mark under the axis
+    tx.fillStyle = '#248A3D'; tx.fillRect(X(T.best[0]), bottom - 4, X(T.best[1]) - X(T.best[0]), 4);
+  }
+  // grids + axes
+  tx.lineWidth = 1; tx.font = '13px ' + FONT;
+  function grid(P, R, step, fmt) {
+    tx.textAlign = 'right'; tx.textBaseline = 'middle';
+    for (var v = R[0]; v <= R[1] + 1e-9; v += step) { var y = Math.round(Y(P, R, v)) + .5; tx.strokeStyle = '#F0F0F2'; tx.beginPath(); tx.moveTo(padL, y); tx.lineTo(W - padR, y); tx.stroke(); tx.fillStyle = '#86868B'; tx.fillText(fmt(v), padL - 10, y); }
+    
+  }
+  grid(P1, R1, 5, function (v) { return v.toFixed(0); }); grid(P2, R2, 0.5, function (v) { return v.toFixed(1); });
+  tx.textAlign = 'center'; tx.textBaseline = 'top'; tx.fillStyle = '#86868B';
+  for (var h = 0; h <= 24; h += 3) { var xx = Math.round(X(h)) + .5; tx.strokeStyle = '#F0F0F2'; [P1, P2].forEach(function (P) { tx.beginPath(); tx.moveTo(xx, P[0]); tx.lineTo(xx, P[1]); tx.stroke(); }); tx.fillText((h < 10 ? '0' : '') + h + ':00', xx, bottom + 8); }
+  // panel names, in words
+  tx.font = '600 15px ' + SANS; tx.textAlign = 'left'; tx.textBaseline = 'top';
+  tx.fillStyle = '#4A4A4A'; tx.fillText('Outside, °C', padL + 10, P1[0] + 8);
+  tx.fillStyle = '#007AFF'; tx.fillText('Her body temperature at home, °C', padL + 10, P2[0] + 8);
+  // lines: outside at each hour (forecast hour value), her body = the highest minute of each hour, drawn mid-hour
+  function line(vals, off, P, R, col, w) { tx.strokeStyle = col; tx.lineWidth = w; tx.lineJoin = 'round'; tx.lineCap = 'round'; tx.beginPath(); vals.forEach(function (v, i) { var x = X(i + off), y = Y(P, R, v); i ? tx.lineTo(x, y) : tx.moveTo(x, y); }); tx.stroke(); tx.lineWidth = 1; }
+  line(T.out, 0, P1, R1, '#AEAEB2', 3); line(T.body, 0.5, P2, R2, '#007AFF', 3.5);
+  function peak(vals, off, P, R, col, dec) { var i = vals.indexOf(Math.max.apply(null, vals)), x = X(i + off), y = Y(P, R, vals[i]);
+    var below = y < P[0] + 26;
+    tx.fillStyle = col; tx.fillRect(x - 3, y - 3, 6, 6); tx.font = '600 14px ' + FONT; tx.textAlign = x > W - 120 ? 'right' : 'left'; tx.textBaseline = below ? 'top' : 'bottom'; tx.fillText(vals[i].toFixed(dec), x + (x > W - 120 ? -8 : 8), below ? y + 6 : y - 4); }
+  peak(T.out, 0, P1, R1, '#4A4A4A', 1); peak(T.body, 0.5, P2, R2, '#007AFF', 2);
+  if (T.best) { tx.fillStyle = '#248A3D'; tx.font = '600 13px ' + SANS; tx.textAlign = 'left'; tx.textBaseline = 'bottom'; tx.fillText('Best time to go out', X(T.best[0]) + 2, bottom - 8); }
+}
+function setView(v) {
+  var t = v === 'tomorrow'; document.body.classList.toggle('view-tmr', t);
+  $('vNow').classList.toggle('on', !t); $('vTmr').classList.toggle('on', t);
+  $('vNow').setAttribute('aria-selected', String(!t)); $('vTmr').setAttribute('aria-selected', String(t));
+  if (t) { loadTomorrow(); paintTomorrow(); }
+  try { localStorage.setItem('hg-view', v); } catch (e) { }
+}
+$('vNow').onclick = function () { setView('now'); }; $('vTmr').onclick = function () { setView('tomorrow'); };
+window.addEventListener('resize', drawTomorrow);
+
+sizeCanvas(); paintDiscrete(); requestAnimationFrame(frame);
+var qs = new URLSearchParams(location.search);
+loadTomorrow();
+var v0 = qs.get('view'); if (!v0) { try { v0 = localStorage.getItem('hg-view'); } catch (e) { } }
+if (v0 === 'tomorrow') setView('tomorrow');
+if (qs.get('preview')) { startPreview(); if (qs.get('seek') != null) window.__seek(+qs.get('seek'), qs.get('noresp') === '1'); }
+})();
+</script>
+</body>
+</html>

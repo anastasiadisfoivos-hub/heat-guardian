@@ -1,0 +1,297 @@
+{
+ "label": "young adults 18-33, chamber walk, DEV",
+ "provenance": {
+  "minutes_dev_file": "minutes_dev_v2.parquet",
+  "minutes_dev_sha256": "293e0daa28e18a337ccd29dee4e55c4e98aa34f7cdeb207babe79eeb5d4bcf34",
+  "persons_sha256": "eb9ad75e3b52caebffa3c7f61a90caffd41d950e64e41ccc0276b0f09e4b5aca",
+  "run_tag": "v2aug",
+  "sim_version": "v2 (frozen, M3)",
+  "hr_rise_augmentation": true,
+  "htt_db": "/home/claude/hgdata/heat_guardian_train.sqlite dataset 1 (all 65 = DEV for hg2)"
+ },
+ "n_people": 65,
+ "n_sessions": 130,
+ "definitions": "ARCH 4.4 step 4: nested LOSO calibration on HTT-DEV (young adults 18-33, chamber walk, DEV) of\n  DANGER = (v1.2 logistic z >= -1.450 for 2 min) OR (hg2 logit_p385 >= cut_385 for 2 min), event 38.5, combined <= 0.10 FA/h\n  DRINK  = (hg2 f20_eff >= 37.85 for 2 min) OR (hg2 logit_p38 >= cut_38 for 2 min),          event 38.0, combined <= 0.15 FA/h\nFor every left-out person: the cut is chosen on the other 64 people's out-of-fold predictions (models fine-tuned without\nthose people, REPORT 5b practice), then that person is scored. hg2 predictions come from train.py --loso (each member\nfine-tuned without the left-out subject; pretraining never saw HTT). Exported cuts = the same choice on all 65.\nWrites model/results_danger_hg2.json.",
+ "danger": {
+  "v1.2 logistic alone (z >= -1.450, 2 min)": {
+   "events": 42,
+   "detected": 33,
+   "sensitivity": 78.57142857142857,
+   "false_alarms": 22,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.09567990721948393,
+   "lead_median": 6.0,
+   "lead_middle_half": [
+    2.0,
+    27.0
+   ],
+   "sensitivity_95": [
+    68.07940729483282,
+    89.47822141560798
+   ],
+   "fa_per_h_95": [
+    0.06422871360611102,
+    0.12893667089099198
+   ]
+  },
+  "OR-rule v1.2 OR hg2 logit_p385 (nested cut, <= 0.10/h)": {
+   "events": 42,
+   "detected": 33,
+   "sensitivity": 78.57142857142857,
+   "false_alarms": 22,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.09567990721948393,
+   "lead_median": 6.0,
+   "lead_middle_half": [
+    2.0,
+    27.0
+   ],
+   "sensitivity_95": [
+    68.07940729483282,
+    89.47822141560798
+   ],
+   "fa_per_h_95": [
+    0.06422871360611102,
+    0.12893667089099198
+   ]
+  },
+  "hg2 logit_p385 alone (nested cut, <= 0.10/h)": {
+   "events": 42,
+   "detected": 32,
+   "sensitivity": 76.19047619047619,
+   "false_alarms": 22,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.09567990721948393,
+   "lead_median": 11.5,
+   "lead_middle_half": [
+    3.0,
+    30.5
+   ],
+   "sensitivity_95": [
+    64.437106918239,
+    87.5
+   ],
+   "fa_per_h_95": [
+    0.06126705147828894,
+    0.13484672336649736
+   ]
+  },
+  "paired_OR_minus_v12_points": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  },
+  "cut_385_nested_per_fold": {
+   "median": 1000000000.0,
+   "range": [
+    1000000000.0,
+    1000000000.0
+   ],
+   "share_off": 1.0
+  },
+  "cut_385_pooled_all_65": 1000000000.0
+ },
+ "drink": {
+  "v1.2 f20 >= 37.85": {
+   "events": 100,
+   "detected": 85,
+   "sensitivity": 85.0,
+   "false_alarms": 22,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.09567990721948393,
+   "lead_median": 23.0,
+   "lead_middle_half": [
+    13.0,
+    34.0
+   ],
+   "sensitivity_95": [
+    76.92105263157895,
+    91.83879612451041
+   ],
+   "fa_per_h_95": [
+    0.058904165583957044,
+    0.13761493345823703
+   ]
+  },
+  "hg2 f20_eff >= 37.85": {
+   "events": 100,
+   "detected": 91,
+   "sensitivity": 91.0,
+   "false_alarms": 41,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.17831255436358368,
+   "lead_median": 23.0,
+   "lead_middle_half": [
+    14.0,
+    37.5
+   ],
+   "sensitivity_95": [
+    84.46221206929374,
+    96.0009900990099
+   ],
+   "fa_per_h_95": [
+    0.1225465614536797,
+    0.2377730694291052
+   ]
+  },
+  "hg2 f20_eff OR logit_p38 (nested cut, <= 0.15/h)": {
+   "events": 100,
+   "detected": 91,
+   "sensitivity": 91.0,
+   "false_alarms": 41,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.17831255436358368,
+   "lead_median": 23.0,
+   "lead_middle_half": [
+    14.0,
+    37.5
+   ],
+   "sensitivity_95": [
+    84.46221206929374,
+    96.0009900990099
+   ],
+   "fa_per_h_95": [
+    0.1225465614536797,
+    0.2377730694291052
+   ]
+  },
+  "paired_hg2_f20eff_minus_v12_points": {
+   "mean": 6.0,
+   "ci95": [
+    1.0204081632653061,
+    11.827956989247312
+   ]
+  },
+  "cut_38_nested_per_fold": {
+   "median": 1000000000.0,
+   "range": [
+    1000000000.0,
+    1000000000.0
+   ],
+   "share_off": 1.0
+  },
+  "cut_38_pooled_all_65": 1000000000.0,
+  "hg2 core_20 mean only (no +sd, D7 off) >= 37.85": {
+   "events": 100,
+   "detected": 87,
+   "sensitivity": 87.0,
+   "false_alarms": 32,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.13917077413743117,
+   "lead_median": 20.0,
+   "lead_middle_half": [
+    13.0,
+    32.5
+   ],
+   "sensitivity_95": [
+    81.36162645390752,
+    93.40942028985506
+   ],
+   "fa_per_h_95": [
+    0.09420675886873715,
+    0.18235315336725558
+   ]
+  },
+  "tradeoff_curve_f20_eff_threshold (information only; thresholds stay v1.2)": [
+   {
+    "threshold": 37.8,
+    "sensitivity": 94.0,
+    "fa_per_h": 0.19570890113076259,
+    "lead_median": 23.0
+   },
+   {
+    "threshold": 37.85,
+    "sensitivity": 91.0,
+    "fa_per_h": 0.17831255436358368,
+    "lead_median": 23.0
+   },
+   {
+    "threshold": 37.9,
+    "sensitivity": 88.0,
+    "fa_per_h": 0.13482168744563644,
+    "lead_median": 22.0
+   },
+   {
+    "threshold": 37.95,
+    "sensitivity": 83.0,
+    "fa_per_h": 0.10437808060307338,
+    "lead_median": 19.0
+   },
+   {
+    "threshold": 38.0,
+    "sensitivity": 78.0,
+    "fa_per_h": 0.07828356045230503,
+    "lead_median": 16.0
+   },
+   {
+    "threshold": 38.05,
+    "sensitivity": 71.0,
+    "fa_per_h": 0.07393447376051031,
+    "lead_median": 17.0
+   },
+   {
+    "threshold": 38.1,
+    "sensitivity": 61.0,
+    "fa_per_h": 0.06958538706871559,
+    "lead_median": 17.0
+   },
+   {
+    "threshold": 38.15,
+    "sensitivity": 59.0,
+    "fa_per_h": 0.05218904030153669,
+    "lead_median": 13.0
+   }
+  ]
+ },
+ "cool": {
+  "v1.2 f20 >= 38.35": {
+   "events": 42,
+   "detected": 24,
+   "sensitivity": 57.142857142857146,
+   "false_alarms": 17,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.07393447376051031,
+   "lead_median": 15.5,
+   "lead_middle_half": [
+    10.25,
+    28.0
+   ],
+   "sensitivity_95": [
+    42.09914320685435,
+    73.17073170731707
+   ],
+   "fa_per_h_95": [
+    0.04160887686653752,
+    0.113294119853433
+   ]
+  },
+  "hg2 f20_eff >= 38.35": {
+   "events": 42,
+   "detected": 34,
+   "sensitivity": 80.95238095238095,
+   "false_alarms": 29,
+   "hours": 229.93333333333328,
+   "fa_per_h": 0.126123514062047,
+   "lead_median": 17.0,
+   "lead_middle_half": [
+    3.75,
+    26.0
+   ],
+   "sensitivity_95": [
+    68.42105263157895,
+    91.30897317298796
+   ],
+   "fa_per_h_95": [
+    0.08216778810638249,
+    0.1730744674695
+   ]
+  }
+ },
+ "export_cuts": {
+  "HG2_LOGIT_CUT_38": 1000000000.0,
+  "HG2_LOGIT_CUT_385": 1000000000.0,
+  "note": "1e9 = NN path never fires (the pooled choice found no cut that adds sensitivity within the FA budget)"
+ }
+}

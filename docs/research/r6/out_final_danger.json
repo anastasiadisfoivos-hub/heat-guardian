@@ -1,0 +1,860 @@
+{
+ "raw": {
+  "weights_cv": [
+   [
+    -2.7178,
+    2.295,
+    -2.7797,
+    194.1729,
+    -206.07,
+    0.1653
+   ],
+   [
+    -2.3351,
+    4.6895,
+    -3.8977,
+    207.0059,
+    -219.352,
+    0.0911
+   ]
+  ],
+  "weights_all": [
+   -2.4987,
+   3.3293,
+   -3.1707,
+   195.8482,
+   -206.7787,
+   0.1314
+  ],
+  "cut": 4.81673440946412,
+  "frozen": {
+   "sens": 0.45806451612903226,
+   "sens_S2": 0.4603174603174603,
+   "fa_month": 14.181818181818182,
+   "empty_month": 9.136363636363637,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 29,
+   "lead": 17.0,
+   "fa_month_S1": 12.67515923566879,
+   "fa_month_median": 1.5,
+   "persons": 110,
+   "ci_sens": [
+    0.262,
+    0.616
+   ],
+   "ci_sens_S2": [
+    0.296,
+    0.647
+   ],
+   "ci_fa": [
+    10.22,
+    17.76
+   ]
+  },
+  "frozen_no_persistence": {
+   "sens": 0.2064516129032258,
+   "sens_S2": 0.20634920634920634,
+   "fa_month": 7.909090909090909,
+   "empty_month": 5.536363636363636,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 13,
+   "lead": 14.0,
+   "fa_month_S1": 4.713375796178344,
+   "fa_month_median": 0.0,
+   "persons": 110,
+   "ci_sens": [
+    0.066,
+    0.337
+   ],
+   "ci_sens_S2": [
+    0.095,
+    0.333
+   ],
+   "ci_fa": [
+    4.96,
+    10.92
+   ]
+  },
+  "momentum": {
+   "sens": 0.6129032258064516,
+   "sens_S2": 0.746031746031746,
+   "fa_month": 5.4818181818181815,
+   "empty_month": 2.809090909090909,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 47,
+   "lead": 19.0,
+   "fa_month_S1": 6.8789808917197455,
+   "fa_month_median": 3.0,
+   "persons": 110,
+   "ci_sens": [
+    0.457,
+    0.787
+   ],
+   "ci_sens_S2": [
+    0.523,
+    0.953
+   ],
+   "ci_fa": [
+    4.23,
+    6.9
+   ]
+  },
+  "replace": {
+   "sens": 0.6774193548387096,
+   "sens_S2": 0.7777777777777778,
+   "fa_month": 12.3,
+   "empty_month": 7.7727272727272725,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 49,
+   "lead": 19.0,
+   "fa_month_S1": 11.019108280254777,
+   "fa_month_median": 6.0,
+   "persons": 110,
+   "ci_sens": [
+    0.482,
+    0.856
+   ],
+   "ci_sens_S2": [
+    0.553,
+    0.976
+   ],
+   "ci_fa": [
+    9.14,
+    15.66
+   ]
+  },
+  "or_frozen": {
+   "sens": 0.7677419354838709,
+   "sens_S2": 0.8412698412698413,
+   "fa_month": 17.727272727272727,
+   "empty_month": 11.290909090909091,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 53,
+   "lead": 19.0,
+   "fa_month_S1": 17.197452229299362,
+   "fa_month_median": 6.0,
+   "persons": 110,
+   "ci_sens": [
+    0.609,
+    0.903
+   ],
+   "ci_sens_S2": [
+    0.675,
+    1.0
+   ],
+   "ci_fa": [
+    13.61,
+    21.38
+   ]
+  },
+  "subgroups": {
+   "hg2-trained persons": {
+    "momentum": {
+     "sens": 0.6444444444444445,
+     "sens_S2": 0.7288135593220338,
+     "fa_month": 7.457142857142857,
+     "empty_month": 2.4,
+     "n": 135,
+     "n_S2": 59,
+     "hit_S2": 43,
+     "lead": 20.0,
+     "fa_month_S1": 10.408163265306122,
+     "fa_month_median": 3.0,
+     "persons": 35
+    },
+    "frozen": {
+     "sens": 0.4740740740740741,
+     "sens_S2": 0.4576271186440678,
+     "fa_month": 23.4,
+     "empty_month": 9.857142857142858,
+     "n": 135,
+     "n_S2": 59,
+     "hit_S2": 27,
+     "lead": 21.5,
+     "fa_month_S1": 24.285714285714285,
+     "fa_month_median": 18.0,
+     "persons": 35
+    }
+   },
+   "calibration persons (not trained)": {
+    "momentum": {
+     "sens": 0.4,
+     "sens_S2": 1.0,
+     "fa_month": 4.56,
+     "empty_month": 3.0,
+     "n": 20,
+     "n_S2": 4,
+     "hit_S2": 4,
+     "lead": 10.5,
+     "fa_month_S1": 5.277777777777778,
+     "fa_month_median": 3.0,
+     "persons": 75
+    },
+    "frozen": {
+     "sens": 0.35,
+     "sens_S2": 0.5,
+     "fa_month": 9.88,
+     "empty_month": 8.8,
+     "n": 20,
+     "n_S2": 4,
+     "hit_S2": 2,
+     "lead": -9.0,
+     "fa_month_S1": 7.407407407407407,
+     "fa_month_median": 0.0,
+     "persons": 75
+    }
+   },
+   "kappa low": {
+    "momentum": {
+     "sens": 0.5945945945945946,
+     "sens_S2": 0.7333333333333333,
+     "fa_month": 4.054054054054054,
+     "empty_month": 2.5945945945945947,
+     "n": 37,
+     "n_S2": 15,
+     "hit_S2": 11,
+     "lead": 15.0,
+     "fa_month_S1": 5.882352941176471,
+     "fa_month_median": 3.0,
+     "persons": 37
+    },
+    "frozen": {
+     "sens": 0.13513513513513514,
+     "sens_S2": 0.26666666666666666,
+     "fa_month": 11.027027027027026,
+     "empty_month": 7.297297297297297,
+     "n": 37,
+     "n_S2": 15,
+     "hit_S2": 4,
+     "lead": -4.0,
+     "fa_month_S1": 8.235294117647058,
+     "fa_month_median": 0.0,
+     "persons": 37
+    }
+   },
+   "kappa mid": {
+    "momentum": {
+     "sens": 0.696969696969697,
+     "sens_S2": 0.9473684210526315,
+     "fa_month": 6.583333333333333,
+     "empty_month": 2.3333333333333335,
+     "n": 66,
+     "n_S2": 19,
+     "hit_S2": 18,
+     "lead": 27.0,
+     "fa_month_S1": 9.04109589041096,
+     "fa_month_median": 3.0,
+     "persons": 36
+    },
+    "frozen": {
+     "sens": 0.6363636363636364,
+     "sens_S2": 0.5263157894736842,
+     "fa_month": 11.666666666666666,
+     "empty_month": 5.916666666666667,
+     "n": 66,
+     "n_S2": 19,
+     "hit_S2": 10,
+     "lead": 25.5,
+     "fa_month_S1": 13.972602739726028,
+     "fa_month_median": 1.5,
+     "persons": 36
+    }
+   },
+   "kappa high": {
+    "momentum": {
+     "sens": 0.5192307692307693,
+     "sens_S2": 0.6206896551724138,
+     "fa_month": 5.837837837837838,
+     "empty_month": 3.4864864864864864,
+     "n": 52,
+     "n_S2": 29,
+     "hit_S2": 18,
+     "lead": 13.0,
+     "fa_month_S1": 5.930232558139535,
+     "fa_month_median": 3.0,
+     "persons": 37
+    },
+    "frozen": {
+     "sens": 0.46153846153846156,
+     "sens_S2": 0.5172413793103449,
+     "fa_month": 19.783783783783782,
+     "empty_month": 14.108108108108109,
+     "n": 52,
+     "n_S2": 29,
+     "hit_S2": 15,
+     "lead": 13.0,
+     "fa_month_S1": 15.523255813953488,
+     "fa_month_median": 15.0,
+     "persons": 37
+    }
+   },
+   "beta-blocker": {
+    "momentum": {
+     "sens": 0.5802469135802469,
+     "sens_S2": 0.5,
+     "fa_month": 6.1,
+     "empty_month": 2.5,
+     "n": 81,
+     "n_S2": 30,
+     "hit_S2": 15,
+     "lead": 17.0,
+     "fa_month_S1": 9.84732824427481,
+     "fa_month_median": 4.5,
+     "persons": 30
+    },
+    "frozen": {
+     "sens": 0.5185185185185185,
+     "sens_S2": 0.43333333333333335,
+     "fa_month": 26.8,
+     "empty_month": 15.8,
+     "n": 81,
+     "n_S2": 30,
+     "hit_S2": 13,
+     "lead": 18.5,
+     "fa_month_S1": 27.251908396946565,
+     "fa_month_median": 22.5,
+     "persons": 30
+    }
+   },
+   "no beta-blocker": {
+    "momentum": {
+     "sens": 0.6486486486486487,
+     "sens_S2": 0.9696969696969697,
+     "fa_month": 5.25,
+     "empty_month": 2.925,
+     "n": 74,
+     "n_S2": 33,
+     "hit_S2": 32,
+     "lead": 19.5,
+     "fa_month_S1": 5.735294117647059,
+     "fa_month_median": 3.0,
+     "persons": 80
+    },
+    "frozen": {
+     "sens": 0.3918918918918919,
+     "sens_S2": 0.48484848484848486,
+     "fa_month": 9.45,
+     "empty_month": 6.6375,
+     "n": 74,
+     "n_S2": 33,
+     "hit_S2": 16,
+     "lead": 14.0,
+     "fa_month_S1": 7.0588235294117645,
+     "fa_month_median": 0.0,
+     "persons": 80
+    }
+   }
+  },
+  "plus_her_units": {
+   "sens": 0.535483870967742,
+   "sens_S2": 0.6984126984126984,
+   "fa_month": 5.4818181818181815,
+   "empty_month": 3.1363636363636362,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 44,
+   "lead": 16.0,
+   "fa_month_S1": 5.54140127388535,
+   "fa_month_median": 3.0,
+   "persons": 110,
+   "ci_sens": [
+    0.379,
+    0.702
+   ],
+   "ci_sens_S2": [
+    0.437,
+    0.938
+   ],
+   "ci_fa": [
+    4.12,
+    7.09
+   ]
+  },
+  "budget_3_Momentum": {
+   "sens": 0.4774193548387097,
+   "sens_S2": 0.5714285714285714,
+   "fa_month": 2.672727272727273,
+   "empty_month": 1.0363636363636364,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 36,
+   "lead": 9.5,
+   "fa_month_S1": 3.3121019108280256,
+   "fa_month_median": 0.0,
+   "persons": 110
+  },
+  "budget_3_Momentum + her-units": {
+   "sens": 0.4129032258064516,
+   "sens_S2": 0.5555555555555556,
+   "fa_month": 2.8636363636363638,
+   "empty_month": 1.5818181818181818,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 35,
+   "lead": 11.5,
+   "fa_month_S1": 2.8025477707006368,
+   "fa_month_median": 0.0,
+   "persons": 110
+  },
+  "budget_10_Momentum": {
+   "sens": 0.7096774193548387,
+   "sens_S2": 0.8888888888888888,
+   "fa_month": 8.781818181818181,
+   "empty_month": 4.581818181818182,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 56,
+   "lead": 27.0,
+   "fa_month_S1": 9.872611464968152,
+   "fa_month_median": 6.0,
+   "persons": 110
+  },
+  "budget_10_Momentum + her-units": {
+   "sens": 0.6516129032258065,
+   "sens_S2": 0.873015873015873,
+   "fa_month": 9.163636363636364,
+   "empty_month": 5.4,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 55,
+   "lead": 24.0,
+   "fa_month_S1": 9.171974522292993,
+   "fa_month_median": 6.0,
+   "persons": 110
+  }
+ },
+ "sc": {
+  "weights_cv": [
+   [
+    -2.5687,
+    2.4392,
+    -2.7186,
+    193.8689,
+    -206.3754,
+    0.192
+   ],
+   [
+    -2.2377,
+    4.9326,
+    -4.0273,
+    206.0515,
+    -217.5758,
+    0.0972
+   ]
+  ],
+  "weights_all": [
+   -2.3663,
+   3.5215,
+   -3.1813,
+   194.5087,
+   -205.0769,
+   0.1464
+  ],
+  "cut": 4.696134470554157,
+  "frozen": {
+   "sens": 0.33548387096774196,
+   "sens_S2": 0.31746031746031744,
+   "fa_month": 7.581818181818182,
+   "empty_month": 4.745454545454545,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 20,
+   "lead": 19.0,
+   "fa_month_S1": 6.8789808917197455,
+   "fa_month_median": 0.0,
+   "persons": 110,
+   "ci_sens": [
+    0.126,
+    0.527
+   ],
+   "ci_sens_S2": [
+    0.133,
+    0.546
+   ],
+   "ci_fa": [
+    4.82,
+    10.64
+   ]
+  },
+  "frozen_no_persistence": {
+   "sens": 0.08387096774193549,
+   "sens_S2": 0.07936507936507936,
+   "fa_month": 3.8181818181818183,
+   "empty_month": 3.0,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 5,
+   "lead": 10.0,
+   "fa_month_S1": 2.2929936305732483,
+   "fa_month_median": 0.0,
+   "persons": 110,
+   "ci_sens": [
+    0.015,
+    0.178
+   ],
+   "ci_sens_S2": [
+    0.023,
+    0.18
+   ],
+   "ci_fa": [
+    1.74,
+    6.49
+   ]
+  },
+  "momentum": {
+   "sens": 0.6451612903225806,
+   "sens_S2": 0.7777777777777778,
+   "fa_month": 5.5636363636363635,
+   "empty_month": 2.7,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 49,
+   "lead": 18.0,
+   "fa_month_S1": 6.8789808917197455,
+   "fa_month_median": 3.0,
+   "persons": 110,
+   "ci_sens": [
+    0.496,
+    0.806
+   ],
+   "ci_sens_S2": [
+    0.648,
+    0.919
+   ],
+   "ci_fa": [
+    4.17,
+    7.17
+   ]
+  },
+  "replace": {
+   "sens": 0.6516129032258065,
+   "sens_S2": 0.7936507936507936,
+   "fa_month": 8.672727272727272,
+   "empty_month": 5.263636363636364,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 50,
+   "lead": 19.0,
+   "fa_month_S1": 8.853503184713375,
+   "fa_month_median": 3.0,
+   "persons": 110,
+   "ci_sens": [
+    0.507,
+    0.809
+   ],
+   "ci_sens_S2": [
+    0.675,
+    0.938
+   ],
+   "ci_fa": [
+    6.05,
+    11.32
+   ]
+  },
+  "or_frozen": {
+   "sens": 0.7096774193548387,
+   "sens_S2": 0.8095238095238095,
+   "fa_month": 11.427272727272728,
+   "empty_month": 6.9818181818181815,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 51,
+   "lead": 19.5,
+   "fa_month_S1": 11.528662420382165,
+   "fa_month_median": 6.0,
+   "persons": 110,
+   "ci_sens": [
+    0.532,
+    0.876
+   ],
+   "ci_sens_S2": [
+    0.677,
+    0.96
+   ],
+   "ci_fa": [
+    8.4,
+    14.65
+   ]
+  },
+  "subgroups": {
+   "hg2-trained persons": {
+    "momentum": {
+     "sens": 0.6888888888888889,
+     "sens_S2": 0.7796610169491526,
+     "fa_month": 7.8,
+     "empty_month": 2.2285714285714286,
+     "n": 135,
+     "n_S2": 59,
+     "hit_S2": 46,
+     "lead": 21.0,
+     "fa_month_S1": 10.816326530612244,
+     "fa_month_median": 3.0,
+     "persons": 35
+    },
+    "frozen": {
+     "sens": 0.37037037037037035,
+     "sens_S2": 0.3220338983050847,
+     "fa_month": 14.142857142857142,
+     "empty_month": 5.571428571428571,
+     "n": 135,
+     "n_S2": 59,
+     "hit_S2": 19,
+     "lead": 19.0,
+     "fa_month_S1": 16.53061224489796,
+     "fa_month_median": 3.0,
+     "persons": 35
+    }
+   },
+   "calibration persons (not trained)": {
+    "momentum": {
+     "sens": 0.35,
+     "sens_S2": 0.75,
+     "fa_month": 4.52,
+     "empty_month": 2.92,
+     "n": 20,
+     "n_S2": 4,
+     "hit_S2": 3,
+     "lead": 8.0,
+     "fa_month_S1": 5.092592592592593,
+     "fa_month_median": 3.0,
+     "persons": 75
+    },
+    "frozen": {
+     "sens": 0.1,
+     "sens_S2": 0.25,
+     "fa_month": 4.52,
+     "empty_month": 4.36,
+     "n": 20,
+     "n_S2": 4,
+     "hit_S2": 1,
+     "lead": 9.0,
+     "fa_month_S1": 2.5,
+     "fa_month_median": 0.0,
+     "persons": 75
+    }
+   },
+   "kappa low": {
+    "momentum": {
+     "sens": 0.5945945945945946,
+     "sens_S2": 0.7333333333333333,
+     "fa_month": 3.810810810810811,
+     "empty_month": 2.3513513513513513,
+     "n": 37,
+     "n_S2": 15,
+     "hit_S2": 11,
+     "lead": 14.5,
+     "fa_month_S1": 5.490196078431373,
+     "fa_month_median": 3.0,
+     "persons": 37
+    },
+    "frozen": {
+     "sens": 0.05405405405405406,
+     "sens_S2": 0.13333333333333333,
+     "fa_month": 4.864864864864865,
+     "empty_month": 3.72972972972973,
+     "n": 37,
+     "n_S2": 15,
+     "hit_S2": 2,
+     "lead": -9.5,
+     "fa_month_S1": 3.9215686274509802,
+     "fa_month_median": 0.0,
+     "persons": 37
+    }
+   },
+   "kappa mid": {
+    "momentum": {
+     "sens": 0.7121212121212122,
+     "sens_S2": 0.8947368421052632,
+     "fa_month": 7.0,
+     "empty_month": 2.3333333333333335,
+     "n": 66,
+     "n_S2": 19,
+     "hit_S2": 17,
+     "lead": 41.0,
+     "fa_month_S1": 9.452054794520548,
+     "fa_month_median": 3.0,
+     "persons": 36
+    },
+    "frozen": {
+     "sens": 0.48484848484848486,
+     "sens_S2": 0.3157894736842105,
+     "fa_month": 7.916666666666667,
+     "empty_month": 3.75,
+     "n": 66,
+     "n_S2": 19,
+     "hit_S2": 6,
+     "lead": 30.0,
+     "fa_month_S1": 10.068493150684931,
+     "fa_month_median": 0.0,
+     "persons": 36
+    }
+   },
+   "kappa high": {
+    "momentum": {
+     "sens": 0.5961538461538461,
+     "sens_S2": 0.7241379310344828,
+     "fa_month": 5.918918918918919,
+     "empty_month": 3.4054054054054053,
+     "n": 52,
+     "n_S2": 29,
+     "hit_S2": 21,
+     "lead": 11.0,
+     "fa_month_S1": 5.930232558139535,
+     "fa_month_median": 3.0,
+     "persons": 37
+    },
+    "frozen": {
+     "sens": 0.34615384615384615,
+     "sens_S2": 0.41379310344827586,
+     "fa_month": 9.972972972972974,
+     "empty_month": 6.72972972972973,
+     "n": 52,
+     "n_S2": 29,
+     "hit_S2": 12,
+     "lead": 9.5,
+     "fa_month_S1": 6.8023255813953485,
+     "fa_month_median": 0.0,
+     "persons": 37
+    }
+   },
+   "beta-blocker": {
+    "momentum": {
+     "sens": 0.654320987654321,
+     "sens_S2": 0.6333333333333333,
+     "fa_month": 6.7,
+     "empty_month": 2.6,
+     "n": 81,
+     "n_S2": 30,
+     "hit_S2": 19,
+     "lead": 13.0,
+     "fa_month_S1": 10.763358778625955,
+     "fa_month_median": 4.5,
+     "persons": 30
+    },
+    "frozen": {
+     "sens": 0.43209876543209874,
+     "sens_S2": 0.3,
+     "fa_month": 14.3,
+     "empty_month": 8.5,
+     "n": 81,
+     "n_S2": 30,
+     "hit_S2": 9,
+     "lead": 16.0,
+     "fa_month_S1": 16.717557251908396,
+     "fa_month_median": 3.0,
+     "persons": 30
+    }
+   },
+   "no beta-blocker": {
+    "momentum": {
+     "sens": 0.6351351351351351,
+     "sens_S2": 0.9090909090909091,
+     "fa_month": 5.1375,
+     "empty_month": 2.7375,
+     "n": 74,
+     "n_S2": 33,
+     "hit_S2": 30,
+     "lead": 23.0,
+     "fa_month_S1": 5.382352941176471,
+     "fa_month_median": 3.0,
+     "persons": 80
+    },
+    "frozen": {
+     "sens": 0.22972972972972974,
+     "sens_S2": 0.3333333333333333,
+     "fa_month": 5.0625,
+     "empty_month": 3.3375,
+     "n": 74,
+     "n_S2": 33,
+     "hit_S2": 11,
+     "lead": 22.0,
+     "fa_month_S1": 3.088235294117647,
+     "fa_month_median": 0.0,
+     "persons": 80
+    }
+   }
+  },
+  "plus_her_units": {
+   "sens": 0.6516129032258065,
+   "sens_S2": 0.873015873015873,
+   "fa_month": 5.754545454545455,
+   "empty_month": 2.8636363636363638,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 55,
+   "lead": 21.0,
+   "fa_month_S1": 5.859872611464968,
+   "fa_month_median": 3.0,
+   "persons": 110,
+   "ci_sens": [
+    0.518,
+    0.779
+   ],
+   "ci_sens_S2": [
+    0.771,
+    0.982
+   ],
+   "ci_fa": [
+    4.17,
+    7.45
+   ]
+  },
+  "budget_3_Momentum": {
+   "sens": 0.49032258064516127,
+   "sens_S2": 0.5873015873015873,
+   "fa_month": 2.809090909090909,
+   "empty_month": 1.1727272727272726,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 37,
+   "lead": 15.0,
+   "fa_month_S1": 3.5031847133757963,
+   "fa_month_median": 0.0,
+   "persons": 110
+  },
+  "budget_3_Momentum + her-units": {
+   "sens": 0.4645161290322581,
+   "sens_S2": 0.6190476190476191,
+   "fa_month": 2.7545454545454544,
+   "empty_month": 0.9818181818181818,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 39,
+   "lead": 14.0,
+   "fa_month_S1": 2.5477707006369426,
+   "fa_month_median": 0.0,
+   "persons": 110
+  },
+  "budget_10_Momentum": {
+   "sens": 0.7548387096774194,
+   "sens_S2": 0.9047619047619048,
+   "fa_month": 9.409090909090908,
+   "empty_month": 4.909090909090909,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 57,
+   "lead": 29.0,
+   "fa_month_S1": 10.573248407643312,
+   "fa_month_median": 7.5,
+   "persons": 110
+  },
+  "budget_10_Momentum + her-units": {
+   "sens": 0.7354838709677419,
+   "sens_S2": 0.9365079365079365,
+   "fa_month": 8.972727272727273,
+   "empty_month": 4.990909090909091,
+   "n": 155,
+   "n_S2": 63,
+   "hit_S2": 59,
+   "lead": 28.0,
+   "fa_month_S1": 9.299363057324841,
+   "fa_month_median": 6.0,
+   "persons": 110
+  }
+ }
+}

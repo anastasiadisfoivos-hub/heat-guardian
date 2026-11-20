@@ -1,0 +1,191 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://heat-guardian.local/tomorrow/plan.schema.json",
+  "title": "Heat Guardian Tomorrow Engine plan (tomorrow-1)",
+  "description": "ARCHITECTURE \u00a76 plan.json. Every field listed in \u00a76 is required; 'home_class', 'stale_forecast' and 'details' are additions (diagnostics), nothing else is allowed at the top level.",
+  "type": "object",
+  "required": [
+    "version",
+    "generated_at",
+    "source",
+    "forecast_age_h",
+    "attribution",
+    "date",
+    "heat_day",
+    "night_heat",
+    "wave_day",
+    "hours",
+    "safe_hours_bitmap",
+    "advice_gr",
+    "labels",
+    "twin_used",
+    "ble"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": "tomorrow-1"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "enum": [
+        "open-meteo",
+        "cache",
+        "CONSTRUCTED DEMO DAY"
+      ]
+    },
+    "forecast_age_h": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "attribution": {
+      "const": "Weather data by Open-Meteo.com"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "heat_day": {
+      "type": "boolean"
+    },
+    "night_heat": {
+      "type": "boolean"
+    },
+    "wave_day": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hours": {
+      "type": "array",
+      "minItems": 24,
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "required": [
+          "h",
+          "t_out",
+          "rh_out",
+          "t_in",
+          "rh_in",
+          "core_indoor",
+          "errand_extra_rise",
+          "advice",
+          "safe"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "h": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 23
+          },
+          "t_out": {
+            "type": "number",
+            "minimum": -40,
+            "maximum": 60
+          },
+          "rh_out": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "t_in": {
+            "type": "number",
+            "minimum": -10,
+            "maximum": 60
+          },
+          "rh_in": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "core_indoor": {
+            "type": "number",
+            "minimum": 34,
+            "maximum": 43
+          },
+          "errand_extra_rise": {
+            "type": "number"
+          },
+          "advice": {
+            "enum": [
+              "OK",
+              "SHORT",
+              "AVOID"
+            ]
+          },
+          "safe": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "safe_hours_bitmap": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 16777215
+    },
+    "advice_gr": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "contains": {
+        "const": "SIMULATION"
+      }
+    },
+    "twin_used": {
+      "type": "object"
+    },
+    "home_class": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "details": {
+      "type": "object"
+    },
+    "ble": {
+      "type": "object",
+      "required": [
+        "forecast_chunks_hex",
+        "safe_hours_hex"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "forecast_chunks_hex": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "pattern": "^11[0-9a-f]{38}$"
+          }
+        },
+        "safe_hours_hex": {
+          "type": "string",
+          "pattern": "^14[0-9a-f]{38}$"
+        }
+      }
+    },
+    "stale_forecast": {
+      "type": "boolean"
+    }
+  }
+}

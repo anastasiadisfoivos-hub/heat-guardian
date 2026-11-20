@@ -1,0 +1,5 @@
+A baseline 3 days, no resets                   boots    1 | 1 Hz kept  64800 s =  18.0 h, newest- 18.0 h..now | holes inside span     0 s (reset RAM loss 0, full-flash loss 0) | deletes 54, held 0 | CRC bad 0
+B 2.5 d + 60 WDT resets x 8 s (hold active)    boots   61 | 1 Hz kept  68400 s =  19.0 h, newest- 19.1 h..now | holes inside span   480 s (reset RAM loss 472, full-flash loss 0) | deletes 41, held 0 | CRC bad 0
+C 2.5 d + 200 brown-out resets x 30 s (no hold) boots  201 | 1 Hz kept  68400 s =  19.0 h, newest- 20.7 h..now | holes inside span  6000 s (reset RAM loss 5970, full-flash loss 0) | deletes 41, held 0 | CRC bad 0
+D reset every 47 min for 3 days                boots   93 | 1 Hz kept  68640 s =  19.1 h, newest- 19.1 h..now | holes inside span     0 s (reset RAM loss 0, full-flash loss 0) | deletes 53, held 0 | CRC bad 0
+E 2.5 d + reset every 5 min for 2 h (hold 30 min) boots   25 | 1 Hz kept  79140 s =  22.0 h, newest- 22.0 h..now | holes inside span    60 s (reset RAM loss 0, full-flash loss 60) | deletes 41, held 2 | CRC bad 0

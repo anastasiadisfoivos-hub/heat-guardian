@@ -1,0 +1,65 @@
+EXPECTED boot print of 09_guardian v0.9.10 on USB serial (115200). Written from the source, NOT captured from a board
+(there is no board in this workspace). Values in <> vary. Compare the first real boot against this file.
+
+# Heat Guardian 09-guardian-0.9.10  reset=POWER-ON/BROWN-OUT(0x00000000)  vbat=<4.05> V
+# BOOT boot=<1> t_ms=<1900> fw=09-guardian-0.9.10 reset=POWER-ON/BROWN-OUT rr=0x00000000 vbat=<4.051> lowbat=0 quick_boots=<0> bootloop=0 storage=OK(formatted (first use) | mounted) jedec=856015
+# FS_HEAL boot=<1> marker=none bootloop=0 quiet=0 state=<new|loaded> gen=<1> events=/log/events_<1>.txt streak=0 formats=0 storage=OK legacy=<none> [quick_boots_reset_from=<n> on the first boot of a new build]
+# FILE boot=<1> t_ms=<1950> path=/log/s0000.bin free_blocks=<500>
+# MARK boot=<1> t_ms=<1960> m=10 name=boot v=<1> src=boot unix=0
+# TRACE <1960> before flushAll            (USB only, around the boot-time flush; never written to flash)
+# TRACE <1960> flushAll secN=0 minN=0 evLen=<300>
+# TRACE <1960> before fileAppend events /log/events_<1>.txt n=<300>
+# TRACE <2000> after fileAppend events ok=1
+# TRACE <2000> after flashSleep
+# TRACE <2000> after flushAll
+# SENSORS t_ms=<2300> bus=ok skin=1 ref=<1 if fitted> sht=1 imu=1 imu_lp=1 ppg=1 drv=1 i2c_timeouts=0
+# GUARDIAN boot=<1> nn=hg2-20261113-ca75ce4-simv5aug crc=OK(0xee4f7e9e) profile=<default|file>(age <75> sex_m <0> bmi <26.0> med <0>) twin=<defaults|loaded>(rc <-1|0>, saves <0>, rest_hr <70.0>, days <0>, calm_n <0>)
+# ECO fw=0.9.10 events_ring=64 famname=<(default)|name> seed=<none|set>
+# DAYPLAN load rc=<-9 (no /dayplan.bin yet) | 0> day=<-1 | local day index> today=<0..6> tomorrow=<0..6>
+# ready in <4500> ms. Type help.
+# S boot=<1> t_ms=<10000> T1=<33.10> ... log=OK stack_free=<2400> TIME-NOT-SET
+# STATE 0 screen 0 level 0 tiers 0 core <nan> sd <...> f20 <...> why 0x.. worn <0|1|2> check 0 family 0      (first minute)
+
+On a weights CRC failure the GUARDIAN line reads crc=MISMATCH, the screen shows «Σφάλμα μοντέλου» and no STATE lines follow
+(the band keeps logging its minute inputs).
+
+0.9.10 FS-HEAL, what other boots print (all lines also go to events_<gen>.txt):
+- after an FS-guard reset (an assert or a > 4 s FS call), e.g. in the events append:
+  # Heat Guardian 09-guardian-0.9.10  reset=FS-GUARD(0x00000004)  vbat=...
+  # FS_HEAL last boot died in a guarded FS call: cause=ASSERT fid=events (gpregret2=0xc1)
+  # FS_HEAL quarantine fid=events path=/log/events_1.txt (never opened again)
+  # FS_HEAL events gen 1 -> 2 path=/log/events_2.txt
+  # FS_HEAL remove /log/events_1.txt ok
+  # BOOT ... reset=FS-GUARD ... quick_boots=1 ...
+  # FS_HEAL boot=<n> marker=ASSERT:events bootloop=0 quiet=0 state=loaded gen=2 events=/log/events_2.txt streak=1 formats=0 storage=OK legacy=...
+- boot loop without a marker (quick_boots >= 3): FS_HEAL quarantine fid=bootloop ..., events gen g -> g+1, quiet=1 in the summary;
+  10 min later: FS_HEAL stable t_ms=600xxx: streak cleared / FS_HEAL quiet end t_ms=... dropped_records=<n> events=...
+- 4th troubled boot in a row: FS_HEAL format log area why=<pre-mount|boot loop|marker|mount failed> result=ok formats=1 gen=<g> (profile/twin/plan on InternalFS kept)
+
+0.9.15 additions (written from the source, not captured from a board):
+  # Heat Guardian 09-guardian-0.9.15  reset=<POWER-ON/BROWN-OUT|RESET-PIN|WATCHDOG|FS-GUARD|UPLOAD|CRASH(soft reset, same build, no marker)|LOCKUP|WAKE>(0x...)  vbat=...
+  # BOOT0915 class=<as above> fault=<0|1> wdt_running_at_setup=<0|1> marker=0x<00|..> src=<none|gpregret2|noinit-copy> chain=<0..3>
+  After an FS-guard reset: class=FS-GUARD fault=1 wdt_running_at_setup=1 src=gpregret2, and the NEXT boot must not be class=WATCHDOG.
+  stat adds: "# STAT flash io errors: ..." / "# STAT stack_free_min: loop=.. writer=.. timer=.." / "# STAT boot: class=.. marker_src=.. vbat_skipped_during_buzz=.."
+  A line typed in the first 3 s that is not fsformat/ifsformat gets "# BOOTING t_ms=...: '<line>' not run ..." (no silent empty reply).
+
+0.9.16 additions (written from the source, not captured from a board):
+  # Heat Guardian 09-guardian-0.9.16  reset=...  vbat=...
+  # BOOT0915 class=... (unchanged)
+  # BOOTGUARD class=<POWER-ON|RESET-PIN|WATCHDOG|FS-GUARD|UPLOAD|CRASH|LOCKUP|WAKE|SUPERVISOR(task app)|ASSERT|STACK(task ..)|MALLOC|FAULT-INJECT|REBOOT> level=<0..6> mode=<NORMAL|CAREFUL|SAFE|MINIMAL|REST> slow=<n> prev_up=<12s|3min|>=2h|?> prev_cp=<checkpoint|?> dead_stage=<none|storage|ble|internalfs> journal=ok(<n> words) ram_copy=<0|1>
+  only when not NORMAL: # BOOTGUARD <MODE>: storage=<on|off> ble=<on|off> internalfs=<on|off|erased> (screen, button, motor, sensors, guardian: on)
+  REST: # BOOTGUARD REST: 6 resets in a row before 60 s up -> ... / # OFF boot guard rest: System OFF now. Press the button to turn the band on.
+  # ready in <ms> ms (app task stack 12288 B). Type help.
+  events: BOOTGUARD boot=.. class=.. level=.. mode=..; at 60 s "BOOTGUARD healthy t_ms=6xxxx mode=.. journal=ok"; at 10 min "BOOTGUARD stable ...".
+  stat adds: "# STAT stack_free_min: app=.. writer=.. timer=.. B (of 12288 / 6144 / 1024)", "# STAT bootguard: ...", "# STAT supervisor: ...",
+             "# STAT ledger (<n> boots on the journal page): RESET-PIN=.. UPLOAD=.. ...", "# STAT reset -1: <class> (the boot before: up .., last checkpoint ..) -> level .."
+  First boot after flashing 0.9.16: class=UPLOAD level=0 mode=NORMAL ram_copy=0 (the .hg_noinit block moved with the bigger .bss: expected).
+
+0.9.17 additions (written from the source, not captured from a board):
+  # Heat Guardian 09-guardian-0.9.17 ... (boot lines unchanged; the hgui task starts right after the power-up clicks)
+  events: GAUGE <colour> -> <colour> f20 .. dot .. lines w/c/d; LADDER LD_REMIND|LD_DONE|LD_WORKED|LD_ESCALATED|LD_NOTE arg=..;
+          BUTTON released after <ms> ms (1.2-3.0 s): no action; POWER prompt / closed / refused / POWER OFF by ...; HAPTIC LOST pattern=..
+  stat adds: "# STAT ui: task=hgui presses=.. press_to_motor_ms last=.. max=.. ...", "# STAT haptics: drv=1 playing=- patterns=.. ...",
+             "# STAT ladder: state=idle ...", "# STAT gauge: <colour> dot=.. lines water=37.75 cool=38.35 danger=38.50 raise=on axis=+z wakes=.."
+  A SUPERVISOR reset can now name "(task ui)": the hgui task did not check in for 5 s.
+  First boot after flashing 0.9.17: class=UPLOAD level=0 mode=NORMAL (as for every new build).

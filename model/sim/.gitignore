@@ -1,0 +1,6 @@
+data/minutes_*.parquet
+data/ppg_1hz_*.parquet
+data/events_*.parquet
+__pycache__/
+*.egg-info/
+.pytest_cache/

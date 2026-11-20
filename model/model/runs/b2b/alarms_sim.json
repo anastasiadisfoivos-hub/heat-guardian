@@ -1,0 +1,167 @@
+{
+ "label": "SIMULATION - SIM-DEV v4, guardian C host builds (scratch: freeze-5 == repo m7_default byte-identical; AR = -DHG_B2B=1). DEV only.",
+ "sim150": {
+  "freeze5|hr_raw": {
+   "drink_per_day_median": 3.0,
+   "drink_min_median": 77.44444444444444,
+   "s2_core38_display_sens": 88.5,
+   "cool_per_week": 0.0,
+   "danger_per_month_mean": 8.38,
+   "family_per_month_mean": 43.1,
+   "ev385_danger_sens": 69.4,
+   "ev385_family_sens": 48.6,
+   "ev385_S2_danger_sens": 69.2
+  },
+  "ar|hr_raw": {
+   "drink_per_day_median": 3.25,
+   "drink_min_median": 71.65,
+   "s2_core38_display_sens": 86.9,
+   "cool_per_week": 0.0,
+   "danger_per_month_mean": 9.09,
+   "family_per_month_mean": 43.7,
+   "ev385_danger_sens": 58.3,
+   "ev385_family_sens": 52.8,
+   "ev385_S2_danger_sens": 50.0
+  },
+  "freeze5|hr_scaled": {
+   "drink_per_day_median": 2.3666666666666667,
+   "drink_min_median": 65.5,
+   "s2_core38_display_sens": 84.8,
+   "cool_per_week": 0.0,
+   "danger_per_month_mean": 6.07,
+   "family_per_month_mean": 40.9,
+   "ev385_danger_sens": 59.7,
+   "ev385_family_sens": 41.7,
+   "ev385_S2_danger_sens": 53.8
+  },
+  "ar|hr_scaled": {
+   "drink_per_day_median": 2.05,
+   "drink_min_median": 55.0,
+   "s2_core38_display_sens": 83.3,
+   "cool_per_week": 0.0,
+   "danger_per_month_mean": 6.62,
+   "family_per_month_mean": 41.3,
+   "ev385_danger_sens": 50.0,
+   "ev385_family_sens": 44.4,
+   "ev385_S2_danger_sens": 46.2
+  },
+  "ar05|hr_raw": {
+   "drink_per_day_median": 3.05,
+   "drink_min_median": 75.27777777777777,
+   "s2_core38_display_sens": 88.5,
+   "cool_per_week": 0.0,
+   "danger_per_month_mean": 8.75,
+   "family_per_month_mean": 43.4,
+   "ev385_danger_sens": 61.1,
+   "ev385_family_sens": 50.0,
+   "ev385_S2_danger_sens": 50.0
+  },
+  "arasym|hr_raw": {
+   "drink_per_day_median": 3.25,
+   "drink_min_median": 71.8,
+   "s2_core38_display_sens": 88.3,
+   "cool_per_week": 0.0,
+   "danger_per_month_mean": 9.11,
+   "family_per_month_mean": 43.7,
+   "ev385_danger_sens": 61.1,
+   "ev385_family_sens": 50.0,
+   "ev385_S2_danger_sens": 50.0
+  },
+  "ar05|hr_scaled": {
+   "drink_per_day_median": 2.155555555555556,
+   "drink_min_median": 59.5,
+   "s2_core38_display_sens": 85.3,
+   "cool_per_week": 0.0,
+   "danger_per_month_mean": 6.54,
+   "family_per_month_mean": 41.2,
+   "ev385_danger_sens": 54.2,
+   "ev385_family_sens": 45.8,
+   "ev385_S2_danger_sens": 46.2
+  },
+  "arasym|hr_scaled": {
+   "drink_per_day_median": 2.05,
+   "drink_min_median": 55.0625,
+   "s2_core38_display_sens": 84.8,
+   "cool_per_week": 0.0,
+   "danger_per_month_mean": 6.7,
+   "family_per_month_mean": 41.4,
+   "ev385_danger_sens": 54.2,
+   "ev385_family_sens": 44.4,
+   "ev385_S2_danger_sens": 46.2
+  }
+ },
+ "r6_110": {
+  "freeze5|raw": {
+   "heatwave_385_caught": "53/63",
+   "strict_fa_per_month": 11.1,
+   "lead": 19.0,
+   "low_kappa_sens": 0.59,
+   "drink_per_day": 4.0,
+   "drink_min": 90.25,
+   "s2_drink": 0.91
+  },
+  "freeze5|sc": {
+   "heatwave_385_caught": "46/63",
+   "strict_fa_per_month": 7.0,
+   "lead": 17.0,
+   "low_kappa_sens": 0.54,
+   "drink_per_day": 2.5,
+   "drink_min": 68.35,
+   "s2_drink": 0.884
+  },
+  "ar|raw": {
+   "heatwave_385_caught": "44/63",
+   "strict_fa_per_month": 11.4,
+   "lead": 15.0,
+   "low_kappa_sens": 0.59,
+   "drink_per_day": 4.0,
+   "drink_min": 76.75,
+   "s2_drink": 0.896
+  },
+  "ar|sc": {
+   "heatwave_385_caught": "39/63",
+   "strict_fa_per_month": 7.4,
+   "lead": 13.5,
+   "low_kappa_sens": 0.59,
+   "drink_per_day": 2.5,
+   "drink_min": 59.6,
+   "s2_drink": 0.862
+  },
+  "ar05|raw": {
+   "heatwave_385_caught": "49/63",
+   "strict_fa_per_month": 11.7,
+   "lead": 19.0,
+   "low_kappa_sens": 0.59,
+   "drink_per_day": 3.85,
+   "drink_min": 89.8,
+   "s2_drink": 0.917
+  },
+  "ar05|sc": {
+   "heatwave_385_caught": "42/63",
+   "strict_fa_per_month": 7.7,
+   "lead": 19.0,
+   "low_kappa_sens": 0.59,
+   "drink_per_day": 2.6,
+   "drink_min": 66.94444444444444,
+   "s2_drink": 0.884
+  },
+  "arasym|raw": {
+   "heatwave_385_caught": "49/63",
+   "strict_fa_per_month": 12.0,
+   "lead": 20.0,
+   "low_kappa_sens": 0.59,
+   "drink_per_day": 4.0,
+   "drink_min": 85.0,
+   "s2_drink": 0.915
+  },
+  "arasym|sc": {
+   "heatwave_385_caught": "42/63",
+   "strict_fa_per_month": 7.9,
+   "lead": 19.0,
+   "low_kappa_sens": 0.59,
+   "drink_per_day": 2.5,
+   "drink_min": 63.25,
+   "s2_drink": 0.881
+  }
+ }
+}

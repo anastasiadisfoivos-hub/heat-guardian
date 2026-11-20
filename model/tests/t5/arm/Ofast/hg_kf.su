@@ -1,0 +1,5 @@
+hg_kf.c:8:6:hg_kf_init	24	static
+hg_kf.c:22:6:hg_kf_set_rest_hr	0	static
+hg_kf.c:34:6:hg_kf_step	24	static
+hg_kf.c:86:6:hg_v12_tiers_init	0	static
+hg_kf.c:103:5:hg_kf_v12_step	40	static

@@ -1,0 +1,113 @@
+{
+ "what": "SIMULATION: 7 simulated days of wear, Virtual Elder pid 90862; Body Twin = twin/hg_twin.py (mirror of hg_twin.c)",
+ "pid": 90862,
+ "days": 7,
+ "regime": "S1",
+ "day_types": [
+  "S1",
+  "S1",
+  "S1",
+  "S1",
+  "S1",
+  "S1",
+  "S1"
+ ],
+ "defaults": {
+  "rest_hr": 70.0,
+  "core_offset": 0.0,
+  "k_person": 0.12
+ },
+ "nights": [
+  {
+   "night": 1,
+   "day": 1,
+   "rest_hr": 67.24,
+   "p10_night_hr": 55.81428527832031,
+   "frozen": ""
+  },
+  {
+   "night": 2,
+   "day": 2,
+   "rest_hr": 64.83,
+   "p10_night_hr": 54.193748474121094,
+   "frozen": ""
+  },
+  {
+   "night": 3,
+   "day": 3,
+   "rest_hr": 63.22,
+   "p10_night_hr": 54.47222137451172,
+   "frozen": ""
+  },
+  {
+   "night": 4,
+   "day": 4,
+   "rest_hr": 62.23,
+   "p10_night_hr": 54.90666580200195,
+   "frozen": ""
+  },
+  {
+   "night": 5,
+   "day": 5,
+   "rest_hr": 61.66,
+   "p10_night_hr": 55.33529281616211,
+   "frozen": ""
+  },
+  {
+   "night": 6,
+   "day": 6,
+   "rest_hr": 61.15,
+   "p10_night_hr": 54.97222137451172,
+   "frozen": ""
+  },
+  {
+   "night": 7,
+   "day": 7,
+   "rest_hr": 60.85,
+   "p10_night_hr": 55.13333511352539,
+   "frozen": ""
+  }
+ ],
+ "learned": {
+  "rest_hr": 60.8,
+  "core_offset": 0.0,
+  "k_person": 0.12,
+  "c_bodyheat": 0.15,
+  "days_learned": 7,
+  "t1_night_base": [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "t1_night_mean_00_06": null
+ },
+ "truth": {
+  "rest_hr_same_definition": 62.4,
+  "night_hr_floor_true": 57.4,
+  "rest_hr_drawn_seated": 67.5,
+  "t1_night_mean_00_06": 35.59,
+  "note": "the twin's rest_hr = 10th percentile of her still sleeping heart rate + 5 bpm (hg_twin.py); rest_hr_same_definition = the same on the simulator's TRUE heart rate over the week; rest_hr_drawn_seated = velders draw_one hr_rest (a different quantity: awake, seated)"
+ },
+ "not_learned": "core_offset needs a phone thermometer reading (none this week); sweat capacity has no sensor on the band"
+}

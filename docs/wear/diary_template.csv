@@ -1,0 +1,13 @@
+date,time,code,value,note
+# Copy this file to diary.csv in the folder with your dumps. One line per event.
+# date = YYYY-MM-DD, time = HH:MM (24 h, Athens time, from your phone clock). Lines starting with # are ignored.
+# PRESS codes (press the band's button once at that moment, then write the line):
+#   SLEEP WAKE MEAL_START MEAL_END WALK_START WALK_END HOT_START HOT_END FAN_START FAN_END SPORT_START SPORT_END
+# Fallback PRESS codes (only when you could not type the mark): OUT HOME OFF DONNED
+# No-press codes: PULSE (value = beats in 60 s)  ROOM (value = room thermometer C)  NOTE (anything unusual)
+#   RELATIVE_START (value = age; note = female or male)  RELATIVE_END
+# No commas inside a note.
+# Examples (remove the # to use a line):
+#2026-11-16,16:34,PULSE,72,after the 16:30 oral readings
+#2026-11-16,23:05,SLEEP,,lights off
+#2026-11-17,06:50,WAKE,,

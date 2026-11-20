@@ -1,0 +1,66 @@
+{
+ "algorithm": "CRC-8 poly 0x07, init 0x00, refin false, refout false, xorout 0x00 (CRC-8/SMBUS)",
+ "check": "crc8(b'123456789') == 0xF4",
+ "vectors": [
+  {
+   "name": "empty",
+   "data_hex": "",
+   "crc": 0,
+   "crc_hex": "00"
+  },
+  {
+   "name": "one_zero",
+   "data_hex": "00",
+   "crc": 0,
+   "crc_hex": "00"
+  },
+  {
+   "name": "all_zero_19",
+   "data_hex": "00000000000000000000000000000000000000",
+   "crc": 0,
+   "crc_hex": "00"
+  },
+  {
+   "name": "all_ff_19",
+   "data_hex": "ffffffffffffffffffffffffffffffffffffff",
+   "crc": 228,
+   "crc_hex": "e4"
+  },
+  {
+   "name": "check_123456789",
+   "data_hex": "313233343536373839",
+   "crc": 244,
+   "crc_hex": "f4"
+  },
+  {
+   "name": "one_ff",
+   "data_hex": "ff",
+   "crc": 243,
+   "crc_hex": "f3"
+  },
+  {
+   "name": "ramp_0_18",
+   "data_hex": "000102030405060708090a0b0c0d0e0f101112",
+   "crc": 115,
+   "crc_hex": "73"
+  },
+  {
+   "name": "status_like",
+   "data_hex": "0109800e0c48042c0d100b980c3755e0032a00",
+   "crc": 23,
+   "crc_hex": "17"
+  },
+  {
+   "name": "ascii_heat",
+   "data_hex": "4865617420477561726469616e",
+   "crc": 186,
+   "crc_hex": "ba"
+  },
+  {
+   "name": "alt_55_aa",
+   "data_hex": "55aa55aa55aa55aa55aa55aa55aa55aa55aa55",
+   "crc": 36,
+   "crc_hex": "24"
+  }
+ ]
+}

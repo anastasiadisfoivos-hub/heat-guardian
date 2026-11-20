@@ -1,0 +1,21 @@
+Heat Guardian public snapshot - build info
+built 2026-11-20T18:39Z by public_hg_refresh.sh
+
+Release files (file  internal-commit  sha256)
+  09_guardian_v0917_demo_b7g.uf2
+      commit  9f9d483937772ae9d8759baaf84d13f82c0aaea8  (b17-demo-b7g)
+      sha256  c38dcecfaddbcf9e260693b620a0ef75c6298142ddebbe6aa8e88e77c32e2216
+      md5     d2a921d597aab2e6cd67880577fa8f67
+  09_guardian_v0917_demo_b7g.zip
+      commit  9f9d483937772ae9d8759baaf84d13f82c0aaea8  (b17-demo-b7g)
+      sha256  dec29480d1fdf84f198131c6f1d7bd084369872c93230fa7721943bd67072170
+      md5     2a09b1047b890f9cac3a6e0c2af6b12c
+
+Sources (internal commits)
+  firmware/  b17-demo-b7g  9f9d483937772ae9d8759baaf84d13f82c0aaea8
+  model/ docs/  b15-fsheal  106b751572720177258645ab0f4496776610705e
+  app/       ios-app-shortcut  38d09f59bb8266f93cab2f681a180574759c1f1c
+  case/      hg_case v7-cover  161226a600a86e73c6723956f77a158192ee0282
+  demo/      sim_stage folder (not a git repo), copied 2026-11-20
+
+Flash: bash firmware/bench-tests/flash_band.command release/<file>.zip   (see README.md)

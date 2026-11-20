@@ -1,0 +1,5 @@
+hg_routine.c:17:6:hg_routine_init	16	static
+hg_routine.c:45:6:hg_routine_noon	312	static
+hg_routine.c:95:6:hg_routine_step	144	static
+hg_routine.c:197:10:hg_routine_pack	24	static
+hg_routine.c:212:5:hg_routine_unpack	1096	static

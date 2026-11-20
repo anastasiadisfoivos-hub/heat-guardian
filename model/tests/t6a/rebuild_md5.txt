@@ -1,0 +1,2 @@
+45184edaf7ca7189db3d9535c9f0d89b  rebuild/08_logger/build/Seeeduino.nrf52.xiaonRF52840/08_logger.ino.hex
+09db908b657167afbbff440361467ebb  rebuild/08_logger.uf2

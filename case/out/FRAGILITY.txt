@@ -1,0 +1,13 @@
+FRAGILITY CHECK (v7.0): nothing under 1.2 mm, no post taller than 2 x its width - print files in out/stl_flat/
+brain_pod: thinnest wall/floor found 1.20 mm; 0 thin spot(s) under 1.2; 0 slender post(s)
+brain_frame: thinnest wall/floor found 1.20 mm; 0 thin spot(s) under 1.2; 0 slender post(s)
+power_pod: thinnest wall/floor found 1.20 mm; 0 thin spot(s) under 1.2; 0 slender post(s)
+power_lid: thinnest wall/floor found 1.20 mm; 0 thin spot(s) under 1.2; 0 slender post(s)
+island_skin: thinnest wall/floor found 0.60 mm; 0 thin spot(s) under 1.2; 0 slender post(s)
+   exception in use: TMP117 #1 seat floor: thinnest 0.60 mm
+   exception in use: MAX30102 pocket floor: thinnest 0.79 mm
+island_shelf: thinnest wall/floor found 1.20 mm; 0 thin spot(s) under 1.2; 0 slender post(s)
+EXCEPTIONS (the only features under 1.2 mm, by design):
+ - island_skin / TMP117 #1 seat floor (>= 0.6 mm): 0.6 mm: the chip is 0.8 mm tall and must stand 0.2 mm past the skin face, so the board face is 0.6 above the bed. A full sheet printed on the bed, joined to the back wall and (v7.0) to the two front pillars; it is only ever pressed flat against the bed / the skin.
+ - island_skin / MAX30102 pocket floor (>= 0.8 mm): 0.8-1.05 mm: the optical chip is 1.55 mm tall and stands 0.05 mm past the skin face, so the board face is 1.5 above the bed; 1.05 under the board, 0.8 under the 0.6 mm resistors and under the two pin sockets. Printed on the bed, carries no load.
+RESULT: PASS

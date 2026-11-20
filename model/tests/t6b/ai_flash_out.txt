@@ -1,0 +1,14 @@
+  27300 fz_hg2_weights.c.o
+   7603 fz_hg_guardian.c.o
+   6328 fz_hg2_step.c.o
+   6148 hg_fw.c.o
+   5324 fz_hg_twin.c.o
+   4536 fz_hg_routine.c.o
+   3124 fz_hg_contact.c.o
+   2228 fz_hg_frames.c.o
+   1708 fz_hg_kf.c.o
+   1032 fz_hg_homeout.c.o
+    636 fz_hg_util.c.o
+    624 fz_hg_tables.c.o
+     84 fz_hg_guardian_twin.c.o
+fz_* (frozen AI: weights+hg2+guardian+twin) 60527 B = 20.4 % of the 296,432 B image = 7.5 % of the 811,008 B app flash; hg_fw glue 6148 B

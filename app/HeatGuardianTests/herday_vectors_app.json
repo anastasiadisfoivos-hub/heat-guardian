@@ -1,0 +1,4685 @@
+{
+ "note": "App-side Her Day vectors produced by ios/tools/gen_herday_vectors.py (Python mirror of EcoFrames.swift / HerDay.swift / HerDayRoutine.swift) from HERDAY_SPEC.md §4/§6. Not the firmware's: compare with fw/09_guardian/herday_vectors.json. Times are minutes of day; null = n/a (0xFF 0xFF / 0xFF on the wire). Unused fields of kind 2/3 are 0. hot_to may be 24 (exclusive end at midnight), as band 0.9.8 accepts.",
+ "day_plan": [
+  {
+   "item": {
+    "day": 1,
+    "kind": 1,
+    "place": 1,
+    "usual": 620,
+    "suggested": 570,
+    "direction": 1,
+    "hot_from": 10,
+    "hot_to": 21,
+    "peak_c": 36,
+    "heatwave_day": 0
+   },
+   "index": 1,
+   "n": 3,
+   "hex": "1b01010301010a14091e010a15240000000000af"
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 1,
+    "place": 5,
+    "usual": 1080,
+    "suggested": 540,
+    "direction": 1,
+    "hot_from": 10,
+    "hot_to": 21,
+    "peak_c": 35,
+    "heatwave_day": 0
+   },
+   "index": 2,
+   "n": 3,
+   "hex": "1b010203010512000900010a1523000000000028"
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 2,
+    "place": 0,
+    "usual": null,
+    "suggested": 1200,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "index": 3,
+   "n": 3,
+   "hex": "1b01030302000000140000000000000000000044"
+  },
+  {
+   "item": {
+    "day": 0,
+    "kind": 3,
+    "place": 0,
+    "usual": null,
+    "suggested": null,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 2
+   },
+   "index": 1,
+   "n": 1,
+   "hex": "1b0001010300000000000000000002000000008c"
+  },
+  {
+   "item": {
+    "day": 0,
+    "kind": 1,
+    "place": 3,
+    "usual": null,
+    "suggested": 1290,
+    "direction": 2,
+    "hot_from": 14,
+    "hot_to": 21,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "index": 1,
+   "n": 2,
+   "hex": "1b0001020103ffff151e020e15ff000000000070"
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 1,
+    "place": 2,
+    "usual": 510,
+    "suggested": 420,
+    "direction": 1,
+    "hot_from": 8,
+    "hot_to": 24,
+    "peak_c": 31,
+    "heatwave_day": 0
+   },
+   "index": 6,
+   "n": 6,
+   "hex": "1b0106060102081e07000108181f000000000035"
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 1,
+    "place": 7,
+    "usual": 1439,
+    "suggested": 0,
+    "direction": 2,
+    "hot_from": 0,
+    "hot_to": 1,
+    "peak_c": 0,
+    "heatwave_day": 0
+   },
+   "index": 1,
+   "n": 1,
+   "hex": "1b0101010107173b000002000100000000000056"
+  }
+ ],
+ "day_plan_clear": [
+  {
+   "day": 0,
+   "hex": "1b0000000000000000000000000000000000009c"
+  },
+  {
+   "day": 1,
+   "hex": "1b010000000000000000000000000000000000b6"
+  }
+ ],
+ "day_plan_bad": [
+  {
+   "item": {
+    "day": 2,
+    "kind": 3,
+    "place": 0,
+    "usual": null,
+    "suggested": null,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 1
+   },
+   "index": 1,
+   "n": 1,
+   "why": "day 2",
+   "swift": true
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 3,
+    "place": 0,
+    "usual": null,
+    "suggested": null,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 1
+   },
+   "index": 2,
+   "n": 1,
+   "why": "index > n",
+   "swift": true
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 3,
+    "place": 0,
+    "usual": null,
+    "suggested": null,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 1
+   },
+   "index": 1,
+   "n": 7,
+   "why": "n > 6",
+   "swift": true
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 3,
+    "place": 0,
+    "usual": null,
+    "suggested": null,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 1
+   },
+   "index": 0,
+   "n": 1,
+   "why": "index 0 with n 1",
+   "swift": true
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 1,
+    "place": 1,
+    "usual": 1440,
+    "suggested": 570,
+    "direction": 1,
+    "hot_from": 10,
+    "hot_to": 21,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "index": 1,
+   "n": 1,
+   "why": "usual 24:00",
+   "swift": true
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 1,
+    "place": 1,
+    "usual": 620,
+    "suggested": null,
+    "direction": 1,
+    "hot_from": 10,
+    "hot_to": 21,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "index": 1,
+   "n": 1,
+   "why": "kind 1 without suggestion",
+   "swift": true
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 3,
+    "place": 0,
+    "usual": null,
+    "suggested": null,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 32
+   },
+   "index": 1,
+   "n": 1,
+   "why": "heat-wave day 32",
+   "swift": true
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 1,
+    "place": 1,
+    "usual": 620,
+    "suggested": 570,
+    "direction": 1,
+    "hot_from": 15,
+    "hot_to": 12,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "index": 1,
+   "n": 1,
+   "why": "hot from > to",
+   "swift": true
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 0,
+    "place": 0,
+    "usual": null,
+    "suggested": null,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "index": 1,
+   "n": 1,
+   "why": "kind 0",
+   "swift": false
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 4,
+    "place": 0,
+    "usual": null,
+    "suggested": null,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "index": 1,
+   "n": 1,
+   "why": "kind 4",
+   "swift": false
+  },
+  {
+   "item": {
+    "day": 1,
+    "kind": 1,
+    "place": 8,
+    "usual": 620,
+    "suggested": 570,
+    "direction": 1,
+    "hot_from": 10,
+    "hot_to": 21,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "index": 1,
+   "n": 1,
+   "why": "place 8",
+   "swift": false
+  }
+ ],
+ "visit": [
+  {
+   "edge": 1,
+   "place": 1,
+   "unix": 1789462320,
+   "hex": "1c01013007a96a00000000000000000000000095"
+  },
+  {
+   "edge": 2,
+   "place": 1,
+   "unix": 1789464120,
+   "hex": "1c0201380ea96a000000000000000000000000fd"
+  },
+  {
+   "edge": 1,
+   "place": 0,
+   "unix": 1789464600,
+   "hex": "1c01001810a96a000000000000000000000000a8"
+  },
+  {
+   "edge": 2,
+   "place": 0,
+   "unix": 0,
+   "hex": "1c020000000000000000000000000000000000e4"
+  },
+  {
+   "edge": 1,
+   "place": 7,
+   "unix": 4294967295,
+   "hex": "1c0107ffffffff0000000000000000000000003b"
+  }
+ ],
+ "events_visit": [
+  {
+   "seq": 41,
+   "boot": 7,
+   "unix": 1789462330,
+   "edge": 1,
+   "place": 1,
+   "visit_unix": 1789462320,
+   "hex": "03290007003a07a96a0901013007a96a000000f3"
+  },
+  {
+   "seq": 42,
+   "boot": 7,
+   "unix": 1789464125,
+   "edge": 2,
+   "place": 1,
+   "visit_unix": 1789464120,
+   "hex": "032a0007003d0ea96a090102380ea96a000000a9"
+  },
+  {
+   "seq": 65535,
+   "boot": 65535,
+   "unix": 0,
+   "edge": 1,
+   "place": 5,
+   "visit_unix": 1789459000,
+   "hex": "03ffffffff0000000009050138faa86a0000006d"
+  },
+  {
+   "seq": 3,
+   "boot": 1,
+   "unix": 1789464600,
+   "edge": 1,
+   "place": 0,
+   "visit_unix": 1789464600,
+   "hex": "03030001001810a96a0900011810a96a00000077"
+  }
+ ],
+ "events_plan_item": [
+  {
+   "seq": 50,
+   "boot": 7,
+   "unix": 1789488000,
+   "item": {
+    "day": 1,
+    "kind": 1,
+    "place": 1,
+    "usual": 620,
+    "suggested": 570,
+    "direction": 1,
+    "hot_from": 10,
+    "hot_to": 21,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "hex": "0332000700806ba96a0a01010a14091e0a150349"
+  },
+  {
+   "seq": 51,
+   "boot": 7,
+   "unix": 1789488000,
+   "item": {
+    "day": 1,
+    "kind": 1,
+    "place": 5,
+    "usual": 1080,
+    "suggested": 540,
+    "direction": 1,
+    "hot_from": 10,
+    "hot_to": 21,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "hex": "0333000700806ba96a0a0105120009000a15038f"
+  },
+  {
+   "seq": 52,
+   "boot": 7,
+   "unix": 1789488000,
+   "item": {
+    "day": 1,
+    "kind": 2,
+    "place": 0,
+    "usual": null,
+    "suggested": 1200,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "hex": "0334000700806ba96a0a020000001400000001be"
+  },
+  {
+   "seq": 53,
+   "boot": 7,
+   "unix": 1789488000,
+   "item": {
+    "day": 1,
+    "kind": 3,
+    "place": 0,
+    "usual": null,
+    "suggested": null,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 2
+   },
+   "hex": "0335000700806ba96a0a03000000000000001120"
+  },
+  {
+   "seq": 54,
+   "boot": 7,
+   "unix": 1789488000,
+   "item": {
+    "day": 0,
+    "kind": 1,
+    "place": 3,
+    "usual": null,
+    "suggested": 1290,
+    "direction": 2,
+    "hot_from": 14,
+    "hot_to": 21,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "hex": "0336000700806ba96a0a0103ffff151e0e15045f"
+  },
+  {
+   "seq": 55,
+   "boot": 7,
+   "unix": 1789488000,
+   "item": {
+    "day": 0,
+    "kind": 3,
+    "place": 0,
+    "usual": null,
+    "suggested": null,
+    "direction": null,
+    "hot_from": 0,
+    "hot_to": 0,
+    "peak_c": null,
+    "heatwave_day": 31
+   },
+   "hex": "0337000700806ba96a0a0300000000000000f8e5"
+  },
+  {
+   "seq": 56,
+   "boot": 7,
+   "unix": 1789488000,
+   "item": {
+    "day": 1,
+    "kind": 1,
+    "place": 2,
+    "usual": 510,
+    "suggested": 420,
+    "direction": 1,
+    "hot_from": 8,
+    "hot_to": 24,
+    "peak_c": null,
+    "heatwave_day": 0
+   },
+   "hex": "0338000700806ba96a0a0102081e070008180315"
+  }
+ ],
+ "engine": [
+  {
+   "name": "demo tomorrow (heat-wave day 2)",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": true,
+    "wave_day": 2,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 28.6,
+      "t_in": 31.2,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 28.2,
+      "t_in": 31.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 27.9,
+      "t_in": 30.9,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 27.6,
+      "t_in": 30.8,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 27.4,
+      "t_in": 30.7,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 27.5,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 27.9,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 28.4,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 8,
+      "t_out": 28.9,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 9,
+      "t_out": 29.5,
+      "t_in": 30.7,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 10,
+      "t_out": 30.6,
+      "t_in": 30.7,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 32.0,
+      "t_in": 30.9,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 33.4,
+      "t_in": 31.1,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 34.8,
+      "t_in": 31.3,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 35.9,
+      "t_in": 31.6,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": 36.4,
+      "t_in": 31.9,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": 36.0,
+      "t_in": 32.1,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 17,
+      "t_out": 35.0,
+      "t_in": 32.2,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 18,
+      "t_out": 33.6,
+      "t_in": 32.3,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 19,
+      "t_out": 32.1,
+      "t_in": 32.2,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 20,
+      "t_out": 30.7,
+      "t_in": 32.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 21,
+      "t_out": 29.4,
+      "t_in": 31.8,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 28.9,
+      "t_in": 31.5,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 28.6,
+      "t_in": 31.3,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 1,
+     "start": 620,
+     "duration": 30
+    },
+    {
+     "place": 5,
+     "start": 1080,
+     "duration": 60
+    },
+    {
+     "place": 3,
+     "start": 1275,
+     "duration": 40
+    }
+   ],
+   "bed": 1410,
+   "day": 1,
+   "expect": {
+    "hot": [
+     [
+      10,
+      21
+     ]
+    ],
+    "collisions": [
+     {
+      "place": 1,
+      "start": 620,
+      "window": [
+       10,
+       21
+      ],
+      "peak_c": 31,
+      "suggested": 570,
+      "direction": 1
+     },
+     {
+      "place": 5,
+      "start": 1080,
+      "window": [
+       10,
+       21
+      ],
+      "peak_c": 34,
+      "suggested": 540,
+      "direction": 1
+     }
+    ],
+    "air_open": 1200,
+    "heatwave_day": 2,
+    "items": [
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 1,
+      "usual": 620,
+      "suggested": 570,
+      "direction": 1,
+      "hot_from": 10,
+      "hot_to": 21,
+      "peak_c": 31,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 5,
+      "usual": 1080,
+      "suggested": 540,
+      "direction": 1,
+      "hot_from": 10,
+      "hot_to": 21,
+      "peak_c": 34,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 2,
+      "place": 0,
+      "usual": null,
+      "suggested": 1200,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 2
+     }
+    ],
+    "frames_hex": [
+     "1b01010401010a14091e010a151f000000000030",
+     "1b010204010512000900010a152200000000000f",
+     "1b0103040200000014000000000000000000004a",
+     "1b0104040300000000000000000002000000009a"
+    ],
+    "brief": "Αύριο: αγορά πριν τις 09:30"
+   }
+  },
+  {
+   "name": "direction 2 (after the window)",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": false,
+    "wave_day": 1,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 26,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 26,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 26,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 26,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 26,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 26,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 31,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 31,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 8,
+      "t_out": 31,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 9,
+      "t_out": 31,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 10,
+      "t_out": 31,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 31,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 31,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 31,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 29,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 15,
+      "t_out": 29,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 16,
+      "t_out": 29,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 17,
+      "t_out": 29,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 18,
+      "t_out": 29,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 19,
+      "t_out": 29,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 20,
+      "t_out": 29,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 21,
+      "t_out": 29,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 29,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 29,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 1,
+     "start": 600,
+     "duration": 45
+    }
+   ],
+   "bed": 1380,
+   "day": 0,
+   "expect": {
+    "hot": [
+     [
+      6,
+      14
+     ]
+    ],
+    "collisions": [
+     {
+      "place": 1,
+      "start": 600,
+      "window": [
+       6,
+       14
+      ],
+      "peak_c": 31,
+      "suggested": 870,
+      "direction": 2
+     }
+    ],
+    "air_open": null,
+    "heatwave_day": 1,
+    "items": [
+     {
+      "day": 0,
+      "kind": 1,
+      "place": 1,
+      "usual": 600,
+      "suggested": 870,
+      "direction": 2,
+      "hot_from": 6,
+      "hot_to": 14,
+      "peak_c": 31,
+      "heatwave_day": 0
+     },
+     {
+      "day": 0,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 1
+     }
+    ],
+    "frames_hex": [
+     "1b00010201010a000e1e02060e1f0000000000f3",
+     "1b0002020300000000000000000001000000003e"
+    ],
+    "brief": "Σήμερα: αγορά μετά τις 14:30"
+   }
+  },
+  {
+   "name": "no safe slot",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": false,
+    "wave_day": 3,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 8,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 9,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 10,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 17,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 18,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 19,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 20,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 21,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 33,
+      "t_in": 31,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 2,
+     "start": 540,
+     "duration": 60
+    }
+   ],
+   "bed": 1380,
+   "day": 1,
+   "expect": {
+    "hot": [
+     [
+      0,
+      24
+     ]
+    ],
+    "collisions": [
+     {
+      "place": 2,
+      "start": 540,
+      "window": [
+       0,
+       24
+      ],
+      "peak_c": 33,
+      "suggested": null,
+      "direction": null
+     }
+    ],
+    "air_open": null,
+    "heatwave_day": 3,
+    "items": [
+     {
+      "day": 1,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 3
+     }
+    ],
+    "frames_hex": [
+     "1b010101030000000000000000000300000000c4"
+    ],
+    "brief": "Αύριο: καύσωνας, μέρα 3"
+   }
+  },
+  {
+   "name": "earlier hot hour (1 h outing)",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": false,
+    "wave_day": null,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 30,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 8,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 9,
+      "t_out": 28,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 10,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 17,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 18,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 19,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 20,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 21,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 6,
+     "start": 720,
+     "duration": 60
+    }
+   ],
+   "bed": 1380,
+   "day": 1,
+   "expect": {
+    "hot": [
+     [
+      7,
+      8
+     ],
+     [
+      10,
+      20
+     ]
+    ],
+    "collisions": [
+     {
+      "place": 6,
+      "start": 720,
+      "window": [
+       10,
+       20
+      ],
+      "peak_c": 31,
+      "suggested": 540,
+      "direction": 1
+     }
+    ],
+    "air_open": null,
+    "heatwave_day": 1,
+    "items": [
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 6,
+      "usual": 720,
+      "suggested": 540,
+      "direction": 1,
+      "hot_from": 10,
+      "hot_to": 20,
+      "peak_c": 31,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 1
+     }
+    ],
+    "frames_hex": [
+     "1b01010201060c000900010a141f000000000033",
+     "1b01020203000000000000000000010000000014"
+    ],
+    "brief": "Αύριο: γιατρό πριν τις 09:00"
+   }
+  },
+  {
+   "name": "earlier hot hour (150 min, bed 00:00)",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": false,
+    "wave_day": null,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 30,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 8,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 9,
+      "t_out": 28,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 10,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 17,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 18,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 19,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 20,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 21,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 3,
+     "start": 720,
+     "duration": 150
+    }
+   ],
+   "bed": 0,
+   "day": 1,
+   "expect": {
+    "hot": [
+     [
+      7,
+      8
+     ],
+     [
+      10,
+      20
+     ]
+    ],
+    "collisions": [
+     {
+      "place": 3,
+      "start": 720,
+      "window": [
+       10,
+       20
+      ],
+      "peak_c": 31,
+      "suggested": 1230,
+      "direction": 2
+     }
+    ],
+    "air_open": null,
+    "heatwave_day": 1,
+    "items": [
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 3,
+      "usual": 720,
+      "suggested": 1230,
+      "direction": 2,
+      "hot_from": 10,
+      "hot_to": 20,
+      "peak_c": 31,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 1
+     }
+    ],
+    "frames_hex": [
+     "1b01010201030c00141e020a141f000000000000",
+     "1b01020203000000000000000000010000000014"
+    ],
+    "brief": "Αύριο: βόλτα μετά τις 20:30"
+   }
+  },
+  {
+   "name": "earlier hot hour (150 min, bed 23:00)",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": false,
+    "wave_day": null,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 25,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 30,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 8,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 9,
+      "t_out": 28,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 10,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 17,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 18,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 19,
+      "t_out": 31,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 20,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 21,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 27,
+      "t_in": 28,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 3,
+     "start": 720,
+     "duration": 150
+    }
+   ],
+   "bed": 1380,
+   "day": 1,
+   "expect": {
+    "hot": [
+     [
+      7,
+      8
+     ],
+     [
+      10,
+      20
+     ]
+    ],
+    "collisions": [
+     {
+      "place": 3,
+      "start": 720,
+      "window": [
+       10,
+       20
+      ],
+      "peak_c": 31,
+      "suggested": null,
+      "direction": null
+     }
+    ],
+    "air_open": null,
+    "heatwave_day": 1,
+    "items": [
+     {
+      "day": 1,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 1
+     }
+    ],
+    "frames_hex": [
+     "1b01010103000000000000000000010000000000"
+    ],
+    "brief": "Αύριο: καύσωνας, μέρα 1"
+   }
+  },
+  {
+   "name": "air open 20:00",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": false,
+    "wave_day": 1,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 24,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 24,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 24,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 24,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 24,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 24,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 24,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 24,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 8,
+      "t_out": 24,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 9,
+      "t_out": 24,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 10,
+      "t_out": 31,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 31,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 31,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 31,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 31,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": 31,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": 31,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 17,
+      "t_out": 31,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 18,
+      "t_out": 29,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 19,
+      "t_out": 29.5,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 20,
+      "t_out": 27,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 21,
+      "t_out": 26,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 25,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 24,
+      "t_in": 29.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [],
+   "bed": 1380,
+   "day": 1,
+   "expect": {
+    "hot": [
+     [
+      10,
+      18
+     ]
+    ],
+    "collisions": [],
+    "air_open": 1200,
+    "heatwave_day": 1,
+    "items": [
+     {
+      "day": 1,
+      "kind": 2,
+      "place": 0,
+      "usual": null,
+      "suggested": 1200,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 1
+     }
+    ],
+    "frames_hex": [
+     "1b0101020200000014000000000000000000005a",
+     "1b01020203000000000000000000010000000014"
+    ],
+    "brief": "Αύριο: καύσωνας, μέρα 1"
+   }
+  },
+  {
+   "name": "mild day: no air, no heat-wave",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": false,
+    "night_heat": false,
+    "wave_day": null,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 8,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 9,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 10,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 11,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 12,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 13,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 14,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 15,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 16,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 17,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 18,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 19,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 20,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 21,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 22,
+      "t_in": 24,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 1,
+     "start": 600,
+     "duration": 30
+    }
+   ],
+   "bed": 1380,
+   "day": 1,
+   "expect": {
+    "hot": [],
+    "collisions": [],
+    "air_open": null,
+    "heatwave_day": null,
+    "items": [],
+    "frames_hex": [
+     "1b010000000000000000000000000000000000b6"
+    ],
+    "brief": null
+   }
+  },
+  {
+   "name": "AVOID without t_out",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": false,
+    "night_heat": false,
+    "wave_day": null,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 8,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 9,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 10,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 11,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 12,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 17,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 18,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 19,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 20,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 21,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": null,
+      "t_in": 27,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 4,
+     "start": 780,
+     "duration": 20
+    },
+    {
+     "place": 5,
+     "start": 960,
+     "duration": 30
+    }
+   ],
+   "bed": 1380,
+   "day": 0,
+   "expect": {
+    "hot": [
+     [
+      12,
+      16
+     ]
+    ],
+    "collisions": [
+     {
+      "place": 4,
+      "start": 780,
+      "window": [
+       12,
+       16
+      ],
+      "peak_c": null,
+      "suggested": 690,
+      "direction": 1
+     }
+    ],
+    "air_open": null,
+    "heatwave_day": null,
+    "items": [
+     {
+      "day": 0,
+      "kind": 1,
+      "place": 4,
+      "usual": 780,
+      "suggested": 690,
+      "direction": 1,
+      "hot_from": 12,
+      "hot_to": 16,
+      "peak_c": null,
+      "heatwave_day": 0
+     }
+    ],
+    "frames_hex": [
+     "1b00010101040d000b1e010c10ff00000000006a"
+    ],
+    "brief": "Σήμερα: φαρμακείο πριν τις 11:30"
+   }
+  },
+  {
+   "name": "cap 6 items",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": false,
+    "wave_day": 5,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 24,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 24,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 24,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 24,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 24,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 24,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 24,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 24,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 8,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 9,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 10,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 17,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 18,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 19,
+      "t_out": 33,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 20,
+      "t_out": 26,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 21,
+      "t_out": 26,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 26,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 26,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 1,
+     "start": 600,
+     "duration": 20
+    },
+    {
+     "place": 2,
+     "start": 660,
+     "duration": 20
+    },
+    {
+     "place": 3,
+     "start": 720,
+     "duration": 20
+    },
+    {
+     "place": 4,
+     "start": 780,
+     "duration": 20
+    },
+    {
+     "place": 5,
+     "start": 840,
+     "duration": 20
+    },
+    {
+     "place": 6,
+     "start": 900,
+     "duration": 20
+    },
+    {
+     "place": 7,
+     "start": 960,
+     "duration": 20
+    }
+   ],
+   "bed": 1380,
+   "day": 1,
+   "expect": {
+    "hot": [
+     [
+      8,
+      20
+     ]
+    ],
+    "collisions": [
+     {
+      "place": 1,
+      "start": 600,
+      "window": [
+       8,
+       20
+      ],
+      "peak_c": 33,
+      "suggested": 450,
+      "direction": 1
+     },
+     {
+      "place": 2,
+      "start": 660,
+      "window": [
+       8,
+       20
+      ],
+      "peak_c": 33,
+      "suggested": 450,
+      "direction": 1
+     },
+     {
+      "place": 3,
+      "start": 720,
+      "window": [
+       8,
+       20
+      ],
+      "peak_c": 33,
+      "suggested": 450,
+      "direction": 1
+     },
+     {
+      "place": 4,
+      "start": 780,
+      "window": [
+       8,
+       20
+      ],
+      "peak_c": 33,
+      "suggested": 450,
+      "direction": 1
+     },
+     {
+      "place": 5,
+      "start": 840,
+      "window": [
+       8,
+       20
+      ],
+      "peak_c": 33,
+      "suggested": 450,
+      "direction": 1
+     },
+     {
+      "place": 6,
+      "start": 900,
+      "window": [
+       8,
+       20
+      ],
+      "peak_c": 33,
+      "suggested": 450,
+      "direction": 1
+     },
+     {
+      "place": 7,
+      "start": 960,
+      "window": [
+       8,
+       20
+      ],
+      "peak_c": 33,
+      "suggested": 450,
+      "direction": 1
+     }
+    ],
+    "air_open": 1200,
+    "heatwave_day": 5,
+    "items": [
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 1,
+      "usual": 600,
+      "suggested": 450,
+      "direction": 1,
+      "hot_from": 8,
+      "hot_to": 20,
+      "peak_c": 33,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 2,
+      "usual": 660,
+      "suggested": 450,
+      "direction": 1,
+      "hot_from": 8,
+      "hot_to": 20,
+      "peak_c": 33,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 3,
+      "usual": 720,
+      "suggested": 450,
+      "direction": 1,
+      "hot_from": 8,
+      "hot_to": 20,
+      "peak_c": 33,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 4,
+      "usual": 780,
+      "suggested": 450,
+      "direction": 1,
+      "hot_from": 8,
+      "hot_to": 20,
+      "peak_c": 33,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 2,
+      "place": 0,
+      "usual": null,
+      "suggested": 1200,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 5
+     }
+    ],
+    "frames_hex": [
+     "1b01010601010a00071e010814210000000000d3",
+     "1b01020601020b00071e0108142100000000007d",
+     "1b01030601030c00071e01081421000000000073",
+     "1b01040601040d00071e01081421000000000078",
+     "1b0105060200000014000000000000000000006a",
+     "1b010606030000000000000000000500000000ab"
+    ],
+    "brief": "Αύριο: αγορά πριν τις 07:30"
+   }
+  },
+  {
+   "name": "overlap: starts before the window",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": false,
+    "wave_day": 2,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 28.6,
+      "t_in": 31.2,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 28.2,
+      "t_in": 31.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 27.9,
+      "t_in": 30.9,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 27.6,
+      "t_in": 30.8,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 27.4,
+      "t_in": 30.7,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 27.5,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 27.9,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 28.4,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 8,
+      "t_out": 28.9,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 9,
+      "t_out": 29.5,
+      "t_in": 30.7,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 10,
+      "t_out": 30.6,
+      "t_in": 30.7,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 32.0,
+      "t_in": 30.9,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 33.4,
+      "t_in": 31.1,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 34.8,
+      "t_in": 31.3,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 35.9,
+      "t_in": 31.6,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": 36.4,
+      "t_in": 31.9,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": 36.0,
+      "t_in": 32.1,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 17,
+      "t_out": 35.0,
+      "t_in": 32.2,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 18,
+      "t_out": 33.6,
+      "t_in": 32.3,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 19,
+      "t_out": 32.1,
+      "t_in": 32.2,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 20,
+      "t_out": 30.7,
+      "t_in": 32.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 21,
+      "t_out": 29.4,
+      "t_in": 31.8,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 28.9,
+      "t_in": 31.5,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 28.6,
+      "t_in": 31.3,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 1,
+     "start": 580,
+     "duration": 30
+    },
+    {
+     "place": 4,
+     "start": 570,
+     "duration": 30
+    }
+   ],
+   "bed": 1380,
+   "day": 1,
+   "expect": {
+    "hot": [
+     [
+      10,
+      21
+     ]
+    ],
+    "collisions": [
+     {
+      "place": 1,
+      "start": 580,
+      "window": [
+       10,
+       21
+      ],
+      "peak_c": 31,
+      "suggested": 570,
+      "direction": 1
+     }
+    ],
+    "air_open": 1200,
+    "heatwave_day": 2,
+    "items": [
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 1,
+      "usual": 580,
+      "suggested": 570,
+      "direction": 1,
+      "hot_from": 10,
+      "hot_to": 21,
+      "peak_c": 31,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 2,
+      "place": 0,
+      "usual": null,
+      "suggested": 1200,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 2
+     }
+    ],
+    "frames_hex": [
+     "1b01010301010928091e010a151f00000000004a",
+     "1b0102030200000014000000000000000000004a",
+     "1b010303030000000000000000000200000000be"
+    ],
+    "brief": "Αύριο: αγορά πριν τις 09:30"
+   }
+  },
+  {
+   "name": "overlap: ends exactly at the start / starts at the end",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": false,
+    "wave_day": 2,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 28.6,
+      "t_in": 31.2,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 28.2,
+      "t_in": 31.0,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 27.9,
+      "t_in": 30.9,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 27.6,
+      "t_in": 30.8,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 27.4,
+      "t_in": 30.7,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 27.5,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 27.9,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 28.4,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 8,
+      "t_out": 28.9,
+      "t_in": 30.6,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 9,
+      "t_out": 29.5,
+      "t_in": 30.7,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 10,
+      "t_out": 30.6,
+      "t_in": 30.7,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 32.0,
+      "t_in": 30.9,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 33.4,
+      "t_in": 31.1,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 34.8,
+      "t_in": 31.3,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 35.9,
+      "t_in": 31.6,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": 36.4,
+      "t_in": 31.9,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": 36.0,
+      "t_in": 32.1,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 17,
+      "t_out": 35.0,
+      "t_in": 32.2,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 18,
+      "t_out": 33.6,
+      "t_in": 32.3,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 19,
+      "t_out": 32.1,
+      "t_in": 32.2,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 20,
+      "t_out": 30.7,
+      "t_in": 32.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 21,
+      "t_out": 29.4,
+      "t_in": 31.8,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 28.9,
+      "t_in": 31.5,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 28.6,
+      "t_in": 31.3,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 3,
+     "start": 1260,
+     "duration": 40
+    },
+    {
+     "place": 5,
+     "start": 1230,
+     "duration": 45
+    }
+   ],
+   "bed": 1380,
+   "day": 1,
+   "expect": {
+    "hot": [
+     [
+      10,
+      21
+     ]
+    ],
+    "collisions": [
+     {
+      "place": 5,
+      "start": 1230,
+      "window": [
+       10,
+       21
+      ],
+      "peak_c": 31,
+      "suggested": 555,
+      "direction": 1
+     }
+    ],
+    "air_open": 1200,
+    "heatwave_day": 2,
+    "items": [
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 5,
+      "usual": 1230,
+      "suggested": 555,
+      "direction": 1,
+      "hot_from": 10,
+      "hot_to": 21,
+      "peak_c": 31,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 2,
+      "place": 0,
+      "usual": null,
+      "suggested": 1200,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 2
+     }
+    ],
+    "frames_hex": [
+     "1b0101030105141e090f010a151f0000000000b7",
+     "1b0102030200000014000000000000000000004a",
+     "1b010303030000000000000000000200000000be"
+    ],
+    "brief": "Αύριο: καφενείο πριν τις 09:15"
+   }
+  },
+  {
+   "name": "demo hotter tomorrow (heat-wave day 3): go after",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": true,
+    "wave_day": 3,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 29.8,
+      "t_in": 31.5,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 29.4,
+      "t_in": 31.5,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 29.0,
+      "t_in": 31.5,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 28.7,
+      "t_in": 31.5,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 28.5,
+      "t_in": 31.4,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 28.6,
+      "t_in": 31.4,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 29.1,
+      "t_in": 31.4,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 29.7,
+      "t_in": 31.4,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 8,
+      "t_out": 30.5,
+      "t_in": 31.4,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 9,
+      "t_out": 31.6,
+      "t_in": 31.5,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 10,
+      "t_out": 32.9,
+      "t_in": 31.7,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 34.1,
+      "t_in": 31.9,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 35.3,
+      "t_in": 32.1,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 36.4,
+      "t_in": 32.3,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 37.1,
+      "t_in": 32.6,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": 37.3,
+      "t_in": 32.8,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": 36.4,
+      "t_in": 33.0,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 17,
+      "t_out": 34.2,
+      "t_in": 33.1,
+      "rh_in": 40,
+      "advice": "AVOID",
+      "safe": false
+     },
+     {
+      "h": 18,
+      "t_out": 31.3,
+      "t_in": 33.0,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 19,
+      "t_out": 29.8,
+      "t_in": 32.7,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 20,
+      "t_out": 29.0,
+      "t_in": 32.4,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": true
+     },
+     {
+      "h": 21,
+      "t_out": 28.6,
+      "t_in": 32.1,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 28.3,
+      "t_in": 31.8,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 28.0,
+      "t_in": 31.7,
+      "rh_in": 40,
+      "advice": "OK",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 1,
+     "start": 620,
+     "duration": 30
+    },
+    {
+     "place": 2,
+     "start": 510,
+     "duration": 75
+    },
+    {
+     "place": 5,
+     "start": 1080,
+     "duration": 60
+    },
+    {
+     "place": 3,
+     "start": 1275,
+     "duration": 40
+    }
+   ],
+   "bed": 1410,
+   "day": 1,
+   "expect": {
+    "hot": [
+     [
+      8,
+      19
+     ]
+    ],
+    "collisions": [
+     {
+      "place": 2,
+      "start": 510,
+      "window": [
+       8,
+       19
+      ],
+      "peak_c": 32,
+      "suggested": 1170,
+      "direction": 2
+     },
+     {
+      "place": 1,
+      "start": 620,
+      "window": [
+       8,
+       19
+      ],
+      "peak_c": 33,
+      "suggested": 450,
+      "direction": 1
+     },
+     {
+      "place": 5,
+      "start": 1080,
+      "window": [
+       8,
+       19
+      ],
+      "peak_c": 31,
+      "suggested": 420,
+      "direction": 1
+     }
+    ],
+    "air_open": 1080,
+    "heatwave_day": 3,
+    "items": [
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 2,
+      "usual": 510,
+      "suggested": 1170,
+      "direction": 2,
+      "hot_from": 8,
+      "hot_to": 19,
+      "peak_c": 32,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 1,
+      "usual": 620,
+      "suggested": 450,
+      "direction": 1,
+      "hot_from": 8,
+      "hot_to": 19,
+      "peak_c": 33,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 1,
+      "place": 5,
+      "usual": 1080,
+      "suggested": 420,
+      "direction": 1,
+      "hot_from": 8,
+      "hot_to": 19,
+      "peak_c": 31,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 2,
+      "place": 0,
+      "usual": null,
+      "suggested": 1080,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 0
+     },
+     {
+      "day": 1,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 3
+     }
+    ],
+    "frames_hex": [
+     "1b0101050102081e131e0208132000000000000c",
+     "1b01020501010a14071e0108132100000000006c",
+     "1b0103050105120007000108131f000000000034",
+     "1b01040502000000120000000000000000000020",
+     "1b010505030000000000000000000300000000f4"
+    ],
+    "brief": "Αύριο: εκκλησία μετά τις 19:30"
+   }
+  },
+  {
+   "name": "home ignored",
+   "plan": {
+    "date": "2026-07-15",
+    "heat_day": true,
+    "night_heat": false,
+    "wave_day": 1,
+    "hours": [
+     {
+      "h": 0,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 1,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 2,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 3,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 4,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 5,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 6,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 7,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 8,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 9,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 10,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 11,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 12,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 13,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 14,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 15,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 16,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 17,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 18,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 19,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 20,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 21,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 22,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     },
+     {
+      "h": 23,
+      "t_out": 31,
+      "t_in": 29,
+      "rh_in": 40,
+      "advice": "SHORT",
+      "safe": false
+     }
+    ]
+   },
+   "outings": [
+    {
+     "place": 0,
+     "start": 600,
+     "duration": 60
+    }
+   ],
+   "bed": 1380,
+   "day": 1,
+   "expect": {
+    "hot": [
+     [
+      0,
+      24
+     ]
+    ],
+    "collisions": [],
+    "air_open": null,
+    "heatwave_day": 1,
+    "items": [
+     {
+      "day": 1,
+      "kind": 3,
+      "place": 0,
+      "usual": null,
+      "suggested": null,
+      "direction": null,
+      "hot_from": 0,
+      "hot_to": 0,
+      "peak_c": null,
+      "heatwave_day": 1
+     }
+    ],
+    "frames_hex": [
+     "1b01010103000000000000000000010000000000"
+    ],
+    "brief": "Αύριο: καύσωνας, μέρα 1"
+   }
+  }
+ ],
+ "routine": [
+  {
+   "name": "daily market (6 weekdays) applies on Sunday",
+   "samples": [
+    {
+     "place": 1,
+     "weekday": 2,
+     "start": 615,
+     "duration": 30
+    },
+    {
+     "place": 1,
+     "weekday": 3,
+     "start": 625,
+     "duration": 40
+    },
+    {
+     "place": 1,
+     "weekday": 4,
+     "start": 618,
+     "duration": 30
+    },
+    {
+     "place": 1,
+     "weekday": 5,
+     "start": 630,
+     "duration": 35
+    },
+    {
+     "place": 1,
+     "weekday": 6,
+     "start": 610,
+     "duration": null
+    },
+    {
+     "place": 1,
+     "weekday": 7,
+     "start": 622,
+     "duration": 30
+    }
+   ],
+   "weekday": 1,
+   "expect": [
+    {
+     "place": 1,
+     "start": 620,
+     "duration": 30,
+     "daily": true,
+     "count": 6
+    }
+   ]
+  },
+  {
+   "name": "church on Sundays: Sunday",
+   "samples": [
+    {
+     "place": 2,
+     "weekday": 1,
+     "start": 510,
+     "duration": 75
+    },
+    {
+     "place": 2,
+     "weekday": 1,
+     "start": 520,
+     "duration": 80
+    }
+   ],
+   "weekday": 1,
+   "expect": [
+    {
+     "place": 2,
+     "start": 515,
+     "duration": 77,
+     "daily": false,
+     "count": 2
+    }
+   ]
+  },
+  {
+   "name": "church on Sundays: Monday",
+   "samples": [
+    {
+     "place": 2,
+     "weekday": 1,
+     "start": 510,
+     "duration": 75
+    },
+    {
+     "place": 2,
+     "weekday": 1,
+     "start": 520,
+     "duration": 80
+    }
+   ],
+   "weekday": 2,
+   "expect": []
+  },
+  {
+   "name": "church once is not a habit",
+   "samples": [
+    {
+     "place": 2,
+     "weekday": 1,
+     "start": 510,
+     "duration": 75
+    }
+   ],
+   "weekday": 1,
+   "expect": []
+  },
+  {
+   "name": "morning and evening walks are two outings",
+   "samples": [
+    {
+     "place": 3,
+     "weekday": 2,
+     "start": 480,
+     "duration": 40
+    },
+    {
+     "place": 3,
+     "weekday": 2,
+     "start": 1260,
+     "duration": 40
+    },
+    {
+     "place": 3,
+     "weekday": 3,
+     "start": 480,
+     "duration": 40
+    },
+    {
+     "place": 3,
+     "weekday": 3,
+     "start": 1260,
+     "duration": 40
+    },
+    {
+     "place": 3,
+     "weekday": 4,
+     "start": 480,
+     "duration": 40
+    },
+    {
+     "place": 3,
+     "weekday": 4,
+     "start": 1260,
+     "duration": 40
+    },
+    {
+     "place": 3,
+     "weekday": 5,
+     "start": 480,
+     "duration": 40
+    },
+    {
+     "place": 3,
+     "weekday": 5,
+     "start": 1260,
+     "duration": 40
+    }
+   ],
+   "weekday": 3,
+   "expect": [
+    {
+     "place": 3,
+     "start": 480,
+     "duration": 40,
+     "daily": true,
+     "count": 4
+    },
+    {
+     "place": 3,
+     "start": 1260,
+     "duration": 40,
+     "daily": true,
+     "count": 4
+    }
+   ]
+  },
+  {
+   "name": "no duration -> 60 min; clamp",
+   "samples": [
+    {
+     "place": 5,
+     "weekday": 4,
+     "start": 1080,
+     "duration": null
+    },
+    {
+     "place": 5,
+     "weekday": 4,
+     "start": 1090,
+     "duration": null
+    },
+    {
+     "place": 6,
+     "weekday": 4,
+     "start": 600,
+     "duration": 5
+    },
+    {
+     "place": 6,
+     "weekday": 4,
+     "start": 610,
+     "duration": 7
+    }
+   ],
+   "weekday": 4,
+   "expect": [
+    {
+     "place": 6,
+     "start": 605,
+     "duration": 15,
+     "daily": false,
+     "count": 2
+    },
+    {
+     "place": 5,
+     "start": 1085,
+     "duration": 60,
+     "daily": false,
+     "count": 2
+    }
+   ]
+  }
+ ]
+}

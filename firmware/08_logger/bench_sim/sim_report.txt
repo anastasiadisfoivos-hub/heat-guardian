@@ -1,0 +1,7 @@
+records: 600 x 1 Hz, 11 x 1-min summaries; CRC errors: 0; unparsed lines: 0; raw blocks: 0
+boot 3: 600 records, t_ms 2840..601840, 0 gaps, 0 s missing, coverage 100.00 %
+sensor availability (1 Hz): T1 100.0%, T2 0.0%, T_air_meas 100.0%, RH_meas 100.0%, HR_meas 92.2%, a_std_g 100.0%
+hr_quality counts: 2.0: 99, 3.0: 63, 4.0: 438
+markers: boot@2840, time@22840, donned@47840, button@302840, oral@422840, boot@0, button@300000, oral@420000
+battery (minute records): 4.06 V -> 4.06 V over 11 min
+time syncs: boot 3: unix 1763287200 at t_ms 22440

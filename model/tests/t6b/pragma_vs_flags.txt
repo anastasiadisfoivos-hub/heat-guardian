@@ -1,0 +1,12 @@
+hg2_step: pragma-vs-flags SAME; fma pragma=0 flags=0 none=56
+hg2_weights: pragma-vs-flags SAME; fma pragma=0 flags=0 none=0
+hg_contact: pragma-vs-flags SAME; fma pragma=0 flags=0 none=0
+hg_frames: pragma-vs-flags SAME; fma pragma=0 flags=0 none=5
+hg_guardian: pragma-vs-flags SAME; fma pragma=0 flags=0 none=5
+hg_guardian_twin: pragma-vs-flags SAME; fma pragma=0 flags=0 none=0
+hg_homeout: pragma-vs-flags SAME; fma pragma=0 flags=0 none=2
+hg_kf: pragma-vs-flags SAME; fma pragma=0 flags=0 none=45
+hg_routine: pragma-vs-flags SAME; fma pragma=0 flags=0 none=3
+hg_tables: pragma-vs-flags SAME; fma pragma=0 flags=0 none=0
+hg_twin: pragma-vs-flags SAME; fma pragma=0 flags=0 none=0
+hg_util: pragma-vs-flags SAME; fma pragma=0 flags=0 none=8

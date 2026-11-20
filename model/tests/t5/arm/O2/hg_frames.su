@@ -1,0 +1,7 @@
+hg_frames.c:19:16:u8c	24	static
+hg_frames.c:15:17:i16c	16	static
+hg_frames.c:6:9:hg_crc8	4	static
+hg_frames.c:24:6:hg_status_pack	16	static
+hg_frames.c:41:6:hg_info_pack	8	static
+hg_frames.c:49:6:hg_forecast_init	8	static
+hg_frames.c:51:5:hg_cmd_parse	32	static

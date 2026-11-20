@@ -1,0 +1,41 @@
+M12 heat-context gate (T_ctx 30 C) + [B2-fix] guards/REAL range: crafted-trace expectation diff vs hg2-freeze
+
+trace_check_danger_family.csv: 7 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@273 DRINK@274 OK@281
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@273 OK@274
+   why: M12 gate. Only the post-episode DRINK tail changes: during recovery HR falls while the v1.2 f20 is still >= 37.85 C; the room is 30.0 C raw = ~29.4 C after the body-heat correction (< T_ctx 30), below the PSU older line, not OOD -> the HR-only v1.2 ceiling no longer counts. Every first onset (DRINK/COOL/DANGER) is unchanged.
+
+trace_check_press_imok_snooze.csv: 7 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 IMOK@63 DANGER@64 COOL@273 DRINK@274 OK@281
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 IMOK@63 DANGER@64 COOL@273 OK@274
+   why: M12 gate. Only the post-episode DRINK tail changes: during recovery HR falls while the v1.2 f20 is still >= 37.85 C; the room is 30.0 C raw = ~29.4 C after the body-heat correction (< T_ctx 30), below the PSU older line, not OOD -> the HR-only v1.2 ceiling no longer counts. Every first onset (DRINK/COOL/DANGER) is unchanged.
+
+trace_cool_f20_danger_logistic.csv: 7 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@233 DRINK@234 OK@241
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@233 OK@234
+   why: M12 gate. Only the post-episode DRINK tail changes: during recovery HR falls while the v1.2 f20 is still >= 37.85 C; the room is 30.0 C raw = ~29.4 C after the body-heat correction (< T_ctx 30), below the PSU older line, not OOD -> the HR-only v1.2 ceiling no longer counts. Every first onset (DRINK/COOL/DANGER) is unchanged.
+
+trace_drink_f20.csv: 5 of 240 minutes changed
+   old: OK@0 DRINK@29 OK@197
+   new: OK@0 DRINK@29 OK@192
+   why: M12 gate. Only the post-episode DRINK tail changes: during recovery HR falls while the v1.2 f20 is still >= 37.85 C; the room is 30.0 C raw = ~29.4 C after the body-heat correction (< T_ctx 30), below the PSU older line, not OOD -> the HR-only v1.2 ceiling no longer counts. Every first onset (DRINK/COOL/DANGER) is unchanged.
+
+trace_hr_gating.csv: 7 of 300 minutes changed
+   old: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@166 DANGER@188 COOL@253 DRINK@254 OK@261
+   new: OK@0 DRINK@27 COOL@37 DANGER@60 COOL@166 DANGER@188 COOL@253 OK@254
+   why: M12 gate. Only the post-episode DRINK tail changes: during recovery HR falls while the v1.2 f20 is still >= 37.85 C; the room is 30.0 C raw = ~29.4 C after the body-heat correction (< T_ctx 30), below the PSU older line, not OOD -> the HR-only v1.2 ceiling no longer counts. Every first onset (DRINK/COOL/DANGER) is unchanged.
+
+trace_m12_heat_context.csv: NEW trace
+trace_med_margins.csv: 6 of 240 minutes changed
+   old: OK@0 DRINK@24 COOL@27 DANGER@36 DRINK@197 OK@203
+   new: OK@0 DRINK@24 COOL@27 DANGER@36 OK@197
+   why: M12 gate. Only the post-episode DRINK tail changes: during recovery HR falls while the v1.2 f20 is still >= 37.85 C; the room is 30.0 C raw = ~29.4 C after the body-heat correction (< T_ctx 30), below the PSU older line, not OOD -> the HR-only v1.2 ceiling no longer counts. Every first onset (DRINK/COOL/DANGER) is unchanged.
+
+trace_older_margin.csv: 5 of 240 minutes changed
+   old: OK@0 DRINK@28 COOL@35 DANGER@70 DRINK@192 OK@197
+   new: OK@0 DRINK@28 COOL@35 DANGER@70 OK@192
+   why: M12 gate. Only the post-episode DRINK tail changes: during recovery HR falls while the v1.2 f20 is still >= 37.85 C; the room is 30.0 C raw = ~29.4 C after the body-heat correction (< T_ctx 30), below the PSU older line, not OOD -> the HR-only v1.2 ceiling no longer counts. Every first onset (DRINK/COOL/DANGER) is unchanged.
+
+
+[B2-fix] guards / REAL range: no expectation changed (in-range inputs are bit-identical; the range only widens the STATUS half-width byte).
+Mutation check: trace_m12_heat_context.csv fails with -DHG_V12_CTX=0 (120 mismatching minutes: DRINK in the 24 C phase).

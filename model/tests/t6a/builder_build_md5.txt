@@ -1,0 +1,5 @@
+c8e3995ce1f3ba67d3ba1b0e43f1a6c0  /home/claude/hg_ai/fw/08_logger/build/Seeeduino.nrf52.xiaonRF52840/08_logger.ino.elf
+45184edaf7ca7189db3d9535c9f0d89b  /home/claude/hg_ai/fw/08_logger/build/Seeeduino.nrf52.xiaonRF52840/08_logger.ino.hex
+6fb2b8dacd8a611d6237e6a2256bbee8  /home/claude/hg_ai/fw/08_logger/build/Seeeduino.nrf52.xiaonRF52840/08_logger.ino.map
+35e549a540064944a9516d25bdd26cfd  /home/claude/hg_ai/fw/08_logger/build/Seeeduino.nrf52.xiaonRF52840/08_logger.ino.zip
+09db908b657167afbbff440361467ebb  /home/claude/hg_ai/fw/08_logger/build/Seeeduino.nrf52.xiaonRF52840/08_logger.uf2

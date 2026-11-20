@@ -1,0 +1,24 @@
+PASS  B4 forecast chunks 0-3 parse, buffer complete
+PASS  24 decoded forecast hours == ble_vectors decoded_hours (0 mismatches)
+PASS  SAFE_HOURS == vectors: b4_safe n=20 rc=20 bitmap=6291680 plan=195 tag=2026-07-14 B
+PASS  dashboard TIME frame accepted: dash_time n=7 rc=16 unix=1794470400 tz_q=8
+PASS  dashboard FAMILY_ACK accepted
+PASS  dashboard DEBUG accepted
+INFO  20-byte TIME with CRC at byte 19 (B4 "every frame is 20 B" rule): time_20B_crc_at_19 n=20 rc=-2
+PASS  200 single-bit flips of a valid FORECAST frame all rejected (200/200)
+PASS  short_time rejected: short_time n=5 rc=-1
+PASS  empty1 rejected: empty1 n=1 rc=-1
+PASS  unknown_op rejected: unknown_op n=7 rc=-3
+PASS  ack_type0 rejected: ack_type0 n=7 rc=-4
+PASS  ack_type9 rejected: ack_type9 n=7 rc=-4
+PASS  profile_nan rejected: profile_nan n=7 rc=-4
+PASS  fc_mixed_chunk rejected: fc_mixed_chunk n=20 rc=-4
+INFO  profile_inf: profile_inf n=7 rc=19 field=2 value=inf
+INFO  time_zero: time_zero n=7 rc=16 unix=0 tz_q=0
+INFO  time_ffff: time_ffff n=7 rc=16 unix=4294967295 tz_q=127
+INFO  time_tz_m128: time_tz_m128 n=7 rc=16 unix=1794470400 tz_q=-128
+INFO  random frames accepted: 4/5000 (CRC-8 chance acceptance ~1/256 of well-formed-length ones)
+      rnd355 n=16 rc=19 field=107 value=3.51813e-36
+      rnd1757 n=17 rc=16 unix=3852267265 tz_q=-41
+      rnd2686 n=11 rc=19 field=193 value=1.76942e-22
+      rnd3589 n=17 rc=31

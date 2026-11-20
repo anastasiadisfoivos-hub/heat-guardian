@@ -1,0 +1,16 @@
+CLEARANCE TEST COUPON  (print this first, ~15 min, PETG, 0.2 mm layers, flat side down, no supports)
+STL: /home/claude/hg_case/out/stl/coupon.stl
+Pictures: /home/claude/hg_case/out/png/coupon_iso.png (+ _top, _bottom, _section)
+
+How to read it - count the little dots next to each feature: 2 dots = 0.2 mm, 3 = 0.3, 4 = 0.4, 5 = 0.5 mm.
+1. Board-edge slots (4 long slots): push the 25.4 mm edge of the ICM-20649 / SHTC3 board into each.
+   Pick the tightest slot the board enters by hand without forcing -> set CLEAR in params.py to that number.
+2. Locating pins (4 pins, row behind the slots): push a board's mounting hole onto each pin.
+   Pick the pin that snaps in and holds -> PIN_UNDERSIZE in params.py = 2 x that number
+   (e.g. the 3-dot pin is best -> PIN_UNDERSIZE = 0.6).
+3. Motor pocket (round, on the boss): the coin motor should drop in and not rattle.
+4. Wire channel (rib with a small post): your 4-wire bundle should lie in it flat; tie/glue round the post.
+5. MAX30102 window (square block): flip the coupon over, push the MAX board into the underside pocket,
+   sensor side up toward the window. Look through the window from the top: you should see the whole
+   black optical chip and nothing else; the raised ring is the light seal.
+Tell Claude: best slot, best pin, motor fit, and whether the MAX chip shows fully in the window.
